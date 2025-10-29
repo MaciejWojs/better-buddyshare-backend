@@ -1,0 +1,27 @@
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    generate-html-docs:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+
+            - uses: oven-sh/setup-bun@v2
+
+            - name: Install dependencies
+              run: bun install
+              
+            - name: Build documentation
+              run: |
+                bunx typedoc
+            
+            - name: Deploy
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                publish_dir: ./docs/html
