@@ -1,0 +1,76 @@
+flowchart LR
+    %% ===== Clients =====
+    subgraph Clients
+        direction LR
+        OBS["OBS Studio<br /> (RTMP/WebRTC)"]
+        Browser["Browser<br /> (HTTP/WebRTC)"]
+        Api["API Client<br /> (HTTP)"]
+    end
+
+    %% ===== Backend =====
+    subgraph Backend
+        direction TB
+        WAF["Web Application Firewall<br /> (Nginx + ModSecurity)"]
+        LB["Load Balancer<br /> (Nginx)"]
+        API["API Server<br /> (Bun + Hono)"]
+
+        %% Order adjusted here
+        Cache["In-memory Cache<br /> (Redis/Valkey)"]
+        Worker["Media Worker<br /> (video and photo)"]
+
+        RabbitMQ["Message Broker<br /> (RabbitMQ)"]
+        DB["Database<br /> (PostgreSQL)"]
+        SRS["Streaming Server<br /> (SRS)"]
+        Storage["Object Storage<br /> (S3 / MinIO)"]
+    end
+
+    %% ===== Flows =====
+    Clients -->|HTTP/RTMP/WebRTC| WAF
+    WAF -->|Filtered Traffic| LB
+    LB -->|HTTP| API
+    LB -->|RTMP/WebRTC| SRS
+
+    %% API Core
+    API -->|DB Queries| DB
+    API <-->|Get/Set| Cache
+
+    %% Async Tasks
+    API <-->|Enqueue Task<br />  Update| RabbitMQ
+    RabbitMQ <-->|Deliver Task<br />  Update done| Worker
+
+    %% Media Worker Operations
+    Worker <-->|Get/Set| Cache
+    Worker -->|Upload Output| Storage
+    Worker -->|Process Media| SRS
+
+    %% SRS Events
+    SRS -->|Stream Events| API
+
+    %% ===== Arrow Styling =====
+    %% HTTP
+    linkStyle 0 stroke:#1E90FF,stroke-width:2px,color:#1E90FF
+    linkStyle 1 stroke:#1E90FF,stroke-width:2px,color:#1E90FF
+    linkStyle 2 stroke:#1E90FF,stroke-width:2px,color:#1E90FF
+
+    %% RTMP/WebRTC
+    linkStyle 3 stroke:#FF4500,stroke-width:2px,color:#FF4500
+
+    %% DB
+    %% linkStyle 4 stroke:#32CD32,stroke-width:2px,color:#32CD32
+
+    %% Cache
+    linkStyle 5 stroke:#FFD700,stroke-width:2px,color:#B8860B
+    linkStyle 8 stroke:#FFD700,stroke-width:2px,color:#B8860B
+
+    %% RabbitMQ messaging
+    linkStyle 6 stroke:#8A2BE2,stroke-width:2px,color:#8A2BE2
+    linkStyle 7 stroke:#8A2BE2,stroke-width:2px,color:#8A2BE2
+
+    %% Media
+    linkStyle 10 stroke:#FF69B4,stroke-width:2px,color:#FF1493
+
+    %% Storage
+    linkStyle 9 stroke:#2E8B57,stroke-width:2px,color:#2E8B57
+
+    %% SRS Event
+    linkStyle 11 stroke:#FF8C00,stroke-width:2px,color:#FF8C00

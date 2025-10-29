@@ -1,0 +1,27 @@
+{
+  "entryPoints": [
+    "src/**/*.{ts,tsx,js,jsx}"
+  ],
+  "outputs": [
+    {
+      "name": "html",
+      "path": "./docs/html/"
+    },
+  ],
+  "exclude": [
+    "**/*.test.ts"
+  ],
+  "plugin": [
+    "typedoc-plugin-markdown",
+    "typedoc-plugin-dt-links",
+    "typedoc-plugin-mdn-links",
+  ],
+  "includeVersion": true,
+  "jsDocCompatibility": {
+    "exampleTag": true,
+    "defaultTag": true,
+    "inheritDocTag": true,
+    "ignoreUnescapedBraces": true
+  },
+  "useTsLinkResolution": true
+}
