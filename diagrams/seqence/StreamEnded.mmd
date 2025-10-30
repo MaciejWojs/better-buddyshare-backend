@@ -1,0 +1,26 @@
+sequenceDiagram
+    participant SRS as Streaming Server (SRS)
+    participant API as API Server
+    %% participant RabbitMQ
+    participant RabbitMQ as Message Broker <br /> (RabbitMQ)
+    %% participant RabbitMQ@{"type":"queue"}
+    participant Worker as Media Worker <br /> (video and photo)
+    participant Storage as Object Storage <br /> (S3 / MinIO)
+
+    SRS ->> API: Stream ended
+    Note over SRS,API: stream video is ready to download
+
+    Note over API,RabbitMQ: Send task with <br />stream info (id, URL)
+    API ->> RabbitMQ: Enqueue Task
+    
+    RabbitMQ ->> Worker: Deliver Task
+    
+    Note over Worker: download stream from SRS
+    Worker -->> SRS: Download stream as video file
+
+    Note over Worker,Storage: upload processed media
+    Worker -->> Storage: Upload stream video file
+
+    Worker --> RabbitMQ: Notify task completed
+    RabbitMQ --> API: Update task status
+    Note over API,RabbitMQ: Insert stream video URL to database

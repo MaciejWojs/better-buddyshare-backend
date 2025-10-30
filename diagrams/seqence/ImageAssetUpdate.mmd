@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant USER as User
+    participant API as API Server
+    participant RabbitMQ as Message Broker <br /> (RabbitMQ)
+    participant Worker as Media Worker <br /> (video and photo)
+    participant Storage as Object Storage <br /> (S3 / MinIO)
+
+    USER ->> API: Request media update
+    Note over USER,API: HTTP request to update image asset <br /> (e.g., change profile picture)
+
+    Note over API,RabbitMQ: Send task to process picture <br /> (HASH, new image data)
+
+    API ->> RabbitMQ: Enqueue Task
+    
+    RabbitMQ ->> Worker: Deliver Task
+    
+    Note over Worker: process new image asset <br /> (e.g., make all resolutions)
+
+    Worker ->> Storage: Upload new files
+    
+    Worker --> RabbitMQ: Notify task completed
+    RabbitMQ --> API: Update task status
+    Note over API,RabbitMQ: store media URL in DB
