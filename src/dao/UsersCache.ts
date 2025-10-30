@@ -2,7 +2,6 @@ import { User } from "../types/db/User";
 import { isEqual } from "lodash";
 import { CacheService } from '../services/cache.service';
 
-const cacheService = CacheService.getInstance();
 // const client = cacheService.getClient();
 
 /**
@@ -20,13 +19,14 @@ const cacheService = CacheService.getInstance();
  */
 export class UserCacheDao {
     private static instance: UserCacheDao | null = null;
-
+    private cacheService: CacheService;
     /**
      * Prywatny konstruktor dla wzorca Singleton
      * @private
      */
-    private constructor() { }
-
+    private constructor() {
+        this.cacheService = CacheService.getInstance();
+    }
     /**
      * Returns the single instance of UserCacheDao class (Singleton pattern)
      * 
@@ -71,7 +71,7 @@ export class UserCacheDao {
      * @see {@link CacheService.get}
      */
     async findById(id: number): Promise<User | null> {
-        const cachedUser = await cacheService.get(`user:${id}`);
+        const cachedUser = await this.cacheService.get(`user:${id}`);
         if (cachedUser) {
             console.log(`Cache hit for user ID ${id}`);
             // Automatyczna konwersja dat przez CacheService
@@ -108,7 +108,7 @@ export class UserCacheDao {
      */
     async findByEmail(email: string): Promise<User | null> {
         const mailKey = `user:email:${email}`;
-        const cachedID = await cacheService.get<string>(mailKey);
+        const cachedID = await this.cacheService.get<string>(mailKey);
         console.log(`Looking for user email ${email} in cache`);
         if (cachedID) {
             console.log(`Cache hit for user email ${email}`);
@@ -169,8 +169,8 @@ export class UserCacheDao {
 
         try {
             await Promise.all([
-                cacheService.set(key, user, 3600),
-                cacheService.set(mailKey, id.toString(), 3600)
+                this.cacheService.set(key, user, 3600),
+                this.cacheService.set(mailKey, id.toString(), 3600)
             ]);
 
             console.log(`User with ID ${id} cached successfully.`);
@@ -206,12 +206,12 @@ export class UserCacheDao {
     async deleteUser(id: number): Promise<void> {
         const key = `user:${id}`;
         const [user] = await Promise.all([
-            await cacheService.get(key),
-            await cacheService.del(key)
+            this.cacheService.get(key),
+            this.cacheService.del(key)
         ]);
 
         if (user) {
-            await cacheService.del(`user:email:${user.email}`);
+            await this.cacheService.del(`user:email:${user.email}`);
             console.log(`Removed user email key binding: user:email:${user.email} -> ${id}`);
         }
     }
