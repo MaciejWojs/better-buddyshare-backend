@@ -27,11 +27,7 @@ export class RolesDAO implements IRolesDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      throw new Error(`Failed to create role: ${roleName}`);
-    }
-
-    const result = results[0];
+    const result = results;
     return result;
   }
 
@@ -57,11 +53,6 @@ export class RolesDAO implements IRolesDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      console.log("[COUNT] No roles found in the database.");
-      return null;
-    }
-
     return results;
   }
   async getRoleByName(roleName: string): Promise<Role | null> {
@@ -72,12 +63,7 @@ export class RolesDAO implements IRolesDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      console.log("[COUNT] No role found in the database.");
-      return null;
-    }
-
-    return results[0];
+    return results;
   }
   async getRoleById(roleId: number): Promise<Role | null> {
     const results = await sql`select * from Get_role_by_id(${roleId})`;
@@ -87,19 +73,13 @@ export class RolesDAO implements IRolesDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      console.log("[COUNT] No role found in the database.");
-      return null;
-    }
-
-    return results[0];
+    return results;
   }
   async assignPermissionToRole(
     roleId: number,
     permissionId: number
   ): Promise<boolean> {
-    const results =
-      await sql`select * from Assign_permission_to_role(${roleId}, ${permissionId})`;
+    const results = await sql`select * from Assign_permission_to_role(${roleId}, ${permissionId})`;
     const isAssigned = results[0].assign_permission_to_role;
     console.log("Assign permission to role result:", isAssigned);
     return isAssigned;
@@ -123,10 +103,6 @@ export class RolesDAO implements IRolesDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      console.log("[COUNT] No permissions found for role ID:", roleId);
-      return null;
-    }
 
     //! Not sure if correctly handled
 
@@ -140,10 +116,6 @@ export class RolesDAO implements IRolesDAO {
 
     if (results.length === 0) {
       console.log("[LENGTH] No permissions found for role name:", roleName);
-      return null;
-    }
-    if (results.count === 0) {
-      console.log("[COUNT] No permissions found for role name:", roleName);
       return null;
     }
 

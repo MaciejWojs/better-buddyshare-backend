@@ -25,12 +25,7 @@ export class PermissionDAO implements IPermissionsDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      throw new Error(`Failed to create permission: ${permissionName}`);
-    }
-
-    const result = results[0];
-    return result;
+    return results;
   }
 
   async deletePermissionById(permissionId: number): Promise<boolean> {
@@ -56,11 +51,6 @@ export class PermissionDAO implements IPermissionsDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      console.log('[COUNT] No permissions found in the database.');
-      throw new Error('No permissions found in the database.');
-    }
-
     //! Not sure if correctly handled
     return results;
   }
@@ -73,12 +63,7 @@ export class PermissionDAO implements IPermissionsDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      throw new Error(`Permission not found: ${permissionName}`);
-    }
-
-    const result = results[0];
-    return result;
+    return results;
   }
   async getPermissionById(permissionId: number): Promise<Permission | null> {
     const results = await sql`select * from Get_permission_by_id(${permissionId})`;
@@ -88,11 +73,6 @@ export class PermissionDAO implements IPermissionsDAO {
       return null;
     }
 
-    if (results.count === 0) {
-      throw new Error(`Permission not found with ID: ${permissionId}`);
-    }
-
-    const result = results[0];
-    return result;
+    return results;
   }
 }
