@@ -26,7 +26,8 @@ export class UserRepository implements IUserRepository {
 
         const queryResults = await this.dao.findById(id);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -40,7 +41,8 @@ export class UserRepository implements IUserRepository {
     async createUser(username: string, email: string, password: string): Promise<User> {
         const queryResults = await this.dao.createUser(username, email, password);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -57,7 +59,8 @@ export class UserRepository implements IUserRepository {
 
         const queryResults = await this.dao.findByEmail(email);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -70,7 +73,8 @@ export class UserRepository implements IUserRepository {
     async banUser(user_id: number, reason: string | null = null) {
         const queryResults = await this.dao.banUser(user_id, reason);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -82,7 +86,8 @@ export class UserRepository implements IUserRepository {
     async unbanUser(user_id: number) {
         const queryResults = await this.dao.unbanUser(user_id);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user
     }
 
@@ -95,7 +100,8 @@ export class UserRepository implements IUserRepository {
     async updateProfilePicture(user_id: number, profile_picture: string) {
         const queryResults = await this.dao.updateProfilePicture(user_id, profile_picture);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -108,7 +114,8 @@ export class UserRepository implements IUserRepository {
     async updateProfileBanner(user_id: number, profile_banner: string) {
         const queryResults = await this.dao.updateProfileBanner(user_id, profile_banner);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -121,7 +128,8 @@ export class UserRepository implements IUserRepository {
     async updateBio(user_id: number, description: string) {
         const queryResults = await this.dao.updateBio(user_id, description);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -134,7 +142,8 @@ export class UserRepository implements IUserRepository {
     async updateUsername(user_id: number, username: string) {
         const queryResults = await this.dao.updateUsername(user_id, username);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -147,7 +156,8 @@ export class UserRepository implements IUserRepository {
     async updateEmail(user_id: number, email: string) {
         const queryResults = await this.dao.updateEmail(user_id, email);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 
@@ -160,7 +170,8 @@ export class UserRepository implements IUserRepository {
     async updatePassword(user_id: number, password: string) {
         const queryResults = await this.dao.updatePassword(user_id, password);
         const user = queryResults[0];
-        this.cache.upsertUser(user);
+        if (user)
+            this.cache.upsertUser(user);
         return user;
     }
 }

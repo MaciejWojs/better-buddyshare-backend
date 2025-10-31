@@ -1,0 +1,55 @@
+name: Pull requests tests
+
+on: pull_request
+
+jobs:
+  PR_tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18.0-alpine3.22
+        ports:
+          - 5431:5432
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_USER: testuser
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd="pg_isready -U testuser -d testdb"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+      
+      - name: run database migrations
+        run: bun x prisma migrate deploy
+        env:
+          DATABASE_URL: postgres://testuser:testpass@localhost:5431/testdb
+
+      - name: Install Postgres client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..20}; do
+            pg_isready -h localhost -p 5431 -U testuser && break
+            echo "Waiting for Postgres..."
+            sleep 1
+          done
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://testuser:testpass@localhost:5431/testdb
+          CI: true
+        run: bun test

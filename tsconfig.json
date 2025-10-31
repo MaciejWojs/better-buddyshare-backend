@@ -9,6 +9,9 @@
     "paths": {
       "@types/*": [
         "../types/*"
+      ],
+      "@src/*": [
+        "src/*"
       ]
     },
     "allowSyntheticDefaultImports": true,
