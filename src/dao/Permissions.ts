@@ -33,33 +33,36 @@ export class PermissionDAO implements IPermissionsDAO {
     return result;
   }
 
-  async deletePermissionById(permissionId: number): Promise<void> {
+  async deletePermissionById(permissionId: number): Promise<boolean> {
     const results = await sql`select * from Delete_permission_by_id(${permissionId})`;
-    console.log('[ID] Delete permission result:', results);
-    return;
+    const isDeleted = results[0].delete_permission_by_id;
+    console.log('[ID] Delete permission result:', isDeleted);
+    return isDeleted;
   }
 
-  async deletePermissionByName(permissionName: string): Promise<void> {
-    const result = await sql`select * from Delete_permission_by_name(${permissionName.toUpperCase()})`;
-    console.log('[NAME] Delete permission result:', result);
-    return;
+  async deletePermissionByName(permissionName: string): Promise<boolean> {
+    const results = await sql`select * from Delete_permission_by_name(${permissionName.toUpperCase()})`;
+    const isDeleted = results[0].delete_permission_by_name;
+    console.log('[NAME] Delete permission result:', isDeleted);
+    return isDeleted;
   }
 
   async getAllPermissions(): Promise<Permission[] | null> {
-    const result = await sql`select * from Get_all_permissions()`;
-    console.log('All permissions fetched:', result);
+    const results = await sql`select * from Get_all_permissions()`;
+    console.log('All permissions fetched:', results);
 
-    if (result.length === 0) {
+    if (results.length === 0) {
       console.log('[LENGTH] No permissions found in the database.');
       return null;
     }
 
-    if (result.count === 0) {
+    if (results.count === 0) {
       console.log('[COUNT] No permissions found in the database.');
       throw new Error('No permissions found in the database.');
     }
 
-    return result || null;
+    //! Not sure if correctly handled
+    return results;
   }
 
   async getPermissionByName(permissionName: string): Promise<Permission | null> {
