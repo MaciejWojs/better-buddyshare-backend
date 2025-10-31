@@ -201,6 +201,9 @@ const x = async () => {
   const perm_name = 'TEST_PERMISSION';
   console.log(`Creating permission: ${perm_name}`);
   await perms.createPermission(perm_name);
+  await perms.createPermission(perm_name + "_1");
+  await perms.createPermission(perm_name + "_2");
+  await perms.createPermission(perm_name + "_3");
 
   console.log(`Fetching permission by name: ${perm_name}`);
   await perms.getPermissionByName(perm_name);
