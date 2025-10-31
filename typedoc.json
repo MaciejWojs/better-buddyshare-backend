@@ -15,6 +15,7 @@
     "typedoc-plugin-markdown",
     "typedoc-plugin-dt-links",
     "typedoc-plugin-mdn-links",
+    "typedoc-plugin-mermaid"
   ],
   "includeVersion": true,
   "jsDocCompatibility": {
