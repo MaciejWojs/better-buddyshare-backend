@@ -1,6 +1,7 @@
-import { beforeAll, afterAll, afterEach, test, expect } from 'bun:test';
+import { beforeAll, afterAll, afterEach, test, expect, beforeEach } from 'bun:test';
 import { $, sleep, sql } from 'bun';
 import { UserDAO } from '../../src/dao/Users';
+
 
 
 const DB_NAME = "testdb";
@@ -13,8 +14,10 @@ const POSTGRESS_SLEEP_TIME = 2000;
 let userDao: UserDAO;
 
 beforeAll(async () => {
-    // Setup code before all tests run
-    userDao = UserDAO.getInstance();
+    if (process.env.CI) {
+        return;
+    }
+
     await $`docker run -d --rm --name test-db -e POSTGRES_USER=${DB_USER} -e POSTGRES_PASSWORD=${DB_PASSWORD} -e POSTGRES_DB=${DB_NAME} -p ${DB_PORT}:5432 postgres:18.0-alpine3.22`;
     console.log("🚀 Uruchamiam bazę danych PostgreSQL w Dockerze...");
     await sleep(POSTGRESS_SLEEP_TIME);
@@ -32,16 +35,21 @@ beforeAll(async () => {
     console.log("✅ Migracje zakończone!");
 });
 
+beforeEach(() => {
+    userDao = UserDAO.getInstance();
+});
+
 
 afterAll(async () => {
+    if (process.env.CI) {
+        return;
+    }
     await $`docker stop test-db`;
     console.log("🛑 Zatrzymano bazę danych PostgreSQL w Dockerze.");
     await sleep(1000);
 });
 
 afterEach(async () => {
-    // Czyszczenie użytkowników po każdym teście
-    // await $`CALL HARD_DELETE_USER(user_id)`;
     await sql`TRUNCATE TABLE users CASCADE`;
 });
 
