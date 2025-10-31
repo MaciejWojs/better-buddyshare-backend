@@ -184,3 +184,6 @@ dist
 prisma/generated/
 *.pgsql
 docs/
+diagrams/**/*.png
+diagrams/**/*.jpg
+diagrams/**/*.svg
