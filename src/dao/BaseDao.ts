@@ -50,10 +50,10 @@ export abstract class BaseDAO {
 
     // detect redis/valkey style errors by code/name
     if (error.code === 'ERR_REDIS_CONNECTION_CLOSED') {
-      return new DaoCacheConnectionError(undefined as any, error);
+      return new DaoCacheConnectionError(error);
     }
     if (error.code === 'ERR_REDIS_AUTHENTICATION_FAILED') {
-      return new DaoCacheAuthenticationError(undefined as any, error);
+      return new DaoCacheAuthenticationError(error);
     }
 
     // fallback
