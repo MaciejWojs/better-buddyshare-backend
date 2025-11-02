@@ -11,6 +11,5 @@ updates:
     rebase-strategy: "auto" # "auto" lub "disabled"
     labels:
       - "dependencies"
-    pull-request-branch-name: "dependabot/npm-updates"
     commit-message:
       prefix: "chore" 
