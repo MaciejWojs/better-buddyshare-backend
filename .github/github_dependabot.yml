@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/" # katalog gdzie jest package.json (np. "/backend" jeśli nie w repo root)
+    schedule:
+      interval: "weekly" # daily | weekly | monthly
+      day: "monday" # opcjonalne dla weekly
+      time: "00:00" # opcjonalne (HH:MM)
+      timezone: "Europe/Warsaw" # opcjonalne
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto" # "auto" lub "disabled"
+    labels:
+      - "dependencies"
+    pull-request-branch-name: "dependabot/npm-updates"
+    commit-message:
+      prefix: "chore" 
