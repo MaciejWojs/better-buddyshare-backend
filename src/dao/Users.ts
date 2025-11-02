@@ -1,109 +1,96 @@
-import { sql } from 'bun'
+import { sql } from 'bun';
 import { IUserDAO } from './interfaces/users.interface';
+import { BaseDAO } from './BaseDao';
+import { User } from '../types/db/User';
 
-export class UserDAO implements IUserDAO {
-    private static instance: UserDAO | null = null;
+export class UserDAO extends BaseDAO implements IUserDAO {
+  private static instance: UserDAO | null = null;
 
-    private constructor() { }
+  private constructor() {
+    super();
+  }
 
-    public static getInstance(): UserDAO {
-        if (!this.instance) {
-            this.instance = new UserDAO();
-            console.log(`Creating new ${this.prototype.constructor.name} instance`);
-        }
-
-        return this.instance;
+  public static getInstance(): UserDAO {
+    if (!this.instance) {
+      this.instance = new UserDAO();
+      console.log(`Creating new ${this.prototype.constructor.name} instance`);
     }
 
-    async findById(id: number) {
-        const user = await sql`select * from get_user_by_id(${id})`
-        // console.log('findById user:', user);
-        // console.log(user.length, user.count, user);
+    return this.instance;
+  }
 
-        if (user.length === 0) {
-            console.log(`User with ID ${id} does not exist first time`);
-            console.log(`user = ${user}`);
-            return null; // No user found
-        }
+  async findById(id: number) {
+    return await this.executeQuery<User>(
+      () => sql`select * from get_user_by_id(${id})`,
+    );
+  }
 
-        if (user.count === 0) {
-            console.log(`user = ${user}`);
-            throw new Error(`User with ID ${id} does not exist second time`);
-        }
-        return user;
+  async findByEmail(email: string) {
+    return await this.executeQuery<User>(
+      () => sql`select * from get_user_by_email(${email})`,
+    );
+  }
+
+  async unbanUser(user_id: number) {
+    return await this.executeQuery<User>(
+      () => sql`select * from unban_user_globally(${user_id})`,
+    );
+  }
+
+  async banUser(user_id: number, reason: string | null = null) {
+    if (reason) {
+      return await this.executeQuery<User>(
+        () => sql`select * from ban_user_globally(${user_id}, ${reason})`,
+      );
     }
 
-    async findByEmail(email: string) {
-        const user = await sql`select * from get_user_by_email(${email})`
-        // console.log(user.length, user.count, user);
+    return await this.executeQuery<User>(
+      () => sql`select * from ban_user_globally(${user_id})`,
+    );
+  }
 
-        if (user.length === 0) {
-            console.log(`User with email ${email} does not exist first time`);
-            return null; // No user found
+  async updateProfilePicture(user_id: number, profile_picture: string) {
+    return await this.executeQuery<User>(
+      () =>
+        sql`select * from update_user_avatar(${user_id}, ${profile_picture})`,
+    );
+  }
 
-        }
-        if (user.count === 0) {
-            throw new Error(`User with email ${email} does not exist second time`);
-        }
-        return user;
-    }
+  async updateProfileBanner(user_id: number, profile_banner: string) {
+    return await this.executeQuery<User>(
+      () =>
+        sql`select * from update_user_profile_banner(${user_id}, ${profile_banner})`,
+    );
+  }
 
-    async unbanUser(user_id: number) {
-        const user = await sql`select * from unban_user_globally(${user_id})`
-        const error_message = `User banning went wrong!`
-        if (user.length === 0) {
-            console.log(error_message)
-            return null;
-        }
+  async updateBio(user_id: number, description: string) {
+    return await this.executeQuery<User>(
+      () =>
+        sql`select * from update_user_description(${user_id}, ${description})`,
+    );
+  }
 
-        if (user.count === 0) {
-            throw new Error(error_message);
-        }
-        // !TODO: sprawdź czy działa
-        return user;
-    }
+  async updateUsername(user_id: number, username: string) {
+    return await this.executeQuery<User>(
+      () => sql`select * from update_user_username(${user_id}, ${username})`,
+    );
+  }
 
-    async banUser(user_id: number, reason: string | null = null) {
-        // !TODO: sprawdź czy działa
-        if (reason) {
-            return await sql`select * from ban_user_globally(${user_id}, ${reason})`
-        }
+  async updateEmail(user_id: number, email: string) {
+    return await this.executeQuery<User>(
+      () => sql`select * from update_user_email(${user_id}, ${email})`,
+    );
+  }
 
-        return await sql`select * from ban_user_globally(${user_id})`
-    }
+  async updatePassword(user_id: number, password: string) {
+    return await this.executeQuery<User>(
+      () => sql`select * from update_user_password(${user_id}, ${password})`,
+    );
+  }
 
-    async updateProfilePicture(user_id: number, profile_picture: string) {
-        // !TODO: sprawdź czy działa
-        return await sql`select * from update_user_avatar(${user_id}, ${profile_picture})`
-    }
-
-    async updateProfileBanner(user_id: number, profile_banner: string) {
-        // !TODO: sprawdź czy działa
-        return await sql`select * from update_user_profile_banner(${user_id}, ${profile_banner})`
-    }
-
-    async updateBio(user_id: number, description: string) {
-        // !TODO: sprawdź czy działa
-        return await sql`select * from update_user_description(${user_id}, ${description})`
-    }
-
-    async updateUsername(user_id: number, username: string) {
-        // !TODO: sprawdź czy działa
-        return await sql`select * from update_user_username(${user_id}, ${username})`
-    }
-
-    async updateEmail(user_id: number, email: string) {
-        // !TODO: sprawdź czy działa
-        return await sql`select * from update_user_email(${user_id}, ${email})`
-    }
-
-    async updatePassword(user_id: number, password: string) {
-        // !TODO: sprawdź czy działa
-        return await sql`select * from update_user_password(${user_id}, ${password})`
-    }
-
-    async createUser(username: string, email: string, password: string) {
-        return await sql`select * from create_user(${username}, ${email}, ${password})`
-    }
-
+  async createUser(username: string, email: string, password: string) {
+    return await this.executeQuery<User>(
+      () => sql`select * from create_user(${username}, ${email}, ${password})`,
+    );
+  }
 }
