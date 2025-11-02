@@ -1,0 +1,22 @@
+---
+title: Load Balancer Diagram
+---
+
+flowchart LR
+    begin((clients))
+
+    LB["Load Balancer<br /> (Nginx)"]
+    API["API Server<br /> (Bun + Hono)"]
+    SRS["Streaming Server<br /> (SRS)"]
+    MinIO["Object Storage<br /> (S3 / MinIO)"]
+
+    begin -->|HTTP/WebRTC| LB
+
+    LB --->|HTTP <br /> not matched routes| API
+    LB --->|WebRTC <br /> watching streams| SRS
+    LB --->|HTTP <br /> videos/photos route| MinIO
+    API --->|HTTP <br > internal nginx auth requests| LB
+    LB -->|HTTP <br /> DASH and HLS <br />streams watching| SRS
+
+    %% RTMP/WebRTC
+    linkStyle 2 stroke:#FF4500,stroke-width:2px,color:#FF4500
