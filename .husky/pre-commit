@@ -4,4 +4,4 @@ bun run gitleaks dir -v --no-banner
 
 bun test
 
-bun format
+bun lint-staged
