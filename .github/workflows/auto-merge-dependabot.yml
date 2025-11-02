@@ -26,6 +26,10 @@ jobs:
           --health-retries=5
 
     steps:
+      - name: skip if not dependabot
+        if: github.actor != 'dependabot[bot]'
+        run: exit 0
+        
       - name: Set up Git repository
         uses: actions/checkout@v5
 
