@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant Client as Service / Controller
+    participant Repo as Repository
+    participant CacheDao as Cache DAO
+    participant DAO as Data Access Object
+
+    participant Database as Database
+
+
+    Client ->> Repo: call method (e.g., getUserById)
+    Note over Client,Repo: Typical call from service/controller
+
+
+    Repo ->> CacheDao: check cache for data
+
+    CacheDao -->> Repo: return cached data if found
+    Repo -->> Client: return data from cache if available
+
+
+    alt Cache Miss
+        Repo ->> DAO: query data
+        Note over Repo,DAO: If cache miss or stale data
+        
+        DAO ->> Database: perform DB query
+        Note over DAO,Database: interact with DB <br /> (e.g., via procedures or functions)
+
+        DAO -->> Repo: return queried data
+
+            Repo ->> CacheDao: update cache with new data
+
+            Repo -->> Client: return final data
+    end

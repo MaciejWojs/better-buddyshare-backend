@@ -1,16 +1,12 @@
 {
-  "entryPoints": [
-    "src/**/*.{ts,tsx,js,jsx}"
-  ],
+  "entryPoints": ["src/**/*.{ts,tsx,js,jsx}"],
   "outputs": [
     {
       "name": "html",
       "path": "./docs/html/"
-    },
+    }
   ],
-  "exclude": [
-    "**/*.test.ts"
-  ],
+  "exclude": ["**/*.test.ts"],
   "plugin": [
     "typedoc-plugin-markdown",
     "typedoc-plugin-dt-links",

@@ -7,12 +7,8 @@
     "outDir": ".dist",
     "baseUrl": ".",
     "paths": {
-      "@types/*": [
-        "../types/*"
-      ],
-      "@src/*": [
-        "src/*"
-      ]
+      "@types/*": ["../types/*"],
+      "@src/*": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -26,10 +22,8 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+    "allowUnreachableCode": false
   },
-  "include": [
-    "src/**/*.ts",
-    "prisma/**/*.ts"
-  ]
+  "include": ["src/**/*.ts", "prisma/**/*.ts"]
 }

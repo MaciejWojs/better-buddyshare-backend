@@ -1,10 +1,15 @@
-name: Pull requests tests
+name: Auto-merge Dependabot PRs
 
-on: pull_request
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main  # Tylko PR-y, które kierują się na main
 
 jobs:
-  PR_tests:
+  auto-merge:
     runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
 
     services:
       postgres:
@@ -40,16 +45,16 @@ jobs:
       - name: Install Postgres client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      - name: Wait for Postgres
-        run: |
-          for i in {1..20}; do
-            pg_isready -h localhost -p 5431 -U testuser && break
-            echo "Waiting for Postgres..."
-            sleep 1
-          done
-
       - name: Run tests
         env:
           DATABASE_URL: postgres://testuser:testpass@localhost:5431/testdb
           CI: true
         run: bun test
+
+
+      - name: Auto-merge PR
+        if: success()
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} --merge --auto
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

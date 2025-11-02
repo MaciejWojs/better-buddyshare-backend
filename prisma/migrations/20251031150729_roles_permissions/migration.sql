@@ -4,9 +4,19 @@ DROP FUNCTION IF EXISTS Create_role(p_name TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION Create_role(p_name TEXT)
 RETURNS SETOF roles AS $$
 BEGIN
-  INSERT INTO roles (name)
-  VALUES (p_name);
-    RETURN QUERY SELECT * FROM roles WHERE name = p_name;
+  -- 1 Sprawdź, czy istnieje rola o tej samej nazwie
+  RETURN QUERY
+  SELECT *
+  FROM roles
+  WHERE name = p_name;
+
+  -- 2 Jeśli nie znaleziono, wstaw nową rolę
+  IF NOT FOUND THEN
+    RETURN QUERY
+    INSERT INTO roles (name)
+    VALUES (p_name)
+    RETURNING *;
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -122,9 +132,14 @@ DROP FUNCTION IF EXISTS Create_permission(p_name TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION Create_permission(p_name TEXT)
 RETURNS SETOF permissions AS $$
 BEGIN
-  INSERT INTO permissions (name)
-  VALUES (p_name);
     RETURN QUERY SELECT * FROM permissions WHERE name = p_name;
+
+  IF NOT FOUND THEN
+    RETURN QUERY
+    INSERT INTO permissions (name)
+    VALUES (p_name)
+   RETURNING *;
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
 
