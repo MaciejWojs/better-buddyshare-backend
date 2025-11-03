@@ -1,5 +1,5 @@
-import { Permission } from "@src/types/db/Permission";
-import { Role } from "@src/types/db/Role";
+import { Permission } from '@src/types/db/Permission';
+import { Role } from '@src/types/db/Role';
 
 export interface IRolesDAO {
   createRole(roleName: string): Promise<Role | null>;
@@ -10,11 +10,11 @@ export interface IRolesDAO {
   getRoleById(roleId: number): Promise<Role | null>;
   assignPermissionToRole(
     roleId: number,
-    permissionId: number
+    permissionId: number,
   ): Promise<boolean>;
   revokePermissionFromRole(
     roleId: number,
-    permissionId: number
+    permissionId: number,
   ): Promise<boolean>;
   getPermissionsByRoleId(roleId: number): Promise<Permission[] | null>;
   getPermissionsByRoleName(roleName: string): Promise<Permission[] | null>;

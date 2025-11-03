@@ -90,4 +90,9 @@ srs/*
 nginx-waf/*
 nginx/*
 prisma/generated/*
+diagrams/*
+tests/*
+.husky/*
+.prettierrc
+typedoc.json
 docs/*
