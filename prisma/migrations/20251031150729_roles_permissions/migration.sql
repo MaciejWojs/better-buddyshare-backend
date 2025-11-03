@@ -6,17 +6,16 @@ RETURNS SETOF roles AS $$
 DECLARE
     role_rec roles%ROWTYPE;
 BEGIN
-    SELECT * INTO role_rec FROM roles WHERE name = p_name;
-    
-    IF FOUND THEN
-        RETURN NEXT role_rec;
-        RETURN;
-    END IF;
-
     INSERT INTO roles (name) VALUES (p_name)
+    ON CONFLICT (name) DO NOTHING
     RETURNING * INTO role_rec;
 
-    RETURN NEXT role_rec;
+    IF FOUND THEN
+        RETURN NEXT role_rec;
+    ELSE
+        SELECT * INTO role_rec FROM roles WHERE name = p_name;
+        RETURN NEXT role_rec;
+    END IF;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -132,21 +131,22 @@ DROP FUNCTION IF EXISTS Create_permission(p_name TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION Create_permission(p_name TEXT)
 RETURNS SETOF permissions AS $$
 DECLARE
+DECLARE
   perm_rec permissions%ROWTYPE;
 BEGIN
-  SELECT * INTO perm_rec FROM permissions WHERE name = p_name;
+  INSERT INTO permissions (name) VALUES (p_name)
+  ON CONFLICT (name) DO NOTHING
+  RETURNING * INTO perm_rec;
 
   IF FOUND THEN
     RETURN NEXT perm_rec;
     RETURN;
   END IF;
 
-  INSERT INTO permissions (name) VALUES (p_name)
-  RETURNING * INTO perm_rec;
+  SELECT * INTO perm_rec FROM permissions WHERE name = p_name;
   RETURN NEXT perm_rec;
 END;
 $$ LANGUAGE plpgsql;
-
 DROP FUNCTION IF EXISTS Delete_permission_by_id(p_permission_id INTEGER) CASCADE;
 CREATE OR REPLACE FUNCTION Delete_permission_by_id(p_permission_id INTEGER)
 RETURNS BOOLEAN AS $$
