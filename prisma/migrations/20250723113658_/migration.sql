@@ -29,11 +29,12 @@ CREATE TABLE "roles" (
 
 -- CreateTable
 CREATE TABLE "user_roles" (
+    "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "role_id" INTEGER NOT NULL,
     "streamer_id" INTEGER,
 
-    CONSTRAINT "user_roles_pkey" PRIMARY KEY ("user_id","role_id")
+    CONSTRAINT "user_roles_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -114,6 +115,9 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "user_roles_user_id_role_id_streamer_id_key" ON "user_roles"("user_id", "role_id", "streamer_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
