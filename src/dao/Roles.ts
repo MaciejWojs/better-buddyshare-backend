@@ -1,6 +1,6 @@
 import { Permission } from '@src/types/db/Permission';
 import { Role } from '@src/types/db/Role';
-import { IRolesDAO } from './interfaces/role';
+import { IRolesDAO } from './interfaces/roles.interface';
 import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
 

@@ -1,9 +1,6 @@
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "citext";
 
--- CreateEnum
-CREATE TYPE "ModeratorPermissionType" AS ENUM ('CHAT_MANAGE', 'STREAM_CONTROL');
-
 -- CreateTable
 CREATE TABLE "users" (
     "user_id" SERIAL NOT NULL,
@@ -31,11 +28,12 @@ CREATE TABLE "roles" (
 );
 
 -- CreateTable
-CREATE TABLE "UserRole" (
+CREATE TABLE "user_roles" (
     "user_id" INTEGER NOT NULL,
     "role_id" INTEGER NOT NULL,
+    "streamer_id" INTEGER,
 
-    CONSTRAINT "UserRole_pkey" PRIMARY KEY ("user_id","role_id")
+    CONSTRAINT "user_roles_pkey" PRIMARY KEY ("user_id","role_id")
 );
 
 -- CreateTable
@@ -52,24 +50,6 @@ CREATE TABLE "role_permissions" (
     "permissionId" INTEGER NOT NULL,
 
     CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("roleId","permissionId")
-);
-
--- CreateTable
-CREATE TABLE "moderators" (
-    "moderator_id" SERIAL NOT NULL,
-    "user_id" INTEGER NOT NULL,
-    "streamer_id" INTEGER NOT NULL,
-
-    CONSTRAINT "moderators_pkey" PRIMARY KEY ("moderator_id")
-);
-
--- CreateTable
-CREATE TABLE "moderator_permissions" (
-    "id" SERIAL NOT NULL,
-    "moderatorId" INTEGER NOT NULL,
-    "type" "ModeratorPermissionType" NOT NULL,
-
-    CONSTRAINT "moderator_permissions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -139,34 +119,25 @@ CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
 CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "moderators_user_id_streamer_id_key" ON "moderators"("user_id", "streamer_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "banned_users_per_streamer_streamer_id_user_id_key" ON "banned_users_per_streamer"("streamer_id", "user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "refresh_tokens_token_key" ON "refresh_tokens"("token");
 
 -- AddForeignKey
-ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("role_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("role_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_streamer_id_fkey" FOREIGN KEY ("streamer_id") REFERENCES "users"("user_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("role_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permissions"("permission_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "moderators" ADD CONSTRAINT "moderators_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "moderators" ADD CONSTRAINT "moderators_streamer_id_fkey" FOREIGN KEY ("streamer_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "moderator_permissions" ADD CONSTRAINT "moderator_permissions_moderatorId_fkey" FOREIGN KEY ("moderatorId") REFERENCES "moderators"("moderator_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "streams" ADD CONSTRAINT "streams_streamer_id_fkey" FOREIGN KEY ("streamer_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;

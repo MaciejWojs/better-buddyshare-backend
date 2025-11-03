@@ -3,20 +3,20 @@ DROP FUNCTION IF EXISTS Create_role(p_name TEXT) CASCADE;
 
 CREATE OR REPLACE FUNCTION Create_role(p_name TEXT)
 RETURNS SETOF roles AS $$
+DECLARE
+    role_rec roles%ROWTYPE;
 BEGIN
-  -- 1 Sprawdź, czy istnieje rola o tej samej nazwie
-  RETURN QUERY
-  SELECT *
-  FROM roles
-  WHERE name = p_name;
+    SELECT * INTO role_rec FROM roles WHERE name = p_name;
+    
+    IF FOUND THEN
+        RETURN NEXT role_rec;
+        RETURN;
+    END IF;
 
-  -- 2 Jeśli nie znaleziono, wstaw nową rolę
-  IF NOT FOUND THEN
-    RETURN QUERY
-    INSERT INTO roles (name)
-    VALUES (p_name)
-    RETURNING *;
-  END IF;
+    INSERT INTO roles (name) VALUES (p_name)
+    RETURNING * INTO role_rec;
+
+    RETURN NEXT role_rec;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -131,15 +131,19 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Create_permission(p_name TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION Create_permission(p_name TEXT)
 RETURNS SETOF permissions AS $$
+DECLARE
+  perm_rec permissions%ROWTYPE;
 BEGIN
-    RETURN QUERY SELECT * FROM permissions WHERE name = p_name;
+  SELECT * INTO perm_rec FROM permissions WHERE name = p_name;
 
-  IF NOT FOUND THEN
-    RETURN QUERY
-    INSERT INTO permissions (name)
-    VALUES (p_name)
-   RETURNING *;
+  IF FOUND THEN
+    RETURN NEXT perm_rec;
+    RETURN;
   END IF;
+
+  INSERT INTO permissions (name) VALUES (p_name)
+  RETURNING * INTO perm_rec;
+  RETURN NEXT perm_rec;
 END;
 $$ LANGUAGE plpgsql;
 
