@@ -1,4 +1,4 @@
--- TODO NAPISAC FUNKCJE DO CONTEXTUAL ACL 
+-- TODO: WRITE FUNCTIONS FOR CONTEXTUAL ACL 
 -- !⚙️ 7. Funkcje — Contextual ACL (opcjonalnie, ale kluczowe np. dla moderatorów streamerów)
 -- Assign_role_to_user_in_context(p_user_id, p_role_id, p_context_type, p_context_id)	Przypisuje rolę w kontekście (np. moderator dla streamera)	🆕 do dodania
 
@@ -119,7 +119,7 @@ DECLARE
     rows INT;
     fetched_role_id INTEGER;
 BEGIN
-    RETURN Assign_role_to_user_context_by_role_name(p_user_id, p_role_name);
+    RETURN Assign_role_to_user_in_context_by_role_name(p_user_id, p_role_name);
 END;
 $$ LANGUAGE plpgsql;
 
