@@ -127,16 +127,27 @@ services:
       - backend
 
   srs:
-    image: ossrs/srs:6
+    # image: ossrs/srs:6
+    build:
+      context: ./srs
+      dockerfile: Dockerfile
+    container_name: srs
     ports:
       - '1935:1935' # RTMP
       - '1985:1985' # SRS HTTP API
       - '8080:8080' # HLS/HTTP/Web
       - '8000:8000/udp' # WebRTC
+      - "7777:${DELETER_PORT}"
     volumes:
       - ./srs/srs.conf:/usr/local/srs/conf/srs.conf
       # - ./srs/srs-dvr-cron:/etc/cron.d/srs-dvr-cron
-    command: ['./objs/srs', '-c', 'conf/srs.conf']
+      - './test:/data'
+    command: >
+      bash -c "/usr/local/bin/deleter & exec /usr/local/srs/objs/srs -c /usr/local/srs/conf/srs.conf"
+    environment:
+      DELETER_PORT: ${DELETER_PORT}
+      SRS_DELETER_HOST: ${SRS_DELETER_HOST}
+      DELETER_API_TOKEN: ${DELETER_API_TOKEN}
     restart: always
     networks:
       - backend
@@ -187,6 +198,9 @@ services:
       VALKEY_URL: valkey://default:${VALKEY_PASSWORD}@cache:6379/0
       VIDEO_QUEUE_NAME: ${VIDEO_QUEUE_NAME}
       PHOTO_QUEUE_NAME: ${PHOTO_QUEUE_NAME}
+      DELETER_PORT: ${DELETER_PORT}
+      SRS_DELETER_HOST: ${SRS_DELETER_HOST}
+      DELETER_API_TOKEN: ${DELETER_API_TOKEN}
 
     networks:
       - backend
