@@ -47,10 +47,10 @@ CREATE TABLE "permissions" (
 
 -- CreateTable
 CREATE TABLE "role_permissions" (
-    "roleId" INTEGER NOT NULL,
-    "permissionId" INTEGER NOT NULL,
+    "role_id" INTEGER NOT NULL,
+    "permission_id" INTEGER NOT NULL,
 
-    CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("roleId","permissionId")
+    CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("role_id","permission_id")
 );
 
 -- CreateTable
@@ -138,10 +138,10 @@ ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_role_id_fkey" FOREIGN KEY ("
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_streamer_id_fkey" FOREIGN KEY ("streamer_id") REFERENCES "users"("user_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("role_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("role_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permissions"("permission_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permission_id_fkey" FOREIGN KEY ("permission_id") REFERENCES "permissions"("permission_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "streams" ADD CONSTRAINT "streams_streamer_id_fkey" FOREIGN KEY ("streamer_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;

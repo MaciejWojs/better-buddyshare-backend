@@ -2,18 +2,44 @@
 -- Assign_role_to_user_in_context(p_user_id, p_role_id, p_context_type, p_context_id)	Przypisuje rolę w kontekście (np. moderator dla streamera)	🆕 do dodania
 
 DROP FUNCTION IF EXISTS Assign_role_to_user_in_context_by_role_id(INTEGER, INTEGER, INTEGER);
-CREATE OR REPLACE FUNCTION Assign_role_to_user_in_context_by_role_id(p_user_id INTEGER, p_role_id INTEGER, p_context_id INTEGER DEFAULT NULL)
+CREATE OR REPLACE FUNCTION Assign_role_to_user_in_context_by_role_id(
+  p_user_id INTEGER,
+  p_role_id INTEGER,
+  p_context_id INTEGER DEFAULT NULL
+)
 RETURNS BOOLEAN AS $$
 DECLARE
-  rows INT;
+  exists_already BOOLEAN;
 BEGIN
-  INSERT INTO user_roles (user_id, role_id, streamer_id)
-  VALUES (p_user_id, p_role_id, p_context_id)
-  ON CONFLICT DO NOTHING;
-  GET DIAGNOSTICS rows = ROW_COUNT;
-  RETURN rows > 0;
+  -- Sprawdź, czy rekord już istnieje (dla NULL streamer_id specjalny warunek)
+  IF p_context_id IS NULL THEN
+    SELECT EXISTS (
+      SELECT 1 FROM user_roles
+      WHERE user_id = p_user_id
+        AND role_id = p_role_id
+        AND streamer_id IS NULL
+    ) INTO exists_already;
+  ELSE
+    SELECT EXISTS (
+      SELECT 1 FROM user_roles
+      WHERE user_id = p_user_id
+        AND role_id = p_role_id
+        AND streamer_id = p_context_id
+    ) INTO exists_already;
+  END IF;
+
+  -- Jeśli nie istnieje, wstaw nowy rekord
+  IF NOT exists_already THEN
+    INSERT INTO user_roles (user_id, role_id, streamer_id)
+    VALUES (p_user_id, p_role_id, p_context_id)
+    ON CONFLICT DO NOTHING;
+  END IF;
+
+  -- Zawsze zwraca TRUE (rola jest przypisana)
+  RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
+
 
 DROP FUNCTION IF EXISTS Assign_role_to_user_in_context_by_role_name(INTEGER, TEXT);
 CREATE OR REPLACE FUNCTION Assign_role_to_user_in_context_by_role_name(
@@ -37,14 +63,7 @@ BEGIN
         RETURN FALSE;
     END IF;
 
-    -- Przypisanie roli użytkownikowi
-    INSERT INTO user_roles (user_id, role_id, streamer_id)
-    VALUES (p_user_id, fetched_role_id, p_context_id)
-    ON CONFLICT DO NOTHING;
-
-    -- Sprawdzenie, czy coś wstawiono
-    GET DIAGNOSTICS rows = ROW_COUNT;
-    RETURN rows > 0;
+    RETURN Assign_role_to_user_in_context_by_role_id(p_user_id, fetched_role_id, p_context_id);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -224,6 +243,37 @@ BEGIN
     JOIN role_permissions rp ON p.permission_id = rp.permission_id
     JOIN user_roles ur ON rp.role_id = ur.role_id
     WHERE ur.user_id = p_user_id AND p.permission_id = p_permission_id;
+    RETURN count > 0;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS User_has_permission_by_permission_id_in_context(p_user_id INTEGER, p_permission_id INTEGER, p_context_id INTEGER);
+CREATE OR REPLACE FUNCTION User_has_permission_by_permission_id_in_context(p_user_id INTEGER, p_permission_id INTEGER, p_context_id INTEGER)
+RETURNS BOOLEAN AS $$
+DECLARE
+    count INT;
+BEGIN
+    SELECT COUNT(*) INTO count
+    FROM permissions p
+    JOIN role_permissions rp ON p.permission_id = rp.permission_id
+    JOIN user_roles ur ON rp.role_id = ur.role_id
+    WHERE ur.user_id = p_user_id AND p.permission_id = p_permission_id AND ur.streamer_id = p_context_id;
+    RETURN count > 0;
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION IF EXISTS User_has_permission_by_permission_name_in_context(p_user_id INTEGER, p_permission_name TEXT, p_context_id INTEGER);
+CREATE OR REPLACE FUNCTION User_has_permission_by_permission_name_in_context(p_user_id INTEGER, p_permission_name TEXT, p_context_id INTEGER)
+RETURNS BOOLEAN AS $$
+DECLARE
+    count INT;
+BEGIN
+    SELECT COUNT(*) INTO count
+    FROM permissions p
+    JOIN role_permissions rp ON p.permission_id = rp.permission_id
+    JOIN user_roles ur ON rp.role_id = ur.role_id
+    WHERE ur.user_id = p_user_id AND p.name = p_permission_name AND ur.streamer_id = p_context_id;
     RETURN count > 0;
 END;
 $$ LANGUAGE plpgsql;

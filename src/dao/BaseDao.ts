@@ -104,6 +104,9 @@ export abstract class BaseDAO {
     try {
       const results = await query();
 
+      if (!results)
+        console.log(`[QUERY RESULT] during ${query.toString()}`, results);
+
       if (!Array.isArray(results)) {
         throw new DaoError('[DB ERROR] Query did not return an array', results);
       }
@@ -156,5 +159,14 @@ export abstract class BaseDAO {
       console.error('[DB ERROR]', mapped);
       throw mapped;
     }
+  }
+
+  protected async getBooleanFromQuery(
+    query: () => any,
+  ): Promise<boolean | null> {
+    const res = await this.executeQuery<Record<string, boolean>>(query);
+    if (!res) return null;
+    const firstValue = Object.values(res)[0];
+    return typeof firstValue === 'boolean' ? firstValue : false;
   }
 }
