@@ -7,13 +7,13 @@ CREATE OR REPLACE FUNCTION create_user(
 )
 RETURNS SETOF users AS $$
 BEGIN
-  -- 1 Sprawdź, czy istnieje użytkownik o tym samym username lub email
+  -- 1 Check if a user with the same username or email already exists
   RETURN QUERY
   SELECT *
   FROM users
   WHERE username = p_username OR email = p_email;
 
-  -- 2 Jeśli nie znaleziono, wstaw nowego użytkownika
+  -- 2 If not found, insert a new user
   IF NOT FOUND THEN
     RETURN QUERY
     INSERT INTO users (username, email, password)
@@ -26,7 +26,7 @@ $$ LANGUAGE plpgsql;
 
 DROP FUNCTION IF EXISTS get_user_by_id(INTEGER) CASCADE;
 
--- SETOF users -> zwraca wiersze w formie tabeli users
+  -- SETOF users -> returns rows in the shape of the users table
 CREATE OR REPLACE FUNCTION get_user_by_id(p_id INTEGER)
 RETURNS SETOF users AS $$
 BEGIN
@@ -40,7 +40,7 @@ $$ LANGUAGE plpgsql;
 
 DROP FUNCTION IF EXISTS get_user_by_email(p_email citext) CASCADE;
 
--- SETOF users -> zwraca wiersze w formie tabeli users
+  -- SETOF users -> returns rows in the shape of the users table
 CREATE OR REPLACE FUNCTION get_user_by_email(p_email citext)
 RETURNS SETOF users AS $$
 BEGIN
