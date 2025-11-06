@@ -11,22 +11,13 @@ RETURNS BOOLEAN AS $$
 DECLARE
   exists_already BOOLEAN;
 BEGIN
-  -- Check if record already exists (special condition for NULL streamer_id)
-  IF p_context_id IS NULL THEN
-    SELECT EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = p_user_id
-        AND role_id = p_role_id
-        AND streamer_id IS NULL
-    ) INTO exists_already;
-  ELSE
-    SELECT EXISTS (
-      SELECT 1 FROM user_roles
-      WHERE user_id = p_user_id
-        AND role_id = p_role_id
-        AND streamer_id = p_context_id
-    ) INTO exists_already;
-  END IF;
+  -- Jedno porównanie obsługujące NULL przez IS NOT DISTINCT FROM
+  SELECT EXISTS (
+    SELECT 1 FROM user_roles
+    WHERE user_id = p_user_id
+      AND role_id = p_role_id
+      AND streamer_id IS NOT DISTINCT FROM p_context_id
+  ) INTO exists_already;
 
   -- If doesn't exist, insert new record
   IF NOT exists_already THEN
