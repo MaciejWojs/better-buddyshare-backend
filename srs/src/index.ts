@@ -42,7 +42,7 @@ app.delete('/delete', async (c) => {
 
   try {
     await fs.rm(resolved, { force: true });
-    return c.json({ ok: true, deleted: resolved });
+    return c.json({ ok: true, deleted: relPath });
   } catch (err) {
     return c.json({ ok: false, error: String(err) }, 500);
   }
