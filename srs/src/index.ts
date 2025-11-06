@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { serve } from 'bun';
 import { promises as fs } from 'fs';
-import { promises as fs } from 'fs';
 import * as path from 'path';
 
 if (

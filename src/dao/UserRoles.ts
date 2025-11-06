@@ -217,7 +217,7 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
    * @param streamerId - Optional context id to limit the query.
    * @returns Array of Role objects, or empty array when no records found.
    */
-  async getUserRoles(userId: number): Promise<Role[] | null>;
+  async getUserRoles(userId: number): Promise<Role[]>;
   async getUserRoles(
     userId: number,
     streamerId: number,
