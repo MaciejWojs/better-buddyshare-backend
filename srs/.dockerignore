@@ -1,0 +1,6 @@
+*
+
+!tsconfig.json
+!src/index.ts
+!bun.lock
+!package.json

@@ -13,7 +13,7 @@ export abstract class BaseDAO {
   }
 
   protected mapPostgresError(error: any): DaoError {
-    // Bun.sql rzuca PostgresError
+    // Bun.sql throws PostgresError
     if (error.name === 'PostgresError') {
       switch (error.code) {
         case '23505': // unique_violation
@@ -104,6 +104,9 @@ export abstract class BaseDAO {
     try {
       const results = await query();
 
+      if (results === null || results === undefined)
+        console.log(`[QUERY RESULT] during ${query.toString()}`, results);
+
       if (!Array.isArray(results)) {
         throw new DaoError('[DB ERROR] Query did not return an array', results);
       }
@@ -137,7 +140,7 @@ export abstract class BaseDAO {
    */
   protected async executeQueryMultiple<T>(
     query: () => Promise<T>,
-  ): Promise<T[] | null> {
+  ): Promise<T[]> {
     try {
       const results = await query();
 
@@ -147,7 +150,7 @@ export abstract class BaseDAO {
 
       if (results.length === 0) {
         console.log('[LENGTH] No records found in the database.');
-        return null;
+        return [];
       }
 
       return results as T[];
@@ -156,5 +159,14 @@ export abstract class BaseDAO {
       console.error('[DB ERROR]', mapped);
       throw mapped;
     }
+  }
+
+  protected async getBooleanFromQuery(
+    query: () => any,
+  ): Promise<boolean | null> {
+    const res = await this.executeQuery<Record<string, boolean>>(query);
+    if (!res) return null;
+    const firstValue = Object.values(res)[0];
+    return typeof firstValue === 'boolean' ? firstValue : false;
   }
 }

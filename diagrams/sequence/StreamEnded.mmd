@@ -21,7 +21,11 @@ sequenceDiagram title Stream ended sequence to process recorded stream
     Worker -->> SRS: Download stream as video file
 
     Note over Worker,Storage: upload processed media
-    Worker -->> Storage: Upload stream video file
+    Worker ->> Storage: Upload stream video file
+
+    Worker ->> SRS: Delete source file from SRS
+
+    SRS -->> Worker: Confirm source file deletion
 
     Worker -->> RabbitMQ: Notify task completed
     RabbitMQ -->> API: Update task status

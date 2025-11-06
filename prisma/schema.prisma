@@ -77,8 +77,8 @@ model Permission {
 }
 
 model RolePermission {
-    roleId       Int
-    permissionId Int
+    roleId       Int @map("role_id")
+    permissionId Int @map("permission_id")
 
     role       Role       @relation(fields: [roleId], references: [roleId])
     permission Permission @relation(fields: [permissionId], references: [permissionId])

@@ -1,15 +1,15 @@
 # ----------------------------------------------------------
-#                         ETAP 1: BUILDER
+#                         STAGE 1: BUILDER
 # ----------------------------------------------------------
 ARG ALPINE_VERSION=3.22
 FROM alpine:${ALPINE_VERSION} AS builder
 
-# 1) Podajemy wersje Nginx, HTTP-FLV i Brotli jako ARGi
+# 1) Provide versions of Nginx, HTTP-FLV and Brotli as ARGs
 ARG NGINX_VERSION=1.29.0
 ARG BROTLI_VERSION=1.1.0
 ARG HEADERS_MORE_VERSION=0.39
 
-# 2) Instalacja wszystkich build‐dependencies (w tym cmake dla brotli)
+# 2) Install all build-dependencies (including cmake for brotli)
 RUN apk add --no-cache \
     build-base \
     pcre-dev \
@@ -25,15 +25,14 @@ RUN apk add --no-cache \
     automake \
     libtool
 
-# 3) Ściągnięcie i rozpakowanie źródeł Nginx w jednym kroku
+# 3) Download and extract Nginx sources in a single step
 RUN mkdir -p /src \
     && cd /src \
     && wget -q http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz \
     && tar -xzf nginx-${NGINX_VERSION}.tar.gz \
     && rm nginx-${NGINX_VERSION}.tar.gz
 
-
-# 5) Sklonowanie i kompilacja biblioteki brotli
+# 5) Clone and build brotli library
 RUN git clone --depth 1 --branch v${BROTLI_VERSION} \
     https://github.com/google/brotli.git \
     /src/brotli \
@@ -43,19 +42,19 @@ RUN git clone --depth 1 --branch v${BROTLI_VERSION} \
     && make -j$(nproc) \
     && make install
 
-# 6) Sklonowanie modułu nginx-brotli
+# 6) Clone nginx-brotli module
 RUN git clone --depth 1 \
     https://github.com/google/ngx_brotli.git \
     /src/ngx_brotli \
     && cd /src/ngx_brotli \
     && git submodule update --init
 
-# 7) Sklonowanie modułu headers-more
+# 7) Clone headers-more module
 RUN git clone --depth 1 --branch v${HEADERS_MORE_VERSION} \
     https://github.com/openresty/headers-more-nginx-module.git \
     /src/headers-more-nginx-module
 
-# 7) Kompilacja Nginx z modułami FLV i Brotli
+# 7) Build Nginx with FLV and Brotli modules
 RUN cd /src/nginx-${NGINX_VERSION} \
     && ./configure \
     --prefix=/etc/nginx \
@@ -88,7 +87,7 @@ RUN cd /src/nginx-${NGINX_VERSION} \
     && make -j$(nproc) \
     && make install
 
-# 8) Sprzątanie: usuwamy build-dependencies i źródła
+# 8) Cleanup: remove build-dependencies and sources
 RUN apk del --no-network \
     build-base \
     pcre-dev \
@@ -105,11 +104,11 @@ RUN apk del --no-network \
     && rm -rf /var/cache/apk/*
 
 # ----------------------------------------------------------
-#                     ETAP 2: PRODUKCJA (runtime)
+#                     STAGE 2: PRODUCTION (runtime)
 # ----------------------------------------------------------
 FROM alpine:${ALPINE_VERSION}
 
-# 1) Instalujemy runtime-dependencies + biblioteki brotli
+# 1) Install runtime dependencies + brotli libraries
 RUN apk add --no-cache \
     pcre \
     zlib \
@@ -119,27 +118,27 @@ RUN apk add --no-cache \
     ca-certificates \
     brotli-libs
 
-# 2) Kopiujemy skompilowanego Nginx z modułami
+# 2) Copy compiled Nginx with modules
 COPY --from=builder /usr/sbin/nginx    /usr/sbin/nginx
 COPY --from=builder /etc/nginx         /etc/nginx
 COPY --from=builder /usr/local/lib/libbrotli* /usr/local/lib/
 
-# 3) Tworzymy katalogi na logi, cache i tmp
+# 3) Create directories for logs, cache and tmp
 RUN mkdir -p /var/log/nginx /var/cache/nginx /tmp/dash \
     && chmod -R 755 /var/log/nginx /var/cache/nginx \
     && chmod -R 777 /tmp/dash
 
-# 4) Kopiujemy plik szablonu konfiguracji dla nginx
+# 4) Copy nginx config template
 COPY nginx.conf /etc/nginx/nginx.conf.template
 
-# 5) Otwieramy porty RTMP i HTTP
+# 5) Expose RTMP and HTTP ports
 EXPOSE 80
 
 # 6) Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
 
-# 7) ENTRYPOINT z testowaniem modułu brotli
+# 7) ENTRYPOINT with testing brotli module
 ENTRYPOINT ["/bin/sh", "-c", "\
     echo 'Testing nginx configuration...' && \
     nginx -t && \

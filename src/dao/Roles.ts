@@ -1,3 +1,11 @@
+/**
+ * Roles DAO.
+ *
+ * Provides methods to create, delete, assign permissions and fetch role records
+ * via database functions. Uses BaseDAO helpers to execute queries and map errors.
+ *
+ * @module dao/Roles
+ */
 import { Permission } from '@src/types/db/Permission';
 import { Role } from '@src/types/db/Role';
 import { IRolesDAO } from './interfaces/roles.interface';
@@ -5,12 +13,23 @@ import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
 
 export class RolesDAO extends BaseDAO implements IRolesDAO {
+  /**
+   * Singleton instance holder.
+   */
   private static instance: RolesDAO;
 
+  /**
+   * Protected constructor to enforce singleton usage via getInstance.
+   */
   private constructor() {
     super();
   }
 
+  /**
+   * Get singleton instance of RolesDAO.
+   *
+   * @returns RolesDAO singleton
+   */
   public static getInstance(): RolesDAO {
     if (!this.instance) {
       this.instance = new RolesDAO();
@@ -19,12 +38,28 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
     return this.instance;
   }
 
+  /**
+   * Create a new role by name.
+   *
+   * Calls the DB function Create_role and returns the created Role or null.
+   *
+   * @param roleName - Role name (uppercasing may be applied in DB call)
+   * @returns The created Role or null
+   */
   async createRole(roleName: string): Promise<Role | null> {
     return await this.executeQuery<Role>(
       () => sql`select * from Create_role(${roleName.toUpperCase()})`,
     );
   }
 
+  /**
+   * Delete a role by its numeric ID.
+   *
+   * Calls Delete_role_by_id DB function and returns boolean result.
+   *
+   * @param roleId - Numeric ID of the role to delete
+   * @returns true when deleted, false otherwise
+   */
   async deleteRoleById(roleId: number): Promise<boolean> {
     const res = await this.executeQuery<{ delete_role_by_id: boolean }>(
       () => sql`select * from Delete_role_by_id(${roleId})`,
@@ -34,6 +69,14 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
     return isDeleted;
   }
 
+  /**
+   * Delete a role by its name.
+   *
+   * Calls Delete_role_by_name DB function and returns boolean result.
+   *
+   * @param roleName - Name of the role to delete
+   * @returns true when deleted, false otherwise
+   */
   async deleteRoleByName(roleName: string): Promise<boolean> {
     const res = await this.executeQuery<{ delete_role_by_name: boolean }>(
       () => sql`select * from Delete_role_by_name(${roleName})`,
@@ -43,24 +86,50 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
     return isDeleted;
   }
 
+  /**
+   * Retrieve all roles.
+   *
+   * @returns Array of Role or null if none
+   */
   async getAllRoles(): Promise<Role[] | null> {
     return await this.executeQueryMultiple<Role>(
       () => sql`select * from Get_all_roles()`,
     );
   }
 
+  /**
+   * Get role by its name.
+   *
+   * @param roleName - Name of the role to look up
+   * @returns Role or null if not found
+   */
   async getRoleByName(roleName: string): Promise<Role | null> {
     return await this.executeQuery<Role>(
       () => sql`select * from Get_role_by_name(${roleName})`,
     );
   }
 
+  /**
+   * Get role by its ID.
+   *
+   * @param roleId - Numeric ID of the role
+   * @returns Role or null if not found
+   */
   async getRoleById(roleId: number): Promise<Role | null> {
     return await this.executeQuery<Role>(
       () => sql`select * from Get_role_by_id(${roleId})`,
     );
   }
 
+  /**
+   * Assign a permission to a role.
+   *
+   * Calls Assign_permission_to_role DB function and returns boolean result.
+   *
+   * @param roleId - Role ID
+   * @param permissionId - Permission ID
+   * @returns true when assigned, false otherwise
+   */
   async assignPermissionToRole(
     roleId: number,
     permissionId: number,
@@ -74,6 +143,15 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
     return isAssigned;
   }
 
+  /**
+   * Revoke a permission from a role.
+   *
+   * Calls Revoke_permission_from_role DB function and returns boolean result.
+   *
+   * @param roleId - Role ID
+   * @param permissionId - Permission ID
+   * @returns true when revoked, false otherwise
+   */
   async revokePermissionFromRole(
     roleId: number,
     permissionId: number,
@@ -89,12 +167,24 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
     return isRevoked;
   }
 
+  /**
+   * Get permissions assigned to a role by role ID.
+   *
+   * @param roleId - Role ID
+   * @returns Array of Permission, or empty array if none
+   */
   async getPermissionsByRoleId(roleId: number): Promise<Permission[] | null> {
     return await this.executeQueryMultiple<Permission>(
       () => sql`select * from Get_permissions_by_role_id(${roleId})`,
     );
   }
 
+  /**
+   * Get permissions assigned to a role by role name.
+   *
+   * @param roleName - Role name
+   * @returns Array of Permission, or empty array if none
+   */
   async getPermissionsByRoleName(
     roleName: string,
   ): Promise<Permission[] | null> {

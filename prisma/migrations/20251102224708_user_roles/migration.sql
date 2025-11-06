@@ -1,19 +1,36 @@
--- !⚙️ 7. Funkcje — Contextual ACL (opcjonalnie, ale kluczowe np. dla moderatorów streamerów)
--- Assign_role_to_user_in_context(p_user_id, p_role_id, p_context_type, p_context_id)	Przypisuje rolę w kontekście (np. moderator dla streamera)	🆕 do dodania
+-- !️ 7. Functions — Contextual ACL (optional but crucial e.g. for streamer moderators)
+-- Assign_role_to_user_in_context(p_user_id, p_role_id, p_context_type, p_context_id)	Assigns a role within a context (e.g., streamer moderator) — to be added
 
 DROP FUNCTION IF EXISTS Assign_role_to_user_in_context_by_role_id(INTEGER, INTEGER, INTEGER);
-CREATE OR REPLACE FUNCTION Assign_role_to_user_in_context_by_role_id(p_user_id INTEGER, p_role_id INTEGER, p_context_id INTEGER DEFAULT NULL)
+CREATE OR REPLACE FUNCTION Assign_role_to_user_in_context_by_role_id(
+  p_user_id INTEGER,
+  p_role_id INTEGER,
+  p_context_id INTEGER DEFAULT NULL
+)
 RETURNS BOOLEAN AS $$
 DECLARE
-  rows INT;
+  exists_already BOOLEAN;
 BEGIN
-  INSERT INTO user_roles (user_id, role_id, streamer_id)
-  VALUES (p_user_id, p_role_id, p_context_id)
-  ON CONFLICT DO NOTHING;
-  GET DIAGNOSTICS rows = ROW_COUNT;
-  RETURN rows > 0;
+  -- Jedno porównanie obsługujące NULL przez IS NOT DISTINCT FROM
+  SELECT EXISTS (
+    SELECT 1 FROM user_roles
+    WHERE user_id = p_user_id
+      AND role_id = p_role_id
+      AND streamer_id IS NOT DISTINCT FROM p_context_id
+  ) INTO exists_already;
+
+  -- If doesn't exist, insert new record
+  IF NOT exists_already THEN
+    INSERT INTO user_roles (user_id, role_id, streamer_id)
+    VALUES (p_user_id, p_role_id, p_context_id)
+    ON CONFLICT DO NOTHING;
+  END IF;
+
+  -- Always returns TRUE (role is assigned)
+  RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
+
 
 DROP FUNCTION IF EXISTS Assign_role_to_user_in_context_by_role_name(INTEGER, TEXT);
 CREATE OR REPLACE FUNCTION Assign_role_to_user_in_context_by_role_name(
@@ -26,30 +43,23 @@ DECLARE
     rows INT;
     fetched_role_id INTEGER;
 BEGIN
-    -- Pobranie ID roli na podstawie nazwy
+    -- Fetch role ID based on name
     SELECT role_id
     INTO fetched_role_id
     FROM Get_role_by_name(p_role_name)
     LIMIT 1;
 
-    -- Jeśli nie znaleziono roli, zwróć FALSE
+    -- If role not found, return FALSE
     IF fetched_role_id IS NULL THEN
         RETURN FALSE;
     END IF;
 
-    -- Przypisanie roli użytkownikowi
-    INSERT INTO user_roles (user_id, role_id, streamer_id)
-    VALUES (p_user_id, fetched_role_id, p_context_id)
-    ON CONFLICT DO NOTHING;
-
-    -- Sprawdzenie, czy coś wstawiono
-    GET DIAGNOSTICS rows = ROW_COUNT;
-    RETURN rows > 0;
+    RETURN Assign_role_to_user_in_context_by_role_id(p_user_id, fetched_role_id, p_context_id);
 END;
 $$ LANGUAGE plpgsql;
 
 
--- Revoke_role_from_user_in_context(p_user_id, p_role_id, p_context_type, p_context_id)	Usuwa przypisanie w kontekście	🆕 do dodania
+-- Revoke_role_from_user_in_context(p_user_id, p_role_id, p_context_type, p_context_id)	Removes assignment within a context — to be added
 DROP FUNCTION IF EXISTS Revoke_role_from_user_in_context_by_role_id(INTEGER, INTEGER, INTEGER);
 CREATE OR REPLACE FUNCTION Revoke_role_from_user_in_context_by_role_id(p_user_id INTEGER, p_role_id INTEGER, p_context_id INTEGER)
 RETURNS BOOLEAN AS $$
@@ -64,7 +74,39 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Get_roles_by_user_in_context(p_user_id, p_context_type, p_context_id)	Zwraca role użytkownika w danym kontekście	🆕 do dodania
+-- Remove user's role in a context by role name
+DROP FUNCTION IF EXISTS Revoke_role_from_user_in_context_by_role_name(INTEGER, TEXT, INTEGER);
+CREATE OR REPLACE FUNCTION Revoke_role_from_user_in_context_by_role_name(
+  p_user_id INTEGER,
+  p_role_name TEXT,
+  p_context_id INTEGER
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+  fetched_role_id INTEGER;
+  result BOOLEAN;
+BEGIN
+  -- Get role ID by name
+  SELECT role_id
+  INTO fetched_role_id
+  FROM Get_role_by_name(p_role_name)
+  LIMIT 1;
+
+  -- If not found, return FALSE
+  IF fetched_role_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Call the version that accepts ID
+  SELECT Revoke_role_from_user_in_context_by_role_id(p_user_id, fetched_role_id, p_context_id)
+  INTO result;
+
+  RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+
+-- Get_roles_by_user_in_context(p_user_id, p_context_type, p_context_id)	Returns user's roles in a given context — to be added
 
 DROP FUNCTION IF EXISTS Get_roles_by_user_in_context(p_user_id INTEGER, p_context_id INTEGER);
 CREATE OR REPLACE FUNCTION Get_roles_by_user_in_context(p_user_id INTEGER, p_context_id INTEGER)
@@ -78,7 +120,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- User_has_permission_in_context(p_user_id, p_permission_name, p_context_type, p_context_id)	Sprawdza uprawnienia w kontekście
+-- User_has_permission_in_context(p_user_id, p_permission_name, p_context_type, p_context_id)	Check permission in a context
 
 DROP FUNCTION IF EXISTS User_has_permission_in_context(p_user_id INTEGER, p_permission_name TEXT, p_context_id INTEGER);
 CREATE OR REPLACE FUNCTION User_has_permission_in_context(p_user_id INTEGER, p_permission_name TEXT, p_context_id INTEGER)
@@ -96,8 +138,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 
---! ⚙️ 5. Funkcje — User ↔ Role Management (nowe)
--- Assign_role_to_user(p_user_id, p_role_id)	Przypisuje rolę użytkownikowi	🆕 do dodania
+--! ️ 5. Functions — User ↔ Role Management (new)
+-- Assign_role_to_user(p_user_id, p_role_id)	Assigns a role to a user — to be added
 DROP FUNCTION IF EXISTS Assign_role_to_user_by_role_id(INTEGER, INTEGER);
 CREATE OR REPLACE FUNCTION Assign_role_to_user_by_role_id(p_user_id INTEGER, p_role_id INTEGER)
 RETURNS BOOLEAN AS $$
@@ -117,7 +159,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Revoke_role_from_user(p_user_id, p_role_id)	Usuwa rolę użytkownika	🆕 do dodania
+-- Revoke_role_from_user(p_user_id, p_role_id)	Removes a role from a user — to be added
 
 DROP FUNCTION IF EXISTS Revoke_role_from_user_by_role_id(p_user_id INTEGER, p_role_id INTEGER);
 CREATE OR REPLACE FUNCTION Revoke_role_from_user_by_role_id(p_user_id INTEGER, p_role_id INTEGER)
@@ -144,18 +186,18 @@ DECLARE
     fetched_role_id INTEGER;
     result BOOLEAN;
 BEGIN
-    -- Pobranie ID roli na podstawie nazwy
+    -- Fetch role ID based on name
     SELECT role_id
     INTO fetched_role_id
     FROM Get_role_by_name(p_role_name)
     LIMIT 1;
 
-    -- Jeśli nie znaleziono roli, zwróć FALSE
+    -- If role not found, return FALSE
     IF fetched_role_id IS NULL THEN
         RETURN FALSE;
     END IF;
 
-    -- Wywołanie funkcji usuwającej rolę po ID
+    -- Call function that removes role by ID
     SELECT Revoke_role_from_user_by_role_id(p_user_id, fetched_role_id)
     INTO result;
 
@@ -164,7 +206,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- Get_roles_by_user(p_user_id)	Pobiera wszystkie role użytkownika	🆕 do dodania
+-- Get_roles_by_user(p_user_id)	Fetches all roles of a user — to be added
 DROP FUNCTION IF EXISTS Get_roles_by_user(p_user_id INTEGER);
 CREATE OR REPLACE FUNCTION Get_roles_by_user(p_user_id INTEGER)
 RETURNS SETOF roles AS $$
@@ -179,8 +221,8 @@ $$ LANGUAGE plpgsql;
 
 
 
--- ! ⚙️ 6. Funkcje — User ↔ Permission (pośrednio przez role)
--- Get_permissions_by_user(p_user_id)	Pobiera wszystkie uprawnienia użytkownika przez jego role	🆕 do dodania
+-- !️ 6. Functions — User ↔ Permission (indirectly via roles)
+-- Get_permissions_by_user(p_user_id)	Gets all permissions of a user through their roles — to be added
 
 DROP FUNCTION IF EXISTS Get_permissions_by_user(p_user_id INTEGER);
 CREATE OR REPLACE FUNCTION Get_permissions_by_user(p_user_id INTEGER)
@@ -195,7 +237,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- User_has_permission(p_user_id, p_permission_name)	Sprawdza, czy użytkownik ma dane uprawnienie	🆕 do dodania
+-- User_has_permission(p_user_id, p_permission_name)	Checks whether a user has a given permission — to be added
 
 DROP FUNCTION IF EXISTS User_has_permission(p_user_id INTEGER, p_permission_name TEXT);
 CREATE OR REPLACE FUNCTION User_has_permission(p_user_id INTEGER, p_permission_name TEXT)
@@ -224,6 +266,37 @@ BEGIN
     JOIN role_permissions rp ON p.permission_id = rp.permission_id
     JOIN user_roles ur ON rp.role_id = ur.role_id
     WHERE ur.user_id = p_user_id AND p.permission_id = p_permission_id;
+    RETURN count > 0;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS User_has_permission_by_permission_id_in_context(p_user_id INTEGER, p_permission_id INTEGER, p_context_id INTEGER);
+CREATE OR REPLACE FUNCTION User_has_permission_by_permission_id_in_context(p_user_id INTEGER, p_permission_id INTEGER, p_context_id INTEGER)
+RETURNS BOOLEAN AS $$
+DECLARE
+    count INT;
+BEGIN
+    SELECT COUNT(*) INTO count
+    FROM permissions p
+    JOIN role_permissions rp ON p.permission_id = rp.permission_id
+    JOIN user_roles ur ON rp.role_id = ur.role_id
+    WHERE ur.user_id = p_user_id AND p.permission_id = p_permission_id AND ur.streamer_id = p_context_id;
+    RETURN count > 0;
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION IF EXISTS User_has_permission_by_permission_name_in_context(p_user_id INTEGER, p_permission_name TEXT, p_context_id INTEGER);
+CREATE OR REPLACE FUNCTION User_has_permission_by_permission_name_in_context(p_user_id INTEGER, p_permission_name TEXT, p_context_id INTEGER)
+RETURNS BOOLEAN AS $$
+DECLARE
+    count INT;
+BEGIN
+    SELECT COUNT(*) INTO count
+    FROM permissions p
+    JOIN role_permissions rp ON p.permission_id = rp.permission_id
+    JOIN user_roles ur ON rp.role_id = ur.role_id
+    WHERE ur.user_id = p_user_id AND p.name = p_permission_name AND ur.streamer_id = p_context_id;
     RETURN count > 0;
 END;
 $$ LANGUAGE plpgsql;
