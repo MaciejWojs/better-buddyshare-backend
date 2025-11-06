@@ -35,15 +35,15 @@ export interface IUserRolesDAO {
   ): Promise<boolean | null>;
 
   // Global roles
-  getUserRoles(userId: number): Promise<Role[] | null>;
+  getUserRoles(userId: number): Promise<Role[]>;
   // Scoped to streamer
-  getUserRoles(userId: number, streamerId: number): Promise<Role[] | null>;
+  getUserRoles(userId: number, streamerId: number): Promise<Role[]>;
 
-  getUserPermissions(userId: number): Promise<Permission[] | null>;
+  getUserPermissions(userId: number): Promise<Permission[]>;
   getUserPermissions(
     userId: number,
     streamerId: number,
-  ): Promise<Permission[] | null>;
+  ): Promise<Permission[]>;
 
   checkIfUserHasPermission(
     userId: number,
