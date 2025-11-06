@@ -2,6 +2,7 @@
 import { Hono } from 'hono';
 import { serve } from 'bun';
 import { promises as fs } from 'fs';
+import * as path from 'path';
 
 if (
   !process.env.SRS_DELETER_HOST ||
@@ -31,7 +32,14 @@ app.delete('/delete', async (c) => {
   const relPath = c.req.query('path');
   if (!relPath) return c.json({ ok: false, error: 'missing path' }, 400);
 
-  const resolved = `/usr/local/srs/objs/nginx/html/${relPath}`;
+  const baseDir = '/usr/local/srs/objs/nginx/html/';
+  const resolvedBase = path.resolve(baseDir) + path.sep;
+  const resolved = path.resolve(baseDir, relPath);
+
+  if (!resolved.startsWith(resolvedBase)) {
+    return c.json({ ok: false, error: 'invalid path' }, 400);
+  }
+
   try {
     await fs.rm(resolved, { force: true });
     return c.json({ ok: true, deleted: resolved });
