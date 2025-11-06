@@ -154,20 +154,31 @@ rabbit.createConsumer(
 
     console.log(`Video saved with ID ${videoID}`);
 
-    const resp = await fetch(
-      `http://${env.SRS_DELETER_HOST || 'srs'}:${env.DELETER_PORT || 7777}/delete?path=${path}`,
-      {
-        method: 'DELETE',
-        headers: {
-          authorization: `Bearer ${env.DELETER_API_TOKEN}`,
+    try {
+      const resp = await fetch(
+        `http://${env.SRS_DELETER_HOST || 'srs'}:${env.DELETER_PORT || 7777}/delete?path=${path}`,
+        {
+          method: 'DELETE',
+          headers: {
+            authorization: `Bearer ${env.DELETER_API_TOKEN}`,
+          },
         },
-      },
-    );
+      );
 
-    console.log('SRS deleter response status:', resp.status);
-    const respText = await resp.text();
-    console.log('SRS deleter response text:', respText);
+      console.log('SRS deleter response status:', resp.status);
+      const respText = await resp.text();
+      console.log('SRS deleter response text:', respText);
 
+      if (!resp.ok) {
+        console.error(`Failed to delete file from SRS: ${resp.status} ${respText}`);
+        await reply('error: Failed to delete file from SRS');
+        return;
+      }
+    } catch (error) {
+      console.error('Error deleting file from SRS:', error);
+      await reply('error: Exception while deleting file from SRS');
+      return;
+    }
     // Respond back to the client
     await reply(link);
   },

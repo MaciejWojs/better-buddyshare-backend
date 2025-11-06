@@ -171,7 +171,7 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    * Get permissions assigned to a role by role ID.
    *
    * @param roleId - Role ID
-   * @returns Array of Permission or null
+   * @returns Array of Permission, or empty array if none
    */
   async getPermissionsByRoleId(roleId: number): Promise<Permission[] | null> {
     return await this.executeQueryMultiple<Permission>(
@@ -183,7 +183,7 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    * Get permissions assigned to a role by role name.
    *
    * @param roleName - Role name
-   * @returns Array of Permission or null
+   * @returns Array of Permission, or empty array if none
    */
   async getPermissionsByRoleName(
     roleName: string,
