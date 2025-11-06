@@ -11,7 +11,7 @@ RETURNS BOOLEAN AS $$
 DECLARE
   exists_already BOOLEAN;
 BEGIN
-  -- Sprawdź, czy rekord już istnieje (dla NULL streamer_id specjalny warunek)
+  -- Check if record already exists (special condition for NULL streamer_id)
   IF p_context_id IS NULL THEN
     SELECT EXISTS (
       SELECT 1 FROM user_roles
@@ -28,14 +28,14 @@ BEGIN
     ) INTO exists_already;
   END IF;
 
-  -- Jeśli nie istnieje, wstaw nowy rekord
+  -- If doesn't exist, insert new record
   IF NOT exists_already THEN
     INSERT INTO user_roles (user_id, role_id, streamer_id)
     VALUES (p_user_id, p_role_id, p_context_id)
     ON CONFLICT DO NOTHING;
   END IF;
 
-  -- Zawsze zwraca TRUE (rola jest przypisana)
+  -- Always returns TRUE (role is assigned)
   RETURN TRUE;
 END;
 $$ LANGUAGE plpgsql;
