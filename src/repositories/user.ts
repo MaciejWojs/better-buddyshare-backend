@@ -9,11 +9,13 @@ import { BaseRepository } from './BaseRepository';
  * Provides methods for user CRUD operations while maintaining cache consistency.
  */
 export class UserRepository extends BaseRepository implements IUserRepository {
-  constructor(
-    private readonly dao: UserDAO,
-    private readonly cache: UserCacheDao,
-  ) {
+  private readonly dao: UserDAO;
+  private readonly cache: UserCacheDao;
+
+  constructor(dao?: UserDAO, cache?: UserCacheDao) {
     super();
+    this.dao = dao ?? UserDAO.getInstance();
+    this.cache = cache ?? UserCacheDao.getInstance();
   }
 
   //! Important: methods in repository should be 1:1 with methods in DAO
