@@ -96,7 +96,8 @@ model Stream {
     thumbnail   String @default("")
 
     isLive    Boolean   @default(false) @map("is_live")
-    isPublic  Boolean   @default(true) @map("is_public")
+    isPublic  Boolean   @default(false) @map("is_public")
+    isLocked  Boolean   @default(false) @map("is_locked")
     startedAt DateTime  @default(now()) @map("started_at")
     endedAt   DateTime? @map("ended_at")
     path      String?
