@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
-      - main  # Tylko PR-y, które kierują się na main
+      - main # Tylko PR-y, które kierują się na main
 
 jobs:
   auto-merge:
@@ -50,7 +50,6 @@ jobs:
           DATABASE_URL: postgres://testuser:testpass@localhost:5431/testdb
           CI: true
         run: bun test
-
 
       - name: Auto-merge PR
         if: success()
