@@ -161,11 +161,13 @@ export abstract class BaseDAO {
     }
   }
 
-  protected async getBooleanFromQuery(
-    query: () => any,
-  ): Promise<boolean | null> {
+  protected async getBooleanFromQuery(query: () => any): Promise<boolean> {
     const res = await this.executeQuery<Record<string, boolean>>(query);
-    if (!res) return null;
+    if (!res) {
+      throw new DaoError(
+        `No result returned from boolean query ${query.toString()}`,
+      );
+    }
     const firstValue = Object.values(res)[0];
     return typeof firstValue === 'boolean' ? firstValue : false;
   }
