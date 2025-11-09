@@ -19,6 +19,9 @@ export interface ISessionDAO {
   // Unieważnia sesję i powiązane tokeny
   revokeSession(sessionId: string): Promise<boolean>;
 
+  // Revoke all tokens and sessions associated with a user
+  revokeAllUserSessions(userId: number): Promise<boolean>;
+
   // Pobiera aktywne sesje dla danego użytkownika
   getActiveSessions(userId: number): Promise<Session[]>;
 

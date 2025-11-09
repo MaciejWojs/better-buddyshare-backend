@@ -163,3 +163,49 @@ describe('SessionDAO.cleanupExpiredSessionsAndTokens', () => {
     expect(result).toBeFalse();
   });
 });
+
+describe('SessionDAO.revokeAllUserSessions', () => {
+  test('should revoke all sessions for a user and not affect others', async () => {
+    // stwórz dodatkowego użytkownika
+    const otherUser = await userDao.createUser(
+      'other_user',
+      'other@test.com',
+      'pass456',
+    );
+    const otherUserId = otherUser!.user_id;
+
+    // stwórz sesje dla głównego usera
+    const expires = new Date(Date.now() + 1000 * 60 * 60);
+    await sessionDao.createSession(userId, expires);
+    await sessionDao.createSession(userId, expires);
+
+    // stwórz sesję dla innego usera
+    await sessionDao.createSession(otherUserId, expires);
+
+    const result = await sessionDao.revokeAllUserSessions(userId);
+    expect(result).toBeTrue();
+
+    const activeForUser = await sql`
+      SELECT COUNT(*)::int AS cnt FROM sessions WHERE user_id = ${userId} AND is_active = true
+    `;
+    expect(Number(activeForUser[0].cnt)).toBe(0);
+
+    const activeForOther = await sql`
+      SELECT COUNT(*)::int AS cnt FROM sessions WHERE user_id = ${otherUserId} AND is_active = true
+    `;
+    expect(Number(activeForOther[0].cnt)).toBeGreaterThanOrEqual(1);
+  });
+
+  test('should return false if there are no active sessions to revoke', async () => {
+    const lonelyUser = await userDao.createUser(
+      'lonely_user',
+      'lonely@test.com',
+      'nopass',
+    );
+    const lonelyUserId = lonelyUser!.user_id;
+
+    // nie tworzymy sesji dla lonelyUser => nic do revoke
+    const result = await sessionDao.revokeAllUserSessions(lonelyUserId);
+    expect(result).toBeFalse();
+  });
+});
