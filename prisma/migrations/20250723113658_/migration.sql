@@ -98,7 +98,7 @@ CREATE TABLE "banned_users_per_streamer" (
 
 -- CreateTable
 CREATE TABLE "refresh_tokens" (
-    "id" TEXT NOT NULL,
+    "token_id" TEXT NOT NULL,
     "token_hash" TEXT NOT NULL,
     "user_id" INTEGER NOT NULL,
     "session_id" TEXT NOT NULL,
@@ -108,12 +108,12 @@ CREATE TABLE "refresh_tokens" (
     "replaced_by_id" TEXT,
     "used_at" TIMESTAMP(3),
 
-    CONSTRAINT "refresh_tokens_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "refresh_tokens_pkey" PRIMARY KEY ("token_id")
 );
 
 -- CreateTable
 CREATE TABLE "sessions" (
-    "id" TEXT NOT NULL,
+    "session_id" TEXT NOT NULL,
     "user_id" INTEGER NOT NULL,
     "ip_address" TEXT,
     "user_agent" TEXT,
@@ -124,7 +124,7 @@ CREATE TABLE "sessions" (
     "expires_at" TIMESTAMP(3) NOT NULL,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
 
-    CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "sessions_pkey" PRIMARY KEY ("session_id")
 );
 
 -- CreateIndex
@@ -188,10 +188,10 @@ ALTER TABLE "banned_users_per_streamer" ADD CONSTRAINT "banned_users_per_streame
 ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "sessions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "sessions"("session_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_replaced_by_id_fkey" FOREIGN KEY ("replaced_by_id") REFERENCES "refresh_tokens"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_replaced_by_id_fkey" FOREIGN KEY ("replaced_by_id") REFERENCES "refresh_tokens"("token_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
