@@ -11,7 +11,7 @@
   ],
   "overrides": [
     {
-      "files": ["./nginx/nginx.conf", "./nginx-waf/nginx.conf"],
+      "files": ["./nginx/nginx.conf"],
       "options": {
         "parser": "nginx"
       }
