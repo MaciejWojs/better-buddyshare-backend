@@ -1,4 +1,4 @@
-import { User } from '../../types/db/User';
+import { User } from '@src/types/db';
 
 export interface IUserDAO {
   findById(id: number): Promise<User | null>;

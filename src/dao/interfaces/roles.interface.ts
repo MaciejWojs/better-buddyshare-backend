@@ -1,5 +1,4 @@
-import { Permission } from '@src/types/db/Permission';
-import { Role } from '@src/types/db/Role';
+import { Permission, Role } from '@src/types/db/';
 
 export interface IRolesDAO {
   createRole(roleName: string): Promise<Role | null>;
