@@ -109,9 +109,10 @@ model Stream {
 }
 
 model Subscribers {
-  subscriberId Int @id @default(autoincrement()) @map("id")
-  userId       Int @map("user_id")
-  streamerId   Int @map("streamer_id")
+  subscriberId    Int      @id @default(autoincrement()) @map("subscription_id")
+  userId          Int      @map("user_id")
+  streamerId      Int      @map("streamer_id")
+  subscribedSince DateTime @default(now()) @map("subscribed_since")
 
   user     User @relation("SubscriberUser", fields: [userId], references: [userId])
   streamer User @relation("SubscriberStreamer", fields: [streamerId], references: [userId])
@@ -120,7 +121,7 @@ model Subscribers {
 }
 
 model BannedUsersPerStreamer {
-  bannedUserId Int       @id @default(autoincrement()) @map("id")
+  bannedUserId Int       @id @default(autoincrement()) @map("ban_id")
   streamerId   Int       @map("streamer_id")
   userId       Int       @map("user_id")
   reason       String    @default("Unknown reason")

@@ -14,6 +14,22 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION check_if_user_exists(p_user_id INTEGER) 
+RETURNS BOOLEAN AS $$
+DECLARE
+    user_exists BOOLEAN;
+BEGIN
+    -- Check if a user with the given ID exists in the 'users' table
+    SELECT EXISTS (
+        SELECT 1
+        FROM users
+        WHERE user_id = p_user_id
+    ) INTO user_exists;
+
+    -- Return the result (TRUE if the user exists, FALSE otherwise)
+    RETURN user_exists;
+END;
+$$ LANGUAGE plpgsql;
 
 DROP FUNCTION IF EXISTS create_user(p_username citext, p_email citext, p_password TEXT) CASCADE;
 
