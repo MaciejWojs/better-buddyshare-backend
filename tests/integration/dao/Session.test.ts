@@ -1,7 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
 import { sql } from 'bun';
-import { SessionDAO } from '@src/dao/Session';
-import { UserDAO } from '@src/dao/Users';
+import { SessionDAO, UserDAO } from '@src/dao';
 
 let sessionDao: SessionDAO;
 let userDao: UserDAO;
