@@ -5,7 +5,7 @@ import {
   DaoConstraintError,
   DaoCacheConnectionError,
   DaoCacheAuthenticationError,
-} from '@src/errors/DaoError';
+} from '@src/errors';
 
 export abstract class BaseDAO {
   protected constructor() {

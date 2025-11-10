@@ -12,7 +12,7 @@ import { Role } from '@src/types/db/Role';
 import { BaseDAO } from './BaseDao';
 import { IUserRolesDAO } from './interfaces/userRoles.interface';
 import { sql } from 'bun';
-import { DaoError } from '@src/errors/DaoError';
+import { DaoError } from '@src/errors';
 
 /**
  * UserRoles DAO.
