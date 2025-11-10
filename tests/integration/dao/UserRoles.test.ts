@@ -1,10 +1,10 @@
 import { beforeAll, beforeEach, test, expect, describe } from 'bun:test';
 import { sql } from 'bun';
-import { UserRolesDAO } from '../../src/dao/UserRoles';
-import { PermissionDAO } from '../../src/dao/Permissions';
-import { RolesDAO } from '../../src/dao/Roles';
-import { UserDAO } from '../../src/dao/Users';
-import { DaoError } from '../../src/errors/DaoError';
+import { UserRolesDAO } from '@src/dao/UserRoles';
+import { PermissionDAO } from '@src/dao/Permissions';
+import { RolesDAO } from '@src/dao/Roles';
+import { UserDAO } from '@src/dao/Users';
+import { DaoError } from '@src/errors/DaoError';
 
 describe('UserRolesDAO', () => {
   let userRolesDao: UserRolesDAO;

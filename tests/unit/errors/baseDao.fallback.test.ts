@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
-import { BaseDAO } from '../../src/dao/BaseDao';
-import { DaoError } from '../../src/errors/DaoError';
+import { BaseDAO } from '@src/dao/BaseDao';
+import { DaoError } from '@src/errors/DaoError';
 
 class TestDAO extends (BaseDAO as any) {
   public exposeMapError(err: any) {

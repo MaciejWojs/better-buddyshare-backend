@@ -1,9 +1,9 @@
 import { test, expect } from 'bun:test';
-import { RepositoryError } from '../../src/errors/RepositoryError';
+import { RepositoryError } from '@src/errors/RepositoryError';
 import {
   DaoCacheConnectionError,
   DaoCacheAuthenticationError,
-} from '../../src/errors/DaoError';
+} from '@src/errors/DaoError';
 
 test('RepositoryError.fromDaoError maps cache connection/auth errors to 503 retryable', () => {
   const conn = new DaoCacheConnectionError('Redis disconnected', {
