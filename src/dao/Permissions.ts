@@ -7,7 +7,7 @@
  * @module dao/Permissions
  */
 import { sql } from 'bun';
-import { IPermissionsDAO } from './interfaces/permissions.interface';
+import { IPermissionsDAO } from './interfaces';
 import { Permission } from '@src/types/db/Permission';
 import { BaseDAO } from './BaseDao';
 
