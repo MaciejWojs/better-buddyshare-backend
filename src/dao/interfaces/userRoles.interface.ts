@@ -1,5 +1,4 @@
-import { Permission } from '@src/types/db/Permission';
-import { Role } from '@src/types/db/Role';
+import { Permission, Role } from '@src/types/db/';
 
 export interface IUserRolesDAO {
   // Global roles
@@ -40,10 +39,7 @@ export interface IUserRolesDAO {
   getUserRoles(userId: number, streamerId: number): Promise<Role[]>;
 
   getUserPermissions(userId: number): Promise<Permission[]>;
-  getUserPermissions(
-    userId: number,
-    streamerId: number,
-  ): Promise<Permission[]>;
+  getUserPermissions(userId: number, streamerId: number): Promise<Permission[]>;
 
   checkIfUserHasPermission(
     userId: number,

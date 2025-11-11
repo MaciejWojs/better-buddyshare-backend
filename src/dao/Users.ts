@@ -8,9 +8,9 @@
  * @module dao/Users
  */
 import { sql } from 'bun';
-import { IUserDAO } from './interfaces/users.interface';
 import { BaseDAO } from './BaseDao';
-import { User } from '../types/db/User';
+import { IUserDAO } from './interfaces';
+import { User } from '@src/types/db';
 
 export class UserDAO extends BaseDAO implements IUserDAO {
   /**
@@ -47,7 +47,12 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async findById(id: number) {
     return await this.executeQuery<User>(
-      () => sql`select * from get_user_by_id(${id})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          get_user_by_id (${id})
+      `,
     );
   }
 
@@ -59,7 +64,12 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async findByEmail(email: string) {
     return await this.executeQuery<User>(
-      () => sql`select * from get_user_by_email(${email})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          get_user_by_email (${email})
+      `,
     );
   }
 
@@ -71,7 +81,12 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async unbanUser(user_id: number) {
     return await this.executeQuery<User>(
-      () => sql`select * from unban_user_globally(${user_id})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          unban_user_globally (${user_id})
+      `,
     );
   }
 
@@ -85,12 +100,25 @@ export class UserDAO extends BaseDAO implements IUserDAO {
   async banUser(user_id: number, reason: string | null = null) {
     if (reason) {
       return await this.executeQuery<User>(
-        () => sql`select * from ban_user_globally(${user_id}, ${reason})`,
+        () => sql`
+          SELECT
+            *
+          FROM
+            ban_user_globally (
+              ${user_id},
+              ${reason}
+            )
+        `,
       );
     }
 
     return await this.executeQuery<User>(
-      () => sql`select * from ban_user_globally(${user_id})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          ban_user_globally (${user_id})
+      `,
     );
   }
 
@@ -103,8 +131,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateProfilePicture(user_id: number, profile_picture: string) {
     return await this.executeQuery<User>(
-      () =>
-        sql`select * from update_user_avatar(${user_id}, ${profile_picture})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_user_avatar (
+            ${user_id},
+            ${profile_picture}
+          )
+      `,
     );
   }
 
@@ -117,8 +152,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateProfileBanner(user_id: number, profile_banner: string) {
     return await this.executeQuery<User>(
-      () =>
-        sql`select * from update_user_profile_banner(${user_id}, ${profile_banner})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_user_profile_banner (
+            ${user_id},
+            ${profile_banner}
+          )
+      `,
     );
   }
 
@@ -131,8 +173,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateBio(user_id: number, description: string) {
     return await this.executeQuery<User>(
-      () =>
-        sql`select * from update_user_description(${user_id}, ${description})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_user_description (
+            ${user_id},
+            ${description}
+          )
+      `,
     );
   }
 
@@ -145,7 +194,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateUsername(user_id: number, username: string) {
     return await this.executeQuery<User>(
-      () => sql`select * from update_user_username(${user_id}, ${username})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_user_username (
+            ${user_id},
+            ${username}
+          )
+      `,
     );
   }
 
@@ -158,7 +215,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateEmail(user_id: number, email: string) {
     return await this.executeQuery<User>(
-      () => sql`select * from update_user_email(${user_id}, ${email})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_user_email (
+            ${user_id},
+            ${email}
+          )
+      `,
     );
   }
 
@@ -171,7 +236,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updatePassword(user_id: number, password: string) {
     return await this.executeQuery<User>(
-      () => sql`select * from update_user_password(${user_id}, ${password})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_user_password (
+            ${user_id},
+            ${password}
+          )
+      `,
     );
   }
 
@@ -185,7 +258,27 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async createUser(username: string, email: string, password: string) {
     return await this.executeQuery<User>(
-      () => sql`select * from create_user(${username}, ${email}, ${password})`,
+      () => sql`
+        SELECT
+          *
+        FROM
+          create_user (
+            ${username},
+            ${email},
+            ${password}
+          )
+      `,
+    );
+  }
+
+  async updateStreamToken(user_id: number) {
+    return await this.executeQuery<User>(
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_stream_token (${user_id})
+      `,
     );
   }
 }

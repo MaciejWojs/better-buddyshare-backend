@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
-import { RepositoryError } from '../../src/errors/RepositoryError';
-import { DaoConnectionError } from '../../src/errors/DaoError';
+import { RepositoryError } from '@src/errors/RepositoryError';
+import { DaoConnectionError } from '@src/errors/DaoError';
 
 test('RepositoryError.fromDaoError maps DaoConnectionError to 503 retryable', () => {
   const daoErr = new DaoConnectionError('DB connection lost', {

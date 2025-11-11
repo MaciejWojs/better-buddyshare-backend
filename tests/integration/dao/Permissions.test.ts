@@ -1,7 +1,7 @@
 import { afterEach, test, expect, beforeEach } from 'bun:test';
 import { sql } from 'bun';
-import { PermissionDAO } from '../../src/dao/Permissions';
-import { Permission } from '@src/types/db/Permission';
+import { PermissionDAO } from '@src/dao';
+import { Permission } from '@src/types/db';
 
 let permissionDao: PermissionDAO;
 

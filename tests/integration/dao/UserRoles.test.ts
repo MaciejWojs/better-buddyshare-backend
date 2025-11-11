@@ -1,10 +1,7 @@
 import { beforeAll, beforeEach, test, expect, describe } from 'bun:test';
 import { sql } from 'bun';
-import { UserRolesDAO } from '../../src/dao/UserRoles';
-import { PermissionDAO } from '../../src/dao/Permissions';
-import { RolesDAO } from '../../src/dao/Roles';
-import { UserDAO } from '../../src/dao/Users';
-import { DaoError } from '../../src/errors/DaoError';
+import { UserRolesDAO, RolesDAO, PermissionDAO, UserDAO } from '@src/dao';
+import { DaoError } from '@src/errors';
 
 describe('UserRolesDAO', () => {
   let userRolesDao: UserRolesDAO;
@@ -190,15 +187,15 @@ describe('UserRolesDAO', () => {
   // 🔹 DaoError cases
   //
   test('should throw DaoError on invalid role type', async () => {
-    // @ts-expect-error
     await expect(
+      // @ts-expect-error
       userRolesDao.assignRoleToUser(userId, { invalid: 'role' }),
     ).rejects.toThrow(DaoError);
   });
 
   test('should throw DaoError on invalid permission type', async () => {
-    // @ts-expect-error
     await expect(
+      // @ts-expect-error
       userRolesDao.checkIfUserHasPermission(userId, { invalid: 'perm' }),
     ).rejects.toThrow(DaoError);
   });

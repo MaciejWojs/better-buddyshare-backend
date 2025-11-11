@@ -170,7 +170,9 @@ rabbit.createConsumer(
       console.log('SRS deleter response text:', respText);
 
       if (!resp.ok) {
-        console.error(`Failed to delete file from SRS: ${resp.status} ${respText}`);
+        console.error(
+          `Failed to delete file from SRS: ${resp.status} ${respText}`,
+        );
         await reply('error: Failed to delete file from SRS');
         return;
       }

@@ -5,8 +5,8 @@ ARG ALPINE_VERSION=3.22
 FROM alpine:${ALPINE_VERSION} AS builder
 
 # 1) Provide versions of Nginx, HTTP-FLV and Brotli as ARGs
-ARG NGINX_VERSION=1.29.0
-ARG BROTLI_VERSION=1.1.0
+ARG NGINX_VERSION=1.29.3
+ARG BROTLI_VERSION=1.2.0
 ARG HEADERS_MORE_VERSION=0.39
 
 # 2) Install all build-dependencies (including cmake for brotli)

@@ -1,6 +1,9 @@
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "citext";
 
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 -- CreateTable
 CREATE TABLE "users" (
     "user_id" SERIAL NOT NULL,
@@ -61,7 +64,8 @@ CREATE TABLE "streams" (
     "description" TEXT NOT NULL DEFAULT 'No description provided',
     "thumbnail" TEXT NOT NULL DEFAULT '',
     "is_live" BOOLEAN NOT NULL DEFAULT false,
-    "is_public" BOOLEAN NOT NULL DEFAULT true,
+    "is_public" BOOLEAN NOT NULL DEFAULT false,
+    "is_locked" BOOLEAN NOT NULL DEFAULT false,
     "started_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "ended_at" TIMESTAMP(3),
     "path" TEXT,
@@ -71,16 +75,17 @@ CREATE TABLE "streams" (
 
 -- CreateTable
 CREATE TABLE "subscribers" (
-    "id" SERIAL NOT NULL,
+    "subscription_id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "streamer_id" INTEGER NOT NULL,
+    "subscribed_since" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "subscribers_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "subscribers_pkey" PRIMARY KEY ("subscription_id")
 );
 
 -- CreateTable
 CREATE TABLE "banned_users_per_streamer" (
-    "id" SERIAL NOT NULL,
+    "ban_id" SERIAL NOT NULL,
     "streamer_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
     "reason" TEXT NOT NULL DEFAULT 'Unknown reason',
@@ -89,19 +94,38 @@ CREATE TABLE "banned_users_per_streamer" (
     "banned_until" TIMESTAMP(3),
     "is_permanent" BOOLEAN NOT NULL DEFAULT true,
 
-    CONSTRAINT "banned_users_per_streamer_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "banned_users_per_streamer_pkey" PRIMARY KEY ("ban_id")
 );
 
 -- CreateTable
 CREATE TABLE "refresh_tokens" (
-    "id" TEXT NOT NULL,
-    "token" TEXT NOT NULL,
+    "token_id" TEXT NOT NULL,
+    "token_hash" TEXT NOT NULL,
     "user_id" INTEGER NOT NULL,
-    "expires_at" TIMESTAMP(3) NOT NULL,
+    "session_id" TEXT NOT NULL,
     "issued_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "invalidated" BOOLEAN NOT NULL DEFAULT false,
+    "expires_at" TIMESTAMP(3) NOT NULL,
+    "revoked_at" TIMESTAMP(3),
+    "replaced_by_id" TEXT,
+    "used_at" TIMESTAMP(3),
 
-    CONSTRAINT "refresh_tokens_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "refresh_tokens_pkey" PRIMARY KEY ("token_id")
+);
+
+-- CreateTable
+CREATE TABLE "sessions" (
+    "session_id" TEXT NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "ip_address" TEXT,
+    "user_agent" TEXT,
+    "device_info" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "last_used_at" TIMESTAMP(3),
+    "revoked_at" TIMESTAMP(3),
+    "expires_at" TIMESTAMP(3) NOT NULL,
+    "is_active" BOOLEAN NOT NULL DEFAULT true,
+
+    CONSTRAINT "sessions_pkey" PRIMARY KEY ("session_id")
 );
 
 -- CreateIndex
@@ -126,7 +150,7 @@ CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
 CREATE UNIQUE INDEX "banned_users_per_streamer_streamer_id_user_id_key" ON "banned_users_per_streamer"("streamer_id", "user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "refresh_tokens_token_key" ON "refresh_tokens"("token");
+CREATE INDEX "sessions_user_id_idx" ON "sessions"("user_id");
 
 -- AddForeignKey
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -163,3 +187,12 @@ ALTER TABLE "banned_users_per_streamer" ADD CONSTRAINT "banned_users_per_streame
 
 -- AddForeignKey
 ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "sessions"("session_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_replaced_by_id_fkey" FOREIGN KEY ("replaced_by_id") REFERENCES "refresh_tokens"("token_id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;

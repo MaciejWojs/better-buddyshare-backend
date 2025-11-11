@@ -1,45 +1,41 @@
 version: 2
 enable-beta-ecosystems: true
 updates:
+  # Group Bun-managed projects together using `directories`. Dependabot will
+  # create separate PRs per dependency as needed, but the configuration is
+  # centrally defined here.
   - package-ecosystem: "bun"
-    directory: "/" # katalog gdzie jest package.json (np. "/backend" jeśli nie w repo root)
+    directories:
+      - "/"
+      - "/upload-media-worker"
+      - "/srs"
     schedule:
-      interval: "weekly" # daily | weekly | monthly
-      day: "monday" # opcjonalne dla weekly
-      time: "00:00" # opcjonalne (HH:MM)
-      timezone: "Europe/Warsaw" # opcjonalne
+      interval: "weekly"
+      day: "monday"
+      time: "00:00"
+      timezone: "Europe/Warsaw"
     open-pull-requests-limit: 10
-    rebase-strategy: "auto" # "auto" lub "disabled"
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
-  - package-ecosystem: "bun"
-    directory: "/upload-media-worker"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "00:00"
-      timezone: "Europe/Warsaw"
     rebase-strategy: "auto"
     labels:
       - "dependencies"
     commit-message:
       prefix: "chore"
-  - package-ecosystem: "bun"
-    directory: "/srs"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "00:00"
-      timezone: "Europe/Warsaw"
-    rebase-strategy: "auto"
-    labels:
-      - "dependencies"
-    commit-message:
-      prefix: "chore"
+    # Grouping: combine patch and minor updates into single PRs to reduce noise
+    groups:
+      bun-small-updates:
+        patterns:
+          - "*" # match all dependencies
+        update-types:
+          - patch
+          - minor
+          - major
+
+  # Group Dockerfiles / images together.
   - package-ecosystem: "docker"
-    directory: "/nginx"
+    directories:
+      - "/"
+      - "/nginx"
+      - "/database"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -51,8 +47,10 @@ updates:
       - "dependencies"
     commit-message:
       prefix: "chore"
-  - package-ecosystem: "docker"
-    directory: "/"
+  # Separate entry for docker-compose files.
+  - package-ecosystem: "docker-compose"
+    directories:
+      - "/"
     schedule:
       interval: "weekly"
       day: "monday"
