@@ -256,31 +256,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- get_subscription_details(p_user_id INTEGER, p_streamer_id INTEGER)
-DROP FUNCTION IF EXISTS get_subscription_details(p_user_id INTEGER, p_streamer_id INTEGER) CASCADE;
-CREATE OR REPLACE FUNCTION get_subscription_details(p_user_id INTEGER, p_streamer_id INTEGER)
-RETURNS TABLE (
-    user_id INTEGER,
-    streamer_id INTEGER,
-    subscribed_since TIMESTAMP(3),
-    streamer_username CITEXT,
-    user_username CITEXT
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        s.user_id,
-        s.streamer_id,
-        s.subscribed_since,
-        su.username AS streamer_username,
-        u.username AS user_username
-    FROM subscribers s
-    JOIN users su ON s.streamer_id = su.user_id
-    JOIN users u ON s.user_id = u.user_id
-    WHERE s.user_id = p_user_id AND s.streamer_id = p_streamer_id;
-END;
-$$ LANGUAGE plpgsql;
-
 -- get_top_streamers_by_subscribers(p_limit INTEGER)
 DROP FUNCTION IF EXISTS get_top_streamers_by_subscribers(p_limit INTEGER) CASCADE;
 CREATE OR REPLACE FUNCTION get_top_streamers_by_subscribers(p_limit INTEGER DEFAULT 10)

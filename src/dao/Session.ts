@@ -5,7 +5,7 @@ import { Session } from '@src/types/db';
 
 export class SessionDAO extends BaseDAO implements ISessionDAO {
   private static instance: SessionDAO;
-  constructor() {
+  private constructor() {
     super();
   }
 
