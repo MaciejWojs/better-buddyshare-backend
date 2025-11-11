@@ -20,6 +20,14 @@ updates:
       - "dependencies"
     commit-message:
       prefix: "chore"
+    # Grouping: combine patch and minor updates into single PRs to reduce noise
+    groups:
+      bun-small-updates:
+        patterns:
+          - "*" # match all dependencies
+        update-types:
+          - patch
+          - minor
 
   # Group Dockerfiles / images together.
   - package-ecosystem: "docker"
