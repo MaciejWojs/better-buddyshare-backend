@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
-      - main  # Tylko PR-y, które kierują się na main
+      - main # Tylko PR-y, które kierują się na main
 
 permissions:
   contents: write

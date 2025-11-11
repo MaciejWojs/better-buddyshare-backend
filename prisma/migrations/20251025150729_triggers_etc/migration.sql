@@ -1,3 +1,20 @@
+CREATE OR REPLACE FUNCTION generate_access_token(length INTEGER DEFAULT 16)
+RETURNS TEXT AS $$
+DECLARE
+  token TEXT;
+BEGIN
+  IF length < 8 THEN
+    RAISE EXCEPTION 'Access token length must be at least 8 characters';
+  END IF;
+
+  token := encode(gen_random_bytes(length), 'hex');
+
+  RETURN token;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
 DROP FUNCTION IF EXISTS create_user(p_username citext, p_email citext, p_password TEXT) CASCADE;
 
 CREATE OR REPLACE FUNCTION create_user(
@@ -186,3 +203,28 @@ BEGIN
   DELETE FROM users WHERE user_id = p_user_id;
 END;
 $$;
+
+
+DROP FUNCTION IF EXISTS update_stream_token(p_user_id INTEGER, p_stream_token TEXT) CASCADE;
+CREATE OR REPLACE FUNCTION update_stream_token(p_user_id INTEGER, p_stream_token TEXT)
+RETURNS SETOF users AS $$
+BEGIN
+  UPDATE users SET 
+    "stream_token" = p_stream_token
+   WHERE users.user_id = p_user_id;
+  RETURN QUERY SELECT * from get_user_by_id(p_user_id);
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION IF EXISTS update_stream_token(p_user_id INTEGER) CASCADE;
+CREATE OR REPLACE FUNCTION update_stream_token(p_user_id INTEGER)
+RETURNS SETOF users AS $$
+BEGIN
+  UPDATE users SET 
+    "stream_token" = generate_access_token(32)
+  WHERE users.user_id = p_user_id;
+  RETURN QUERY SELECT * from get_user_by_id(p_user_id);
+END;
+$$ LANGUAGE plpgsql;
+
