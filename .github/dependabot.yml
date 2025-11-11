@@ -28,6 +28,7 @@ updates:
         update-types:
           - patch
           - minor
+          - major
 
   # Group Dockerfiles / images together.
   - package-ecosystem: "docker"
