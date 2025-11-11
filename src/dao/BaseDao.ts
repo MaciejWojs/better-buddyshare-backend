@@ -5,7 +5,7 @@ import {
   DaoConstraintError,
   DaoCacheConnectionError,
   DaoCacheAuthenticationError,
-} from '@src/errors/DaoError';
+} from '@src/errors';
 
 export abstract class BaseDAO {
   protected constructor() {
@@ -170,5 +170,32 @@ export abstract class BaseDAO {
     }
     const firstValue = Object.values(res)[0];
     return typeof firstValue === 'boolean' ? firstValue : false;
+  }
+
+  protected async getPrimitiveFromQuery<
+    T extends string | number | boolean = number,
+  >(query: () => any): Promise<T> {
+    const res = await this.executeQuery<Record<string, T>>(query);
+
+    if (!res) {
+      throw new DaoError(
+        `No result returned from primitive query ${query.toString()}`,
+      );
+    }
+
+    const firstValue = Object.values(res)[0];
+
+    // Sprawdź, czy to prymityw (string, number, boolean)
+    if (
+      typeof firstValue === 'string' ||
+      typeof firstValue === 'number' ||
+      typeof firstValue === 'boolean'
+    ) {
+      return firstValue as T;
+    }
+
+    throw new DaoError(
+      `Unexpected non-primitive value returned from query ${query.toString()}`,
+    );
   }
 }

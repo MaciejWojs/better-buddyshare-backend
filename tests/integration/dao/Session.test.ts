@@ -1,7 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from 'bun:test';
 import { sql } from 'bun';
-import { SessionDAO } from '@src/dao/SessionDAO';
-import { UserDAO } from '@src/dao/Users';
+import { SessionDAO, UserDAO } from '@src/dao';
 
 let sessionDao: SessionDAO;
 let userDao: UserDAO;
@@ -186,12 +185,24 @@ describe('SessionDAO.revokeAllUserSessions', () => {
     expect(result).toBeTrue();
 
     const activeForUser = await sql`
-      SELECT COUNT(*)::int AS cnt FROM sessions WHERE user_id = ${userId} AND is_active = true
+      SELECT
+        COUNT(*) AS cnt
+      FROM
+        sessions
+      WHERE
+        user_id = ${userId}
+        AND is_active = TRUE
     `;
     expect(Number(activeForUser[0].cnt)).toBe(0);
 
     const activeForOther = await sql`
-      SELECT COUNT(*)::int AS cnt FROM sessions WHERE user_id = ${otherUserId} AND is_active = true
+      SELECT
+        COUNT(*) AS cnt
+      FROM
+        sessions
+      WHERE
+        user_id = ${otherUserId}
+        AND is_active = TRUE
     `;
     expect(Number(activeForOther[0].cnt)).toBeGreaterThanOrEqual(1);
   });

@@ -8,9 +8,9 @@
  * @module dao/Users
  */
 import { sql } from 'bun';
-import { IUserDAO } from './interfaces/users.interface';
 import { BaseDAO } from './BaseDao';
-import { User } from '../types/db/User';
+import { IUserDAO } from './interfaces';
+import { User } from '@src/types/db';
 
 export class UserDAO extends BaseDAO implements IUserDAO {
   /**
@@ -267,6 +267,17 @@ export class UserDAO extends BaseDAO implements IUserDAO {
             ${email},
             ${password}
           )
+      `,
+    );
+  }
+
+  async updateStreamToken(user_id: number) {
+    return await this.executeQuery<User>(
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_stream_token (${user_id})
       `,
     );
   }

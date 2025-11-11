@@ -7,12 +7,11 @@
  *
  * @module dao/UserRoles
  */
-import { Permission } from '@src/types/db/Permission';
-import { Role } from '@src/types/db/Role';
 import { BaseDAO } from './BaseDao';
-import { IUserRolesDAO } from './interfaces/userRoles.interface';
 import { sql } from 'bun';
-import { DaoError } from '@src/errors/DaoError';
+import { DaoError } from '@src/errors';
+import { IUserRolesDAO } from './interfaces';
+import { Role, Permission } from '@src/types/db';
 
 /**
  * UserRoles DAO.

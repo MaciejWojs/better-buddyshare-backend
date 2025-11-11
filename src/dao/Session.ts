@@ -1,11 +1,11 @@
 import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
-import { ISessionDAO } from './interfaces/auth/session.interface';
-import { Session } from '@src/types/db/Session';
+import { ISessionDAO } from './interfaces';
+import { Session } from '@src/types/db';
 
 export class SessionDAO extends BaseDAO implements ISessionDAO {
   private static instance: SessionDAO;
-  constructor() {
+  private constructor() {
     super();
   }
 

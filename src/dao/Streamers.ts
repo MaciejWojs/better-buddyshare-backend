@@ -1,5 +1,5 @@
 import { sql } from 'bun';
-import { IStreamersDAO } from './interfaces/streamers.interface';
+import { IStreamersDAO } from './interfaces';
 
 export class StreamersDAO implements IStreamersDAO {
   private static instance: StreamersDAO | null = null;

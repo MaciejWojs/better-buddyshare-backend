@@ -12,7 +12,7 @@ import {
   DaoError,
   DaoCacheConnectionError,
   DaoCacheAuthenticationError,
-} from '@src/errors/DaoError';
+} from '@src/errors';
 import { CacheService } from '@src/services/cache.service';
 
 /**

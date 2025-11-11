@@ -6,11 +6,10 @@
  *
  * @module dao/Roles
  */
-import { Permission } from '@src/types/db/Permission';
-import { Role } from '@src/types/db/Role';
-import { IRolesDAO } from './interfaces/roles.interface';
+import { IRolesDAO } from './interfaces';
 import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
+import { Permission, Role } from '@src/types/db';
 
 export class RolesDAO extends BaseDAO implements IRolesDAO {
   /**
