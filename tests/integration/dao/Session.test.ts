@@ -10,9 +10,13 @@ beforeEach(async () => {
   sessionDao = new SessionDAO();
   userDao = UserDAO.getInstance();
 
-  await sql`TRUNCATE TABLE refresh_tokens CASCADE`;
-  await sql`TRUNCATE TABLE sessions CASCADE`;
-  await sql`TRUNCATE TABLE users CASCADE`;
+  await sql`
+    TRUNCATE TABLE refresh_tokens CASCADE;
+
+    TRUNCATE TABLE sessions CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 
   const user = await userDao.createUser(
     'test_user',
@@ -23,9 +27,13 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await sql`TRUNCATE TABLE refresh_tokens CASCADE`;
-  await sql`TRUNCATE TABLE sessions CASCADE`;
-  await sql`TRUNCATE TABLE users CASCADE`;
+  await sql`
+    TRUNCATE TABLE refresh_tokens CASCADE;
+
+    TRUNCATE TABLE sessions CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 });
 
 describe('SessionDAO.createSession', () => {

@@ -14,8 +14,12 @@ beforeEach(async () => {
   userDao = UserDAO.getInstance();
 
   // Wyczyść dane
-  await sql`TRUNCATE TABLE subscribers CASCADE`;
-  await sql`TRUNCATE TABLE users CASCADE`;
+
+  await sql`
+    TRUNCATE TABLE subscribers CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 
   // Utwórz testowych użytkowników
   user1 = await userDao.createUser('viewer_1', 'viewer1@mail.com', 'pass123');
@@ -36,8 +40,11 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await sql` TRUNCATE TABLE subscribers CASCADE; `;
-  await sql` TRUNCATE TABLE users CASCADE; `;
+  await sql`
+    TRUNCATE TABLE subscribers CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 });
 
 //
