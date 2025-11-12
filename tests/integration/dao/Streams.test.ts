@@ -11,8 +11,11 @@ beforeEach(async () => {
   streamsDao = StreamsDAO.getInstance();
   userDao = UserDAO.getInstance();
 
-  await sql`TRUNCATE TABLE streams CASCADE`;
-  await sql`TRUNCATE TABLE users CASCADE`;
+  await sql`
+    TRUNCATE TABLE streams CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 
   user = await userDao.createUser('streamer1', 'streamer@test.com', 'pass123');
   await sql`
@@ -25,8 +28,11 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await sql`TRUNCATE TABLE streams CASCADE`;
-  await sql`TRUNCATE TABLE users CASCADE`;
+  await sql`
+    TRUNCATE TABLE streams CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 });
 
 describe('Stream Token Management', () => {
@@ -295,42 +301,46 @@ describe('Stream Operations via DAO', () => {
   });
 
   test('should end all active streams for user (manual multiple streams)', async () => {
-    const stream1 = await sql`
-      INSERT INTO
-        streams (
-          streamer_id,
-          title,
-          description,
-          is_live,
-          is_public
-        )
-      VALUES
-        (
-          ${streamerId},
-          'Manual Stream 1',
-          'desc1',
-          TRUE,
-          TRUE
-        ) RETURNING *;
-    `;
-    const stream2 = await sql`
-      INSERT INTO
-        streams (
-          streamer_id,
-          title,
-          description,
-          is_live,
-          is_public
-        )
-      VALUES
-        (
-          ${streamerId},
-          'Manual Stream 2',
-          'desc2',
-          TRUE,
-          TRUE
-        ) RETURNING *;
-    `;
+    const [stream1Res, stream2Res] = await Promise.all([
+      sql`
+        INSERT INTO
+          streams (
+            streamer_id,
+            title,
+            description,
+            is_live,
+            is_public
+          )
+        VALUES
+          (
+            ${streamerId},
+            'Manual Stream 1',
+            'desc1',
+            TRUE,
+            TRUE
+          ) RETURNING *;
+      `,
+      sql`
+        INSERT INTO
+          streams (
+            streamer_id,
+            title,
+            description,
+            is_live,
+            is_public
+          )
+        VALUES
+          (
+            ${streamerId},
+            'Manual Stream 2',
+            'desc2',
+            TRUE,
+            TRUE
+          ) RETURNING *;
+      `,
+    ]);
+    const stream1 = stream1Res;
+    const stream2 = stream2Res;
     const ended = await streamsDao.endAllStreamsForUser(streamerId);
     expect(ended.length).toBeGreaterThanOrEqual(2);
     expect(ended.every((s) => s.is_live === false)).toBeTrue();

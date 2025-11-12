@@ -14,6 +14,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION subscription_exists(INTEGER, INTEGER) IS 'Checks if a subscription relationship already exists between a user and a streamer.';
+
 
 -- add_subscription(p_user_id INTEGER, p_streamer_id INTEGER)
 DROP FUNCTION IF EXISTS add_subscription(p_user_id INTEGER, p_streamer_id INTEGER) CASCADE;
@@ -53,6 +55,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION add_subscription(INTEGER, INTEGER) IS 'Adds a subscription from a user to a streamer. Returns existing subscription if already subscribed, otherwise creates new subscription.';
+
 
 
 -- remove_subscription(p_user_id INTEGER, p_streamer_id INTEGER)
@@ -80,10 +84,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION remove_subscription(INTEGER, INTEGER) IS 'Removes a subscription between a user and streamer. Returns TRUE if subscription was deleted, FALSE if it did not exist.';
+
 
 -- get_subscriptions_by_user(p_user_id INTEGER)
 -- Used to get my subscriptions as a user/viewer
 DROP FUNCTION IF EXISTS get_subscriptions_by_user(p_user_id INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_subscriptions_by_user(p_user_id INTEGER)
 RETURNS TABLE (
     user_id INTEGER,
@@ -99,9 +106,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_subscriptions_by_user(INTEGER) IS 'Retrieves all streamers that a user is subscribed to with subscription timestamps.';
+
 -- get_subscribers_by_streamer(p_streamer_id INTEGER) 
 -- Used to get my subscribers as a streamer
 DROP FUNCTION IF EXISTS get_subscribers_by_streamer(p_streamer_id INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_subscribers_by_streamer(p_streamer_id INTEGER)
 RETURNS TABLE (
     user_id INTEGER,
@@ -117,9 +127,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_subscribers_by_streamer(INTEGER) IS 'Retrieves all users subscribed to a streamer with subscription timestamps.';
+
 
 -- get_subscription_count_by_user(p_user_id INTEGER)
 DROP FUNCTION IF EXISTS get_subscription_count_by_user(p_user_id INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_subscription_count_by_user(p_user_id INTEGER)
 RETURNS INTEGER AS $$
 DECLARE
@@ -131,6 +144,8 @@ BEGIN
     RETURN subscription_count;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION get_subscription_count_by_user(INTEGER) IS 'Returns the number of streamers a user is subscribed to.';
 
 -- get_subscription_count_by_streamer(p_streamer_id INTEGER)
 
@@ -146,6 +161,8 @@ BEGIN
     RETURN subscriber_count;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION get_subscription_count_by_streamer(INTEGER) IS 'Returns the number of subscribers for a streamer.';
 
 -- get_subscribers_paginated(p_streamer_id INTEGER, p_limit INTEGER, p_offset INTEGER)
 DROP FUNCTION IF EXISTS get_subscribers_paginated(p_streamer_id INTEGER, p_limit INTEGER, p_offset INTEGER) CASCADE;
@@ -176,8 +193,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_subscribers_paginated(INTEGER, INTEGER, INTEGER) IS 'Retrieves subscribers for a streamer with pagination, sorted by subscription date.';
+
 -- get_subscriptions_paginated(p_user_id INTEGER, p_limit INTEGER, p_offset INTEGER)
 DROP FUNCTION IF EXISTS get_subscriptions_paginated(p_user_id INTEGER, p_limit INTEGER, p_offset INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_subscriptions_paginated(
     p_user_id INTEGER, 
     p_offset INTEGER DEFAULT 0,
@@ -203,8 +223,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_subscriptions_paginated(INTEGER, INTEGER, INTEGER) IS 'Retrieves subscriptions for a user with pagination, sorted by subscription date.';
+
 -- remove_all_subscriptions_by_user(p_user_id INTEGER)
 DROP FUNCTION IF EXISTS remove_all_subscriptions_by_user(p_user_id INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION remove_all_subscriptions_by_user(p_user_id INTEGER)
 RETURNS INTEGER AS $$
 DECLARE
@@ -217,8 +240,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION remove_all_subscriptions_by_user(INTEGER) IS 'Removes all subscriptions from a user and returns count of deleted subscriptions.';
+
 -- remove_all_subscribers_by_streamer(p_streamer_id INTEGER)
 DROP FUNCTION IF EXISTS remove_all_subscribers_by_streamer(p_streamer_id INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION remove_all_subscribers_by_streamer(p_streamer_id INTEGER)
 RETURNS INTEGER AS $$
 DECLARE
@@ -231,8 +257,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION remove_all_subscribers_by_streamer(INTEGER) IS 'Removes all subscribers from a streamer and returns count of deleted subscriptions.';
+
 -- get_subscriber_details(p_subscriber_id INTEGER)
 DROP FUNCTION IF EXISTS get_subscriber_details(p_user_id INTEGER, p_streamer_id INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_subscription_details(p_user_id INTEGER, p_streamer_id INTEGER)
 RETURNS TABLE (
     user_id INTEGER,
@@ -256,8 +285,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_subscription_details(INTEGER, INTEGER) IS 'Retrieves detailed subscription information including both usernames for a specific user-streamer relationship.';
+
 -- get_top_streamers_by_subscribers(p_limit INTEGER)
 DROP FUNCTION IF EXISTS get_top_streamers_by_subscribers(p_limit INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_top_streamers_by_subscribers(p_limit INTEGER DEFAULT 10)
 RETURNS TABLE (
     streamer_id INTEGER,
@@ -278,8 +310,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_top_streamers_by_subscribers(INTEGER) IS 'Retrieves the top streamers ranked by subscriber count, useful for discovery features.';
+
 -- get_recent_subscriptions_by_user(p_user_id INTEGER, p_limit INTEGER)
 DROP FUNCTION IF EXISTS get_recent_subscriptions_by_user(p_user_id INTEGER, p_limit INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_recent_subscriptions_by_user(p_user_id INTEGER, p_limit INTEGER DEFAULT 5)
 RETURNS TABLE (
     streamer_id INTEGER,
@@ -299,3 +334,5 @@ BEGIN
     LIMIT p_limit;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION get_recent_subscriptions_by_user(INTEGER, INTEGER) IS 'Retrieves the most recent subscriptions for a user with optional limit.';

@@ -14,21 +14,23 @@ beforeEach(async () => {
   userDao = UserDAO.getInstance();
 
   // Wyczyść dane
-  await sql`TRUNCATE TABLE subscribers CASCADE`;
-  await sql`TRUNCATE TABLE users CASCADE`;
+
+  await sql`
+    TRUNCATE TABLE subscribers CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 
   // Utwórz testowych użytkowników
-  user1 = await userDao.createUser('viewer_1', 'viewer1@mail.com', 'pass123');
-  streamer1 = await userDao.createUser(
-    'streamer_1',
-    'streamer1@mail.com',
-    'pass123',
-  );
-  streamer2 = await userDao.createUser(
-    'streamer_2',
-    'streamer2@mail.com',
-    'pass123',
-  );
+  const [u1, s1, s2] = await Promise.all([
+    userDao.createUser('viewer_1', 'viewer1@mail.com', 'pass123'),
+    userDao.createUser('streamer_1', 'streamer1@mail.com', 'pass123'),
+    userDao.createUser('streamer_2', 'streamer2@mail.com', 'pass123'),
+  ]);
+
+  user1 = u1;
+  streamer1 = s1;
+  streamer2 = s2;
 
   // Uczyń streamerów faktycznymi streamerami
   await userDao.updateStreamToken(streamer1.user_id);
@@ -36,8 +38,11 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await sql` TRUNCATE TABLE subscribers CASCADE; `;
-  await sql` TRUNCATE TABLE users CASCADE; `;
+  await sql`
+    TRUNCATE TABLE subscribers CASCADE;
+
+    TRUNCATE TABLE users CASCADE;
+  `.simple();
 });
 
 //
@@ -111,8 +116,10 @@ describe('SubscriptionsDAO.removeSubscription', () => {
 
 describe('SubscriptionsDAO.getSubscriptionsByUser / getSubscribersByStreamer', () => {
   test('should return user subscriptions list', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    await subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id);
+    await Promise.all([
+      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
+      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+    ]);
 
     const list = await subscriptionsDao.getSubscriptionsByUser(user1.user_id);
     expect(list.length).toBe(2);
@@ -131,8 +138,10 @@ describe('SubscriptionsDAO.getSubscriptionsByUser / getSubscribersByStreamer', (
 
 describe('SubscriptionsDAO counting & pagination', () => {
   test('should count subscriptions for a user', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    await subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id);
+    await Promise.all([
+      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
+      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+    ]);
 
     const count = await subscriptionsDao.getSubscriptionCountByUser(
       user1.user_id,
@@ -149,8 +158,10 @@ describe('SubscriptionsDAO counting & pagination', () => {
   });
 
   test('should paginate subscriptions', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    await subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id);
+    await Promise.all([
+      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
+      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+    ]);
 
     const paginated = await subscriptionsDao.getSubscriptionsPaginated(
       user1.user_id,
@@ -173,8 +184,10 @@ describe('SubscriptionsDAO counting & pagination', () => {
 
 describe('SubscriptionsDAO bulk removals', () => {
   test('should remove all subscriptions by user', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    await subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id);
+    await Promise.all([
+      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
+      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+    ]);
 
     const deletedCount = await subscriptionsDao.removeAllSubscriptionsByUser(
       user1.user_id,

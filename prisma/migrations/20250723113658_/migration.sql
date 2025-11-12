@@ -128,6 +128,48 @@ CREATE TABLE "sessions" (
     CONSTRAINT "sessions_pkey" PRIMARY KEY ("session_id")
 );
 
+-- CreateTable
+CREATE TABLE "chat_messages" (
+    "message_id" SERIAL NOT NULL,
+    "stream_id" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "content" TEXT NOT NULL,
+    "sent_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "is_deleted" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "chat_messages_pkey" PRIMARY KEY ("message_id")
+);
+
+-- CreateTable
+CREATE TABLE "streamStatisticsType" (
+    "stream_statistic_type_id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+
+    CONSTRAINT "streamStatisticsType_pkey" PRIMARY KEY ("stream_statistic_type_id")
+);
+
+-- CreateTable
+CREATE TABLE "stream_statistics_in_time" (
+    "id" SERIAL NOT NULL,
+    "stream_id" INTEGER NOT NULL,
+    "stream_statistic_type_id" INTEGER NOT NULL,
+    "value" INTEGER NOT NULL DEFAULT 0,
+    "timepoint" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "stream_statistics_in_time_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "chat_message_edit_histories" (
+    "edit_id" SERIAL NOT NULL,
+    "message_id" INTEGER NOT NULL,
+    "old_content" TEXT NOT NULL,
+    "edited_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "chat_message_edit_histories_pkey" PRIMARY KEY ("edit_id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "users_user_id_key" ON "users"("user_id");
 
@@ -136,6 +178,9 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
+
+-- CreateIndex
+CREATE INDEX "users_created_at_idx" ON "users"("created_at");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
@@ -147,10 +192,64 @@ CREATE UNIQUE INDEX "user_roles_user_id_role_id_streamer_id_key" ON "user_roles"
 CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
 
 -- CreateIndex
+CREATE INDEX "streams_streamer_id_idx" ON "streams"("streamer_id");
+
+-- CreateIndex
+CREATE INDEX "streams_is_live_started_at_idx" ON "streams"("is_live", "started_at");
+
+-- CreateIndex
+CREATE INDEX "subscribers_user_id_idx" ON "subscribers"("user_id");
+
+-- CreateIndex
+CREATE INDEX "subscribers_streamer_id_idx" ON "subscribers"("streamer_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "subscribers_user_id_streamer_id_key" ON "subscribers"("user_id", "streamer_id");
+
+-- CreateIndex
+CREATE INDEX "banned_users_per_streamer_banned_by_idx" ON "banned_users_per_streamer"("banned_by");
+
+-- CreateIndex
+CREATE INDEX "banned_users_per_streamer_banned_until_idx" ON "banned_users_per_streamer"("banned_until");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "banned_users_per_streamer_streamer_id_user_id_key" ON "banned_users_per_streamer"("streamer_id", "user_id");
 
 -- CreateIndex
-CREATE INDEX "sessions_user_id_idx" ON "sessions"("user_id");
+CREATE INDEX "refresh_tokens_user_id_idx" ON "refresh_tokens"("user_id");
+
+-- CreateIndex
+CREATE INDEX "refresh_tokens_session_id_idx" ON "refresh_tokens"("session_id");
+
+-- CreateIndex
+CREATE INDEX "refresh_tokens_issued_at_idx" ON "refresh_tokens"("issued_at");
+
+-- CreateIndex
+CREATE INDEX "sessions_user_id_is_active_idx" ON "sessions"("user_id", "is_active");
+
+-- CreateIndex
+CREATE INDEX "chat_messages_stream_id_sent_at_idx" ON "chat_messages"("stream_id", "sent_at");
+
+-- CreateIndex
+CREATE INDEX "chat_messages_user_id_idx" ON "chat_messages"("user_id");
+
+-- CreateIndex
+CREATE INDEX "chat_messages_is_deleted_idx" ON "chat_messages"("is_deleted");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "streamStatisticsType_name_key" ON "streamStatisticsType"("name");
+
+-- CreateIndex
+CREATE INDEX "stream_statistics_in_time_stream_id_timepoint_idx" ON "stream_statistics_in_time"("stream_id", "timepoint");
+
+-- CreateIndex
+CREATE INDEX "stream_statistics_in_time_stream_statistic_type_id_idx" ON "stream_statistics_in_time"("stream_statistic_type_id");
+
+-- CreateIndex
+CREATE INDEX "chat_message_edit_histories_message_id_idx" ON "chat_message_edit_histories"("message_id");
+
+-- CreateIndex
+CREATE INDEX "chat_message_edit_histories_edited_at_idx" ON "chat_message_edit_histories"("edited_at");
 
 -- AddForeignKey
 ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -196,3 +295,18 @@ ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_replaced_by_id_fkey"
 
 -- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "chat_messages" ADD CONSTRAINT "chat_messages_stream_id_fkey" FOREIGN KEY ("stream_id") REFERENCES "streams"("stream_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "chat_messages" ADD CONSTRAINT "chat_messages_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "stream_statistics_in_time" ADD CONSTRAINT "stream_statistics_in_time_stream_id_fkey" FOREIGN KEY ("stream_id") REFERENCES "streams"("stream_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "stream_statistics_in_time" ADD CONSTRAINT "stream_statistics_in_time_stream_statistic_type_id_fkey" FOREIGN KEY ("stream_statistic_type_id") REFERENCES "streamStatisticsType"("stream_statistic_type_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "chat_message_edit_histories" ADD CONSTRAINT "chat_message_edit_histories_message_id_fkey" FOREIGN KEY ("message_id") REFERENCES "chat_messages"("message_id") ON DELETE RESTRICT ON UPDATE CASCADE;

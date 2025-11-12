@@ -130,7 +130,7 @@ export abstract class BaseDAO {
       return first as T;
     } catch (error: any) {
       const mapped = this.mapError(error);
-      console.error('[DB ERROR]', mapped);
+      // console.error('[DB ERROR]', mapped);
       throw mapped;
     }
   }
@@ -156,7 +156,7 @@ export abstract class BaseDAO {
       return results as T[];
     } catch (error: any) {
       const mapped = this.mapError(error);
-      console.error('[DB ERROR]', mapped);
+      // console.error('[DB ERROR]', mapped);
       throw mapped;
     }
   }
