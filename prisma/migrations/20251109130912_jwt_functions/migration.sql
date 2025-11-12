@@ -26,6 +26,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE STRICT;
 
+COMMENT ON FUNCTION generate_token_hash(TEXT) IS 'Generates a SHA256 hash of a raw token with optional pepper for secure token storage.';
+
 
 --! Transakcje
 
@@ -35,6 +37,7 @@ $$ LANGUAGE plpgsql STABLE STRICT;
 --   -> tworzy session, zwraca session_id (TEXT)
 
 DROP FUNCTION IF EXISTS create_session(INTEGER, TIMESTAMP, TEXT, TEXT, TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION create_session(
     p_user_id INTEGER,
     p_expires_at TIMESTAMP,
@@ -52,10 +55,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION create_session(INTEGER, TIMESTAMP, TEXT, TEXT, TEXT) IS 'Creates a new user session with device information and expiration time. Returns the created session record.';
+
 
 -- issue_refresh_token(session_id TEXT, user_id int, expires_at timestamp, raw_token text)
 --   -> zapisuje token_hash (pgcrypto), zwraca rekord refresh_tokens
 DROP FUNCTION IF EXISTS issue_refresh_token(TEXT, INTEGER, TIMESTAMP, TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION issue_refresh_token(
     p_session_id TEXT,
     p_user_id INTEGER,
@@ -75,11 +81,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION issue_refresh_token(TEXT, INTEGER, TIMESTAMP, TEXT) IS 'Issues a new refresh token for a session by hashing the raw token and storing the hash in the database.';
+
 
 -- rotate_refresh_token(old_token_hash text, new_expires_at timestamp, new_raw_token text)
 --   -> atomowo oznacza stary token jako replaced/revoked, tworzy nowy token i powiązanie replaced_by_id
 
 DROP FUNCTION IF EXISTS rotate_refresh_token(TEXT, TIMESTAMP, TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION rotate_refresh_token(
     p_old_token_hash TEXT,
     p_new_expires_at TIMESTAMP,
@@ -117,9 +126,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION rotate_refresh_token(TEXT, TIMESTAMP, TEXT) IS 'Atomically rotates a refresh token by marking old token as replaced and creating a new one. Ensures race condition safety.';
+
 -- is_refresh_token_valid(token_hash text) RETURNS boolean
 --   -> sprawdza is_active session, not revoked, not expired, not replaced
 DROP FUNCTION IF EXISTS is_refresh_token_valid(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION is_refresh_token_valid(p_token_hash TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -151,9 +163,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION is_refresh_token_valid(TEXT) IS 'Validates a refresh token by checking if it is active, not revoked, not expired, not replaced, and its session is valid.';
+
 -- revoke_refresh_token(token_hash text, revoke_session boolean default false)
 --   -> ustawia revoked_at, opcjonalnie unieważnia sesję powiązaną
 DROP FUNCTION IF EXISTS revoke_refresh_token(TEXT, BOOLEAN) CASCADE;
+
 CREATE OR REPLACE FUNCTION revoke_refresh_token(p_token_hash TEXT, p_revoke_session BOOLEAN DEFAULT FALSE)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -179,10 +194,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION revoke_refresh_token(TEXT, BOOLEAN) IS 'Revokes a refresh token and optionally revokes its associated session.';
+
 -- revoke_session(session_id TEXT)
 --   -> ustawia revoked_at i is_active = false dla sesji i unieważnia powiązane tokeny
 
 DROP FUNCTION IF EXISTS revoke_session(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION revoke_session(p_session_id TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -202,11 +220,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION revoke_session(TEXT) IS 'Revokes a session and all its associated refresh tokens.';
+
 
 
 -- revoke_all_user_sessions(user_id int)
 --   -> unieważnia wszystkie sesje i tokeny użytkownika
 DROP FUNCTION IF EXISTS revoke_all_user_sessions(INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION revoke_all_user_sessions(p_user_id INTEGER)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -229,9 +250,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION revoke_all_user_sessions(INTEGER) IS 'Revokes all sessions and tokens for a specific user, effectively logging them out everywhere.';
+
 -- get_active_sessions(user_id int) RETURNS SETOF sessions
 --   -> zwraca aktywne (is_active=true, not expired) sesje użytkownika
 DROP FUNCTION IF EXISTS get_active_sessions(INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_active_sessions(p_user_id INTEGER)
 RETURNS SETOF sessions AS $$
 BEGIN
@@ -242,9 +266,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_active_sessions(INTEGER) IS 'Retrieves all active and non-expired sessions for a user.';
+
 -- get_refresh_token(token_hash text) RETURNS refresh_tokens
 --   -> pobiera rekord refresh_tokens wg hash
 DROP FUNCTION IF EXISTS get_refresh_token(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_refresh_token(p_token_hash TEXT)
 RETURNS refresh_tokens AS $$
 DECLARE
@@ -260,9 +287,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_refresh_token(TEXT) IS 'Retrieves a refresh token record by its hash.';
+
 -- get_refresh_tokens_by_session(session_id TEXT) RETURNS SETOF refresh_tokens
 --   -> lista tokenów powiązanych z sesją
 DROP FUNCTION IF EXISTS get_refresh_tokens_by_session(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_refresh_tokens_by_session(p_session_id TEXT)
 RETURNS SETOF refresh_tokens AS $$
 BEGIN
@@ -273,9 +303,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_refresh_tokens_by_session(TEXT) IS 'Retrieves all refresh tokens associated with a specific session.';
+
 -- get_user_token_history(user_id int, limit int default 100) RETURNS SETOF refresh_tokens
 --   -> historia tokenów użytkownika (użyte, revoked, replaced)
 DROP FUNCTION IF EXISTS get_user_token_history(INTEGER, INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_user_token_history(p_user_id INTEGER, p_limit INTEGER DEFAULT 100)
 RETURNS SETOF refresh_tokens AS $$
 BEGIN
@@ -288,9 +321,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_user_token_history(INTEGER, INTEGER) IS 'Retrieves the token history for a user with optional limit, sorted by most recent first.';
+
 -- mark_refresh_token_used(token_hash text)
 --   -> ustawia used_at dla tokena (audyt użycia)
 DROP FUNCTION IF EXISTS mark_refresh_token_used(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION mark_refresh_token_used(p_token_hash TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -304,9 +340,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION mark_refresh_token_used(TEXT) IS 'Marks a refresh token as used by updating its used_at timestamp for audit purposes.';
+
 -- replace_refresh_token(old_token_hash text, new_token_id TEXT)
 --   -> ustawia replaced_by_id dla old_token
 DROP FUNCTION IF EXISTS replace_refresh_token(TEXT, TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION replace_refresh_token(p_old_token_hash TEXT, p_new_token_id TEXT)
 RETURNS SETOF refresh_tokens AS $$
 BEGIN
@@ -318,8 +357,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION replace_refresh_token(TEXT, TEXT) IS 'Updates replaced_by_id field of an old token to link it to a new token during token rotation.';
+
 -- cleanup_expired_sessions_tokens()
 DROP FUNCTION IF EXISTS cleanup_expired_sessions_tokens() CASCADE;
+
 CREATE OR REPLACE FUNCTION cleanup_expired_sessions_tokens()
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -340,11 +382,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION cleanup_expired_sessions_tokens() IS 'Cleanup function that marks expired sessions and tokens as inactive/revoked for database maintenance.';
+
 
 -- cleanup_revoked_tokens_older_than(p_days int)
 --   -> usuwa/redukuje rekordy tokenów z revoked_at starsze niż p_days (pruning)
 
 DROP FUNCTION IF EXISTS cleanup_revoked_tokens_older_than(INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION cleanup_revoked_tokens_older_than(p_days INTEGER)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -357,9 +402,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION cleanup_revoked_tokens_older_than(INTEGER) IS 'Permanently deletes revoked tokens older than the specified number of days (database pruning/maintenance).';
+
 -- extend_session_expiry(session_id TEXT, new_expires_at timestamp)
 --   -> przedłuża expires_at sesji
 DROP FUNCTION IF EXISTS extend_session_expiry(TEXT, TIMESTAMP) CASCADE;
+
 CREATE OR REPLACE FUNCTION extend_session_expiry(p_session_id TEXT, p_new_expires_at TIMESTAMP)
 RETURNS SETOF sessions AS $$
 BEGIN
@@ -371,9 +419,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION extend_session_expiry(TEXT, TIMESTAMP) IS 'Extends the expiration time of an existing session.';
+
 -- touch_session_last_used(session_id TEXT)
 --   -> aktualizuje last_used_at na now() (używane przy refresh token flow)
 DROP FUNCTION IF EXISTS touch_session_last_used(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION touch_session_last_used(p_session_id TEXT)
 RETURNS SETOF sessions AS $$
 BEGIN
@@ -385,9 +436,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION touch_session_last_used(TEXT) IS 'Updates the last_used_at timestamp of a session to track user activity.';
+
 -- get_sessions_with_refresh_tokens(user_id int) RETURNS SETOF RECORD
 --   -> pomocnicze: sesje razem z liczbą/ostatnim tokenem, przydatne do UI zarządzania sesjami
 DROP FUNCTION IF EXISTS get_sessions_with_refresh_tokens(INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION get_sessions_with_refresh_tokens(p_user_id INTEGER)
 RETURNS TABLE (
     session_id TEXT,
@@ -403,9 +457,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_sessions_with_refresh_tokens(INTEGER) IS 'Retrieves all sessions with their last token issuance timestamp, useful for session management UI.';
+
 -- revoke_tokens_by_session(session_id TEXT)
 --   -> unieważnia wszystkie tokeny powiązane z daną sesją
 DROP FUNCTION IF EXISTS revoke_tokens_by_session(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION revoke_tokens_by_session(p_session_id TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -419,9 +476,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION revoke_tokens_by_session(TEXT) IS 'Revokes all refresh tokens associated with a specific session.';
+
 -- rotate_and_return_raw_token(old_token_hash text, new_expires_at timestamp)
 --   -> (opcjonalne) wykonuje rotację i zwraca raw token do wysłania klientowi (jeśli generujemy raw token w DB)
 DROP FUNCTION IF EXISTS rotate_and_return_raw_token(TEXT, TIMESTAMP) CASCADE;
+
 CREATE OR REPLACE FUNCTION rotate_and_return_raw_token(
     p_old_token_hash TEXT,
     p_new_expires_at TIMESTAMP
@@ -461,10 +521,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION rotate_and_return_raw_token(TEXT, TIMESTAMP) IS 'Rotates a refresh token, generates a new raw token and returns it for client use (optional implementation).';
+
 -- is_token_hash_unique(token_hash text) RETURNS boolean
 --   -> walidacja unikalności przed wstawieniem (opcjonalne, indeks już istnieje)
 
 DROP FUNCTION IF EXISTS is_token_hash_unique(TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION is_token_hash_unique(p_token_hash TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -476,3 +539,5 @@ BEGIN
     RETURN existing_count = 0;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION is_token_hash_unique(TEXT) IS 'Validates that a token hash is unique before inserting (optional - unique index already exists)';

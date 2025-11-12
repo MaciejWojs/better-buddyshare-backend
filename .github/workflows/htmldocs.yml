@@ -4,7 +4,7 @@ on:
       - main
 
 jobs:
-  generate-html-docs:
+  generate-typedoc:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -18,12 +18,71 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build documentation
+      - name: Build TypeDoc documentation
         run: |
           bunx typedoc
 
-      - name: Deploy
+      - name: Deploy TypeDoc
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/html
+          destination_dir: docs
+
+  generate-schemaspy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    services:
+      postgres:
+        image: postgres:18.0-alpine3.22
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: schemaspy
+          POSTGRES_USER: schemaspy
+          POSTGRES_DB: postgres
+        options: >
+          --health-cmd="pg_isready -U schemaspy -d postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run database migrations
+        run: bun x prisma migrate deploy
+        env:
+          DATABASE_URL: postgres://schemaspy:schemaspy@localhost:5432/postgres
+
+      - name: Generate SchemaSpy documentation
+        run: |
+          mkdir -p ./docs/schemaspy-output
+          docker run -it --rm \
+            -v $(pwd)/docs/schemaspy-output:/output \
+            --network host \
+            schemaspy/schemaspy:latest \
+            -t pgsql \
+            -db postgres \
+            -host localhost \
+            -u schemaspy \
+            -p schemaspy \
+            -port 5432 \
+            -o /output
+
+      - name: Deploy SchemaSpy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/schemaspy-output
+          destination_dir: database

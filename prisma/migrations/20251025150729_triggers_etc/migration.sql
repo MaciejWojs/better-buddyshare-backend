@@ -13,6 +13,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION generate_access_token(INTEGER) IS 'Generates a random access token of specified length using hexadecimal encoding. Minimum length is 8 characters.';
+
 
 CREATE OR REPLACE FUNCTION check_if_user_exists(p_user_id INTEGER) 
 RETURNS BOOLEAN AS $$
@@ -30,6 +32,8 @@ BEGIN
     RETURN user_exists;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION check_if_user_exists(INTEGER) IS 'Checks if a user with the specified user ID exists in the database.';
 
 DROP FUNCTION IF EXISTS create_user(p_username citext, p_email citext, p_password TEXT) CASCADE;
 
@@ -56,6 +60,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION create_user(CITEXT, CITEXT, TEXT) IS 'Creates a new user account if username and email do not already exist. Returns the newly created or existing user.';
+
 
 DROP FUNCTION IF EXISTS get_user_by_id(INTEGER) CASCADE;
 
@@ -71,6 +77,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION get_user_by_id(INTEGER) IS 'Retrieves a user by their user ID.';
+
 DROP FUNCTION IF EXISTS get_user_by_email(p_email citext) CASCADE;
 
   -- SETOF users -> returns rows in the shape of the users table
@@ -84,6 +92,8 @@ BEGIN
   WHERE "users".email = p_email;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION get_user_by_email(CITEXT) IS 'Retrieves a user by their email address.';
 
 
 DROP FUNCTION IF EXISTS ban_user_globally(p_user_id INTEGER,  p_reason TEXT) CASCADE;
@@ -100,6 +110,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION ban_user_globally(INTEGER, TEXT) IS 'Globally bans a user with a specified reason. The user is marked as banned in the system.';
+
 DROP FUNCTION IF EXISTS unban_user_globally(p_user_id INTEGER) CASCADE;
 
 CREATE OR REPLACE FUNCTION unban_user_globally(p_user_id INTEGER)
@@ -115,8 +127,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION unban_user_globally(INTEGER) IS 'Removes the global ban from a user, clearing the ban reason and expiration timestamp.';
+
 
 DROP FUNCTION IF EXISTS update_user_description(p_user_id INTEGER, p_description TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_user_description(p_user_id INTEGER, p_description TEXT)
 RETURNS SETOF users AS $$
 BEGIN
@@ -128,7 +143,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION update_user_description(INTEGER, TEXT) IS 'Updates the description/bio of a user.';
+
 DROP FUNCTION IF EXISTS update_user_avatar(p_user_id INTEGER, p_avatar TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_user_avatar(p_user_id INTEGER, p_avatar TEXT)
 RETURNS SETOF users AS $$
 BEGIN
@@ -140,7 +158,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION update_user_avatar(INTEGER, TEXT) IS 'Updates the avatar image URL for a user.';
+
 DROP FUNCTION IF EXISTS update_user_profile_banner(p_user_id INTEGER, p_profile_banner TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_user_profile_banner(p_user_id INTEGER, p_profile_banner TEXT)
 RETURNS SETOF users AS $$
 BEGIN
@@ -152,7 +173,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION update_user_profile_banner(INTEGER, TEXT) IS 'Updates the profile banner image URL for a user.';
+
 DROP FUNCTION IF EXISTS update_user_username(p_user_id INTEGER, p_username citext) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_user_username(p_user_id INTEGER, p_username citext)
 RETURNS SETOF users AS $$
 BEGIN
@@ -163,8 +187,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION update_user_username(INTEGER, CITEXT) IS 'Updates the username of a user.';
+
 
 DROP FUNCTION IF EXISTS update_user_email(p_user_id INTEGER, p_email citext) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_user_email(p_user_id INTEGER, p_email citext)
 RETURNS SETOF users AS $$
 BEGIN
@@ -175,7 +202,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION update_user_email(INTEGER, CITEXT) IS 'Updates the email address of a user.';
+
 DROP FUNCTION IF EXISTS update_user_password(p_user_id INTEGER, p_password TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_user_password(p_user_id INTEGER, p_password TEXT)
 RETURNS SETOF users AS $$
 BEGIN
@@ -185,6 +215,8 @@ BEGIN
   RETURN QUERY SELECT * from get_user_by_id(p_user_id);
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION update_user_password(INTEGER, TEXT) IS 'Updates the password hash for a user.';
 
 DROP FUNCTION IF EXISTS ban_user_in_chat CASCADE;
 
@@ -211,6 +243,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION ban_user_in_chat(INTEGER, INTEGER, INTEGER, TEXT, BOOLEAN, TIMESTAMP) IS 'Bans a user from a streamer chat. Ban can be permanent or temporary with optional expiration date.';
+
 
 CREATE OR REPLACE PROCEDURE HARD_DELETE_USER(p_user_id INTEGER)
 LANGUAGE plpgsql
@@ -220,8 +254,11 @@ BEGIN
 END;
 $$;
 
+COMMENT ON PROCEDURE HARD_DELETE_USER(INTEGER) IS 'Permanently deletes a user and all associated data from the system.';
+
 
 DROP FUNCTION IF EXISTS update_stream_token(p_user_id INTEGER, p_stream_token TEXT) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_stream_token(p_user_id INTEGER, p_stream_token TEXT)
 RETURNS SETOF users AS $$
 BEGIN
@@ -232,8 +269,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMENT ON FUNCTION update_stream_token(INTEGER, TEXT) IS 'Updates the stream token for a user to the specified value.';
 
 DROP FUNCTION IF EXISTS update_stream_token(p_user_id INTEGER) CASCADE;
+
 CREATE OR REPLACE FUNCTION update_stream_token(p_user_id INTEGER)
 RETURNS SETOF users AS $$
 BEGIN
@@ -243,4 +282,6 @@ BEGIN
   RETURN QUERY SELECT * from get_user_by_id(p_user_id);
 END;
 $$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION update_stream_token(INTEGER) IS 'Generates and assigns a new random stream token to a user.';
 
