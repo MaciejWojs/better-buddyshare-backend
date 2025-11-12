@@ -8,7 +8,7 @@ const DB_PORT = 5431;
 
 const POSTGRESS_SLEEP_TIME = 2000;
 
-const orginalConsoleLog = console.log;
+const originalConsoleLog = console.log;
 
 beforeAll(async () => {
   if (process.env.CI) {
@@ -37,7 +37,7 @@ afterAll(async () => {
   if (process.env.CI) {
     return;
   }
-  console.log = orginalConsoleLog;
+  console.log = originalConsoleLog;
   await $`docker stop test-db`;
   console.log('🛑 Zatrzymano bazę danych PostgreSQL w Dockerze.');
   await sleep(1000);

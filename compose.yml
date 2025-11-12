@@ -83,38 +83,10 @@ services:
     #   - ./media:/app/media
     # ports:
     #   - "5000:5000"
-
     # deploy:
     #   replicas: 3
     #   mode: replicated
     # env
-  # app2:
-  #   image: bs-backend:latest
-  #   container_name: backend2
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   restart: unless-stopped
-  #   environment:
-  #     NUMBER: "2"
-  #   ports:
-  #     - "5001:5001"
-  #   networks:
-  #     - backend
-
-  # app3:
-  #   image: bs-backend:latest
-  #   container_name: backend3
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   restart: unless-stopped
-  #   environment:
-  #     NUMBER: "3"
-  #   ports:
-  #     - "5002:5002"
-  #   networks:
-  #     - backend
 
   nginx:
     image: bs-load-balancer

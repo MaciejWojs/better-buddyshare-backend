@@ -4,7 +4,7 @@ import { RefreshTokenDAO, UserDAO } from '@src/dao';
 
 let dao: RefreshTokenDAO;
 let userDao: UserDAO;
-let userId = 1;
+let userId: number;
 let sessionId: string;
 let tokenHash: string;
 let rawToken = 'raw_token_example';
@@ -12,19 +12,20 @@ let rawToken = 'raw_token_example';
 beforeEach(async () => {
   dao = RefreshTokenDAO.getInstance();
   userDao = UserDAO.getInstance();
-  const cleanupPromise = await sql`
+
+  await sql`
     TRUNCATE TABLE refresh_tokens,
     sessions RESTART IDENTITY CASCADE;
 
     TRUNCATE TABLE users RESTART IDENTITY CASCADE;
   `.simple();
 
-  const createUserPromise = await userDao.createUser(
+  const createdUser = await userDao.createUser(
     'testuser',
     'test@example.com',
     'hashed_password',
   );
-  await Promise.all([cleanupPromise, createUserPromise]);
+  userId = createdUser.user_id;
 
   const expires = new Date(Date.now() + 1000 * 60 * 60);
   const session = await sql`
@@ -220,6 +221,6 @@ describe('RefreshTokenDAO – maintenance and cleanup', () => {
     const revoked = await dao.revokeTokensBySession(sessionId);
     expect(revoked).toBe(true);
     const tokens = await dao.getRefreshTokensBySession(sessionId);
-    expect(tokens.every((t) => t.revoked_at !== null)).toBe(true);
+    expect(tokens.every((t: any) => t.revoked_at !== null)).toBe(true);
   });
 });
