@@ -12,14 +12,19 @@ let rawToken = 'raw_token_example';
 beforeEach(async () => {
   dao = RefreshTokenDAO.getInstance();
   userDao = UserDAO.getInstance();
-  await sql`
+  const cleanupPromise = await sql`
     TRUNCATE TABLE refresh_tokens,
     sessions RESTART IDENTITY CASCADE;
 
     TRUNCATE TABLE users RESTART IDENTITY CASCADE;
   `.simple();
 
-  await userDao.createUser('testuser', 'test@example.com', 'hashed_password');
+  const createUserPromise = await userDao.createUser(
+    'testuser',
+    'test@example.com',
+    'hashed_password',
+  );
+  await Promise.all([cleanupPromise, createUserPromise]);
 
   const expires = new Date(Date.now() + 1000 * 60 * 60);
   const session = await sql`

@@ -8,6 +8,8 @@ const DB_PORT = 5431;
 
 const POSTGRESS_SLEEP_TIME = 2000;
 
+const orginalConsoleLog = console.log;
+
 beforeAll(async () => {
   if (process.env.CI) {
     return;
@@ -28,12 +30,14 @@ beforeAll(async () => {
   // await $`bunx prisma db push`;
 
   console.log('✅ Migracje zakończone!');
+  console.log = () => {};
 });
 
 afterAll(async () => {
   if (process.env.CI) {
     return;
   }
+  console.log = orginalConsoleLog;
   await $`docker stop test-db`;
   console.log('🛑 Zatrzymano bazę danych PostgreSQL w Dockerze.');
   await sleep(1000);

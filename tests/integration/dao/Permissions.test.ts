@@ -52,8 +52,10 @@ test('should delete permission by name', async () => {
 });
 
 test('should fetch all permissions', async () => {
-  await permissionDao.createPermission('read');
-  await permissionDao.createPermission('write');
+  await Promise.all([
+    permissionDao.createPermission('read'),
+    permissionDao.createPermission('write'),
+  ]);
   const all = await permissionDao.getAllPermissions();
   expect(all).not.toBeNull();
   expect(all!.length).toBeGreaterThanOrEqual(2);

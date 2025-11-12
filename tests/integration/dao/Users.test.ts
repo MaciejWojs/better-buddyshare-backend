@@ -63,22 +63,20 @@ test('Update user profile fields', async () => {
   const created = await userDao.createUser('bob', 'bob@example.com', 'bobpass');
   const user_id = created?.user_id;
 
-  const avatar = await userDao.updateProfilePicture(user_id!, 'avatar.png');
+  const [avatar, banner, bio, username, email, password] = await Promise.all([
+    userDao.updateProfilePicture(user_id!, 'avatar.png'),
+    userDao.updateProfileBanner(user_id!, 'banner.png'),
+    userDao.updateBio(user_id!, 'Hello World!'),
+    userDao.updateUsername(user_id!, 'bobby'),
+    userDao.updateEmail(user_id!, 'bobby@example.com'),
+    userDao.updatePassword(user_id!, 'newpass'),
+  ]);
+
   expect(avatar?.avatar).toBe('avatar.png');
-
-  const banner = await userDao.updateProfileBanner(user_id!, 'banner.png');
   expect(banner?.profile_banner).toBe('banner.png');
-
-  const bio = await userDao.updateBio(user_id!, 'Hello World!');
   expect(bio?.description).toBe('Hello World!');
-
-  const username = await userDao.updateUsername(user_id!, 'bobby');
   expect(username?.username).toBe('bobby');
-
-  const email = await userDao.updateEmail(user_id!, 'bobby@example.com');
   expect(email?.email).toBe('bobby@example.com');
-
-  const password = await userDao.updatePassword(user_id!, 'newpass');
   expect(password?.password).toBe('newpass');
 });
 

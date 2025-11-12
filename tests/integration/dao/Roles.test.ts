@@ -12,10 +12,11 @@ describe('RolesDAO', () => {
     permissionDao = PermissionDAO.getInstance();
 
     // Create example roles and permissions
-    const role = await dao.createRole('TEST_ROLE');
-    testRoleId = role!.role_id;
+    const rolePromise = dao.createRole('TEST_ROLE');
+    const permissionPromise = permissionDao.createPermission('TEST_PERMISSION');
 
-    const perm = await permissionDao.createPermission('TEST_PERMISSION');
+    const [role, perm] = await Promise.all([rolePromise, permissionPromise]);
+    testRoleId = role!.role_id;
     testPermissionId = perm!.permission_id;
   });
 
