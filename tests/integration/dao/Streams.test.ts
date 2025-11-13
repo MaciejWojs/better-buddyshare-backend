@@ -27,14 +27,6 @@ beforeEach(async () => {
   streamerId = user!.user_id;
 });
 
-afterEach(async () => {
-  await sql`
-    TRUNCATE TABLE streams CASCADE;
-
-    TRUNCATE TABLE users CASCADE;
-  `.simple();
-});
-
 describe('Stream Token Management', () => {
   test('should update stream_token with a provided value', async () => {
     const customToken = 'MY_CUSTOM_TOKEN_123';
