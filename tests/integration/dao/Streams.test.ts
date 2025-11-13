@@ -12,10 +12,9 @@ beforeEach(async () => {
   userDao = UserDAO.getInstance();
 
   await sql`
-    TRUNCATE TABLE streams CASCADE;
-
-    TRUNCATE TABLE users CASCADE;
-  `.simple();
+    TRUNCATE TABLE streams,
+    users CASCADE;
+  `;
 
   user = await userDao.createUser('streamer1', 'streamer@test.com', 'pass123');
   await sql`
