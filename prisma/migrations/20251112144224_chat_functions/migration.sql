@@ -296,8 +296,10 @@ COMMENT ON FUNCTION undelete_all_chat_messages(INT)
 IS 'Restores all deleted chat messages in a given stream and returns the count of restored messages.';
 
 -- 14. Hard delete a chat message
-CREATE OR REPLACE FUNCTION hard_delete_chat_message(p_message_id INT)
-RETURNS INTEGER AS $$
+DROP FUNCTION IF EXISTS hard_delete_chat_message(INT);
+
+CREATE FUNCTION hard_delete_chat_message(p_message_id INT)
+RETURNS BOOLEAN AS $$
 DECLARE
     deleted_count INT;
 BEGIN
@@ -306,12 +308,12 @@ BEGIN
 
     GET DIAGNOSTICS deleted_count = ROW_COUNT;
 
-    RETURN deleted_count;
+    RETURN deleted_count > 0;
 END;
 $$ LANGUAGE plpgsql;
 
 COMMENT ON FUNCTION hard_delete_chat_message(INT)
-IS 'Permanently deletes a chat message from the database and returns the number of deleted rows.';
+IS 'Permanently deletes a chat message from the database and returns TRUE if a row was deleted, FALSE otherwise.';
 
 -- 15. Get deleted messages in stream with pagination
 CREATE OR REPLACE FUNCTION get_deleted_messages_paginated(
