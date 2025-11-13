@@ -12,10 +12,9 @@ beforeEach(async () => {
   userDao = UserDAO.getInstance();
 
   await sql`
-    TRUNCATE TABLE streams CASCADE;
-
-    TRUNCATE TABLE users CASCADE;
-  `.simple();
+    TRUNCATE TABLE streams,
+    users CASCADE;
+  `;
 
   user = await userDao.createUser('streamer1', 'streamer@test.com', 'pass123');
   await sql`
@@ -25,14 +24,6 @@ beforeEach(async () => {
       update_stream_token (${user!.user_id})
   `;
   streamerId = user!.user_id;
-});
-
-afterEach(async () => {
-  await sql`
-    TRUNCATE TABLE streams CASCADE;
-
-    TRUNCATE TABLE users CASCADE;
-  `.simple();
 });
 
 describe('Stream Token Management', () => {
