@@ -10,3 +10,4 @@ export * from './Subscriptions';
 export * from './UserRoles';
 export * from './Users';
 export * from './UsersCache';
+export * from './Messages';

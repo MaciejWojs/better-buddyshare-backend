@@ -7,3 +7,4 @@ export * from './userRoles.interface';
 export * from './users.interface';
 export * from './auth/RefreshToken.interface';
 export * from './auth/session.interface';
+export * from './message.interface';

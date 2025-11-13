@@ -8,3 +8,5 @@ export * from './TopStreamer';
 export * from './User';
 export * from './UserAsSubscriber';
 export * from './UserAsSubscriberWithStreamer';
+export * from './Message';
+export * from './OldMessageRecord';
