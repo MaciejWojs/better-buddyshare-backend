@@ -1,6 +1,6 @@
 import { describe, test, expect, mock, beforeEach } from 'bun:test';
 import { UserRepository } from '@src/repositories/user';
-import { User } from '@src/types/db/User';
+import { User } from '@src/types/db';
 
 // 💡 Przykładowy użytkownik
 const exampleUser: User = {

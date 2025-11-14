@@ -18,8 +18,8 @@ mock.module('@src/services/cache.service', () => ({
 }));
 
 // 🔹 Dopiero teraz importujemy zależne moduły
-import { UserCacheDao } from '@src/dao/UsersCache';
-import { User } from '@src/types/db/User';
+import { UserCacheDao } from '@src/dao';
+import { User } from '@src/types/db';
 
 // 💡 Przykładowy użytkownik
 const exampleUser: User = {

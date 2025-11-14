@@ -1,5 +1,5 @@
+import { User } from '@src/types/db';
 import { RedisClient } from 'bun';
-import { User } from '../types/db/User';
 
 export class CacheService {
   private static instance: CacheService | null = null;
