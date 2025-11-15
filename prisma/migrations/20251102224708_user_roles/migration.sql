@@ -101,8 +101,6 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Assign_role_to_user_by_role_id(INTEGER, INTEGER);
 CREATE OR REPLACE FUNCTION Assign_role_to_user_by_role_id(p_user_id INTEGER, p_role_id INTEGER)
 RETURNS BOOLEAN AS $$
-DECLARE
-  rows INT;
 BEGIN
     RETURN Assign_role_to_user_in_context_by_role_id(p_user_id, p_role_id);
 END;
@@ -115,13 +113,11 @@ CREATE OR REPLACE FUNCTION Assign_role_to_user_by_role_name(
 )
 RETURNS BOOLEAN AS $$
 DECLARE
-    rows INT;
     fetched_role_id INTEGER;
 BEGIN
     RETURN Assign_role_to_user_in_context_by_role_name(p_user_id, p_role_name);
 END;
 $$ LANGUAGE plpgsql;
-
 
 -- Revoke_role_from_user(p_user_id, p_role_id)	Usuwa rolę użytkownika	🆕 do dodania
 
