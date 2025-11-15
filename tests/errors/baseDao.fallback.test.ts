@@ -1,5 +1,6 @@
 import { test, expect } from 'bun:test';
 import { BaseDAO } from '../../src/dao/BaseDao';
+import { DaoError } from '../../src/errors/DaoError';
 
 class TestDAO extends (BaseDAO as any) {
   public exposeMapError(err: any) {
@@ -14,6 +15,7 @@ test('BaseDAO.mapError falls back to DaoError for unknown errors', () => {
   const mapped = dao.exposeMapError(err);
 
   expect(mapped).toBeInstanceOf(Error);
+  expect(mapped).toBeInstanceOf(DaoError);
   expect((mapped as any).code).toBe('DAO_ERROR');
 });
 

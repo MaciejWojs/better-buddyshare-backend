@@ -18,6 +18,11 @@ DROP FUNCTION IF EXISTS Delete_role_by_id(p_role_id INTEGER) CASCADE;
 CREATE OR REPLACE FUNCTION Delete_role_by_id(p_role_id INTEGER)
 RETURNS BOOLEAN AS $$
 BEGIN
+  -- Jeśli są przypisane permissions, nie usuwamy — zwracamy FALSE
+  IF EXISTS (SELECT 1 FROM role_permissions WHERE role_id = p_role_id) THEN
+    RETURN FALSE;
+  END IF;
+
   DELETE FROM roles WHERE role_id = p_role_id;
   IF FOUND THEN
     RETURN TRUE;
@@ -31,6 +36,16 @@ DROP FUNCTION IF EXISTS Delete_role_by_name(p_name TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION Delete_role_by_name(p_name TEXT)
 RETURNS BOOLEAN AS $$
 BEGIN
+  -- Sprawdź, czy istnieją przypisania dla tej roli
+  IF EXISTS (
+    SELECT 1
+    FROM role_permissions rp
+    JOIN roles r ON rp.role_id = r.role_id
+    WHERE r.name = p_name
+  ) THEN
+    RETURN FALSE;
+  END IF;
+
   DELETE FROM roles WHERE "name" = p_name;
   IF FOUND THEN
     RETURN TRUE;

@@ -140,7 +140,7 @@ export abstract class BaseDAO {
    */
   protected async executeQueryMultiple<T>(
     query: () => Promise<T>,
-  ): Promise<T[] | null> {
+  ): Promise<T[]> {
     try {
       const results = await query();
 
@@ -150,7 +150,7 @@ export abstract class BaseDAO {
 
       if (results.length === 0) {
         console.log('[LENGTH] No records found in the database.');
-        return null;
+        return [];
       }
 
       return results as T[];

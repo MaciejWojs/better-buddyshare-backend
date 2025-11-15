@@ -83,6 +83,38 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Usuń rolę użytkownika w kontekście po nazwie roli
+DROP FUNCTION IF EXISTS Revoke_role_from_user_in_context_by_role_name(INTEGER, TEXT, INTEGER);
+CREATE OR REPLACE FUNCTION Revoke_role_from_user_in_context_by_role_name(
+  p_user_id INTEGER,
+  p_role_name TEXT,
+  p_context_id INTEGER
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+  fetched_role_id INTEGER;
+  result BOOLEAN;
+BEGIN
+  -- Pobierz ID roli po nazwie
+  SELECT role_id
+  INTO fetched_role_id
+  FROM Get_role_by_name(p_role_name)
+  LIMIT 1;
+
+  -- Jeśli nie znaleziono, zwróć FALSE
+  IF fetched_role_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Wywołaj wersję po ID
+  SELECT Revoke_role_from_user_in_context_by_role_id(p_user_id, fetched_role_id, p_context_id)
+  INTO result;
+
+  RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+
 -- Get_roles_by_user_in_context(p_user_id, p_context_type, p_context_id)	Zwraca role użytkownika w danym kontekście	🆕 do dodania
 
 DROP FUNCTION IF EXISTS Get_roles_by_user_in_context(p_user_id INTEGER, p_context_id INTEGER);
