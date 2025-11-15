@@ -1,9 +1,6 @@
 import { RefreshToken } from '@src/types/db/RefreshToken';
 import { BaseDAO } from './BaseDao';
-import {
-  IRefreshTokenDAO,
-  SessionWithLastToken,
-} from './interfaces/auth/RefreshToken.interface';
+import { IRefreshTokenDAO, SessionWithLastToken } from './interfaces';
 import { sql } from 'bun';
 
 export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {

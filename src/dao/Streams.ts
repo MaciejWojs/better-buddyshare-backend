@@ -1,7 +1,7 @@
 import { sql } from 'bun';
-import { IStreamsDAO } from './interfaces/streams.interface';
-import { Stream } from '@src/types/db/Stream';
 import { BaseDAO } from './BaseDao';
+import { IStreamsDAO } from './interfaces';
+import { Stream } from '@src/types/db';
 
 export class StreamsDAO extends BaseDAO implements IStreamsDAO {
   private static instance: StreamsDAO | null = null;

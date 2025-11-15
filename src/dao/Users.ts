@@ -8,9 +8,9 @@
  * @module dao/Users
  */
 import { sql } from 'bun';
-import { IUserDAO } from './interfaces/users.interface';
 import { BaseDAO } from './BaseDao';
-import { User } from '../types/db/User';
+import { IUserDAO } from './interfaces';
+import { User } from '@src/types/db';
 
 export class UserDAO extends BaseDAO implements IUserDAO {
   /**

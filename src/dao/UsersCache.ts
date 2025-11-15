@@ -1,9 +1,3 @@
-import { User } from '../types/db/User';
-import isEqual from 'lodash/isEqual';
-import { CacheService } from '../services/cache.service';
-
-// const client = cacheService.getClient();
-
 /**
  * Data Access Object for user caching operations in Redis
  *
@@ -18,6 +12,9 @@ import { CacheService } from '../services/cache.service';
  * ```
  */
 import { BaseCache } from './BaseCache';
+import { User } from '@src/types/db';
+import { CacheService } from '../services/cache.service';
+import isEqual from 'lodash/isEqual';
 
 export class UserCacheDao extends BaseCache {
   private static instance: UserCacheDao | null = null;
