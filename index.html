@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Better Buddy Share Backend</title>
+    <style>
+        /* Reset stylów */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #6a11cb, #2575fc, #ff6a00, #f9d423);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid #fff;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2575fc;
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .btn {
+                width: 80%;
+                padding: 15px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Better Buddy Share Backend Documentation</h1>
+        <div class="buttons">
+            <a href="./database/index.html" class="btn">Database</a>
+            <a href="./docs/index.html" class="btn">Docs</a>
+        </div>
+    </div>
+</body>
+</html>
