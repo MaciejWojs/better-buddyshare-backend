@@ -5,11 +5,7 @@ const VIDEO_QUEUE_NAME = env.VIDEO_QUEUE_NAME || 'video_processing_queue';
 const PHOTO_QUEUE_NAME = env.PHOTO_QUEUE_NAME || 'photo_processing_queue';
 const SRS_PORT = env.SRS_PORT || '8080';
 
-if (
-  !process.env.SRS_DELETER_HOST ||
-  !process.env.DELETER_PORT ||
-  !process.env.DELETER_API_TOKEN
-) {
+if (!env.SRS_DELETER_HOST || !env.DELETER_PORT || !env.DELETER_API_TOKEN) {
   console.error(
     'SRS deleter configuration is not fully defined in environment variables',
   );

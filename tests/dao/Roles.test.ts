@@ -90,10 +90,11 @@ describe('RolesDAO', () => {
   });
 
   test('should NOT delete role by name if it has assigned permissions', async () => {
-    const result = await dao.deleteRoleByName('TEST_ROLE');
+    const roleName = 'TEST_ROLE';
+    const result = await dao.deleteRoleByName(roleName);
     expect(result).toBeFalse();
 
-    const stillExists = await dao.getRoleByName('TEST_ROLE');
+    const stillExists = await dao.getRoleByName(roleName);
     expect(stillExists).not.toBeNull();
   });
 
@@ -108,21 +109,23 @@ describe('RolesDAO', () => {
   });
 
   test('should delete role by name when it has no relations', async () => {
-    const tempRole = await dao.createRole('UNUSED_ROLE_2');
-    const result = await dao.deleteRoleByName('UNUSED_ROLE_2');
+    const roleName = 'UNUSED_ROLE_2';
+    await dao.createRole(roleName);
+    const result = await dao.deleteRoleByName(roleName);
     expect(result).toBeTrue();
 
-    const deleted = await dao.getRoleByName('UNUSED_ROLE_2');
+    const deleted = await dao.getRoleByName(roleName);
     expect(deleted).toBeNull();
   });
 
   test('should delete TEST_ROLE after manually removing assignments', async () => {
+    const roleName = 'TEST_ROLE';
     // First revoke the assigned permission
     await dao.revokePermissionFromRole(testRoleId, testPermissionId);
-    const result = await dao.deleteRoleByName('TEST_ROLE');
+    const result = await dao.deleteRoleByName(roleName);
     expect(result).toBeTrue();
 
-    const deleted = await dao.getRoleByName('TEST_ROLE');
+    const deleted = await dao.getRoleByName(roleName);
     expect(deleted).toBeNull();
   });
 });
