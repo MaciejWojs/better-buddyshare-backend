@@ -22,9 +22,9 @@
   "dependencies": {
     "@hono/swagger-ui": "^0.5.2",
     "@prisma/client": "^6.19.0",
-    "hono": "^4.10.5",
+    "hono": "^4.10.6",
     "lodash": "^4.17.21",
-    "rabbitmq-client": "^5.0.6"
+    "rabbitmq-client": "^5.0.7"
   },
   "devDependencies": {
     "@0xts/gitleaks-cli": "^0.1.3",
