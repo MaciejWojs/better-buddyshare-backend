@@ -17,7 +17,7 @@ export class UserDAO implements IUserDAO {
 
     async findById(id: number) {
         const user = await sql`select * from get_user_by_id(${id})`
-        console.log('findById user:', user);
+        // console.log('findById user:', user);
         // console.log(user.length, user.count, user);
 
         if (user.length === 0) {
