@@ -1,8 +1,7 @@
 import { IUserRepository } from './user.interface';
-import { UserDAO } from '../dao/Users';
-import { User } from '../types/db/User';
-import { UserCacheDao } from '../dao/UsersCache';
 import { BaseRepository } from './BaseRepository';
+import { UserCacheDao, UserDAO } from '@src/dao';
+import { User } from '@src/types/db';
 
 /**
  * Repository for user operations with caching support.

@@ -1,14 +1,12 @@
-import { test, expect } from 'bun:test';
-import {
-  RepositoryError,
-  RepositoryConflictError,
-  RepositoryNotFoundError,
-} from '@src/errors/RepositoryError';
 import {
   DaoError,
-  DaoUniqueViolationError,
   DaoNotFoundError,
-} from '@src/errors/DaoError';
+  RepositoryError,
+  RepositoryConflictError,
+  DaoUniqueViolationError,
+  RepositoryNotFoundError,
+} from '@src/errors';
+import { test, expect } from 'bun:test';
 
 test('RepositoryError.fromDaoError maps UniqueViolation to Conflict', () => {
   const daoErr = new DaoUniqueViolationError('users_email_key', {

@@ -1,6 +1,6 @@
 import { test, expect } from 'bun:test';
-import { BaseDAO } from '@src/dao/BaseDao';
 import { DaoUniqueViolationError } from '@src/errors/DaoError';
+import { BaseDAO } from '@src/dao';
 
 // Create a tiny concrete subclass exposing mapError for testing
 class TestDAO extends (BaseDAO as any) {

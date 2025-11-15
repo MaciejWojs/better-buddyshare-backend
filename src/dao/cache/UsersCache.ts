@@ -13,7 +13,7 @@
  */
 import { BaseCache } from './BaseCache';
 import { User } from '@src/types/db';
-import { CacheService } from '../services/cache.service';
+import { CacheService } from '@src/services/cache.service';
 import isEqual from 'lodash/isEqual';
 
 export class UserCacheDao extends BaseCache {
