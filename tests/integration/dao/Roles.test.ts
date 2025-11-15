@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeAll } from 'bun:test';
-import { RolesDAO } from '../../src/dao/Roles';
-import { PermissionDAO } from '../../src/dao/Permissions';
+import { RolesDAO } from '@src/dao/Roles';
+import { PermissionDAO } from '@src/dao/Permissions';
 
 describe('RolesDAO', () => {
   let dao: RolesDAO;

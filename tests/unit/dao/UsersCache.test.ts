@@ -7,7 +7,7 @@ const mockGet = mock<(key: string) => Promise<any>>(() =>
 const mockSet = mock(() => Promise.resolve(true));
 const mockDel = mock(() => Promise.resolve(true));
 
-mock.module('../../src/services/cache.service', () => ({
+mock.module('@src/services/cache.service', () => ({
   CacheService: {
     getInstance: () => ({
       get: mockGet,
@@ -18,8 +18,8 @@ mock.module('../../src/services/cache.service', () => ({
 }));
 
 // 🔹 Dopiero teraz importujemy zależne moduły
-import { UserCacheDao } from '../../src/dao/UsersCache';
-import { User } from '../../src/types/db/User';
+import { UserCacheDao } from '@src/dao/UsersCache';
+import { User } from '@src/types/db/User';
 
 // 💡 Przykładowy użytkownik
 const exampleUser: User = {

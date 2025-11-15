@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test';
-import { RepositoryError } from '../../src/errors/RepositoryError';
+import { RepositoryError } from '@src/errors/RepositoryError';
 
 test('RepositoryError.toJSON returns structured payload', () => {
   const err = new RepositoryError(

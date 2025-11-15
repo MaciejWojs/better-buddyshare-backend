@@ -3,12 +3,12 @@ import {
   RepositoryError,
   RepositoryConflictError,
   RepositoryNotFoundError,
-} from '../../src/errors/RepositoryError';
+} from '@src/errors/RepositoryError';
 import {
   DaoError,
   DaoUniqueViolationError,
   DaoNotFoundError,
-} from '../../src/errors/DaoError';
+} from '@src/errors/DaoError';
 
 test('RepositoryError.fromDaoError maps UniqueViolation to Conflict', () => {
   const daoErr = new DaoUniqueViolationError('users_email_key', {
