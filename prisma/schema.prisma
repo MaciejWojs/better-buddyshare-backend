@@ -42,7 +42,9 @@ model User {
   bannedByMe            BannedUsersPerStreamer[] @relation("BannedByUser")
   RefreshToken          RefreshToken[]
   Session               Session[]
+  ChatMessage           ChatMessage[]
 
+  @@index([createdAt])
   @@map("users")
 }
 
@@ -103,8 +105,12 @@ model Stream {
   endedAt   DateTime? @map("ended_at")
   path      String?
 
-  streamer User @relation(fields: [streamerId], references: [userId])
+  streamer               User                     @relation(fields: [streamerId], references: [userId])
+  ChatMessage            ChatMessage[]
+  streamStatisticsInTime streamStatisticsInTime[]
 
+  @@index([streamerId])
+  @@index([isLive, startedAt])
   @@map("streams")
 }
 
@@ -117,6 +123,9 @@ model Subscribers {
   user     User @relation("SubscriberUser", fields: [userId], references: [userId])
   streamer User @relation("SubscriberStreamer", fields: [streamerId], references: [userId])
 
+  @@unique([userId, streamerId])
+  @@index([userId])
+  @@index([streamerId])
   @@map("subscribers")
 }
 
@@ -135,6 +144,8 @@ model BannedUsersPerStreamer {
   bannedByUser User @relation("BannedByUser", fields: [bannedBy], references: [userId])
 
   @@unique([streamerId, userId])
+  @@index([bannedBy])
+  @@index([bannedUntil])
   @@map("banned_users_per_streamer")
 }
 
@@ -155,6 +166,9 @@ model RefreshToken {
   replacedBy RefreshToken?  @relation("TokenReplacement", fields: [replacedById], references: [id])
   replaces   RefreshToken[] @relation("TokenReplacement")
 
+  @@index([userId])
+  @@index([sessionId])
+  @@index([issuedAt])
   @@map("refresh_tokens")
 }
 
@@ -173,6 +187,59 @@ model Session {
   user          User           @relation(fields: [userId], references: [userId])
   refreshTokens RefreshToken[]
 
-  @@index([userId])
+  @@index([userId, isActive])
   @@map("sessions")
+}
+
+model ChatMessage {
+  messageId Int      @id @default(autoincrement()) @map("message_id")
+  streamId  Int      @map("stream_id")
+  userId    Int      @map("user_id")
+  content   String   @map("content")
+  sentAt    DateTime @default(now()) @map("sent_at")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  stream      Stream                   @relation(fields: [streamId], references: [streamId])
+  user        User                     @relation(fields: [userId], references: [userId])
+  editHistory ChatMessageEditHistory[] @relation("MessageEditHistory")
+
+  @@index([streamId, sentAt])
+  @@index([userId])
+  @@index([isDeleted])
+  @@map("chat_messages")
+}
+
+model streamStatisticsType {
+  id                     Int                      @id @default(autoincrement()) @map("stream_statistic_type_id")
+  name                   String                   @unique @map("name")
+  description            String?                  @map("description")
+  streamStatisticsInTime streamStatisticsInTime[]
+}
+
+model streamStatisticsInTime {
+  id                    Int      @id @default(autoincrement()) @map("id")
+  streamId              Int      @map("stream_id")
+  streamStatisticTypeId Int      @map("stream_statistic_type_id")
+  value                 Int      @default(0) @map("value")
+  timepoint             DateTime @default(now()) @map("timepoint")
+
+  stream               Stream               @relation(fields: [streamId], references: [streamId])
+  streamStatisticsType streamStatisticsType @relation(fields: [streamStatisticTypeId], references: [id])
+
+  @@index([streamId, timepoint])
+  @@index([streamStatisticTypeId])
+  @@map("stream_statistics_in_time")
+}
+
+model ChatMessageEditHistory {
+  id         Int      @id @default(autoincrement()) @map("edit_id")
+  messageId  Int      @map("message_id")
+  oldContent String   @map("old_content")
+  editedAt   DateTime @default(now()) @map("edited_at")
+
+  message ChatMessage @relation("MessageEditHistory", fields: [messageId], references: [messageId])
+
+  @@index([messageId])
+  @@index([editedAt])
+  @@map("chat_message_edit_histories")
 }
