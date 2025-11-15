@@ -1,5 +1,5 @@
 import { User } from '../types/db/User';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import { CacheService } from '../services/cache.service';
 
 // const client = cacheService.getClient();
@@ -22,7 +22,7 @@ import { BaseCache } from './BaseCache';
 export class UserCacheDao extends BaseCache {
   private static instance: UserCacheDao | null = null;
   /**
-   * Prywatny konstruktor dla wzorca Singleton
+   * Private constructor for the Singleton pattern.
    * @private
    */
   private constructor() {
@@ -75,8 +75,8 @@ export class UserCacheDao extends BaseCache {
     const cachedUser = await this.cacheGet<User>(`user:${id}`);
     if (cachedUser) {
       console.log(`Cache hit for user ID ${id}`);
-      // Automatyczna konwersja dat przez CacheService
-      // Ręczna konwersja jako fallback (może zostać usunięta po implementacji auto-konwersji)
+      // Dates are automatically converted by CacheService.
+      // Keep manual conversion as a fallback.
       if (cachedUser.created_at)
         cachedUser.created_at = new Date(cachedUser.created_at);
       if (cachedUser.ban_expires_at)

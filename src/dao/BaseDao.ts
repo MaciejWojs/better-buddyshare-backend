@@ -13,7 +13,7 @@ export abstract class BaseDAO {
   }
 
   protected mapPostgresError(error: any): DaoError {
-    // Bun.sql rzuca PostgresError
+    // Bun.sql throws PostgresError
     if (error.name === 'PostgresError') {
       switch (error.code) {
         case '23505': // unique_violation
