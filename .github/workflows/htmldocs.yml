@@ -1,4 +1,5 @@
 on:
+  workflow_dispatch: 
   push:
     branches:
       - main
@@ -43,7 +44,7 @@ jobs:
           POSTGRES_PASSWORD: schemaspy
           POSTGRES_USER: schemaspy
           POSTGRES_DB: postgres
-        options: >
+        options: >-
           --health-cmd="pg_isready -U schemaspy -d postgres"
           --health-interval=10s
           --health-timeout=5s
@@ -68,7 +69,7 @@ jobs:
       - name: Generate SchemaSpy documentation
         run: |
           mkdir -p ./docs/schemaspy-output
-          docker run -it --rm \
+          docker run --rm \
             -v $(pwd)/docs/schemaspy-output:/output \
             --network host \
             schemaspy/schemaspy:latest \
