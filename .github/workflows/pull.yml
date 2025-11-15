@@ -5,6 +5,7 @@ on: pull_request
 jobs:
   PR_tests:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
 
     services:
       postgres:
