@@ -40,5 +40,5 @@ afterAll(async () => {
   console.log = originalConsoleLog;
   await $`docker stop test-db`;
   console.log('🛑 Zatrzymano bazę danych PostgreSQL w Dockerze.');
-  await sleep(1000);
+  // await sleep(1000);
 });
