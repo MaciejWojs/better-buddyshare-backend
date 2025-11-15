@@ -50,18 +50,7 @@ jobs:
         run: bun x prisma migrate deploy
         env:
           DATABASE_URL: postgres://testuser:testpass@localhost:5431/testdb
-
-      - name: Install Postgres client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
-
-      - name: Wait for Postgres
-        run: |
-          for i in {1..20}; do
-            pg_isready -h localhost -p 5431 -U testuser && break
-            echo "Waiting for Postgres..."
-            sleep 1
-          done
-
+          
       - name: Run tests
         env:
           DATABASE_URL: postgres://testuser:testpass@localhost:5431/testdb
