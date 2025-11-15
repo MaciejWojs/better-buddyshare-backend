@@ -137,7 +137,7 @@ services:
       - '1985:1985' # SRS HTTP API
       - '8080:8080' # HLS/HTTP/Web
       - '8000:8000/udp' # WebRTC
-      - "7777:${DELETER_PORT}"
+      - '7777:${DELETER_PORT}'
     volumes:
       - ./srs/srs.conf:/usr/local/srs/conf/srs.conf
       # - ./srs/srs-dvr-cron:/etc/cron.d/srs-dvr-cron
