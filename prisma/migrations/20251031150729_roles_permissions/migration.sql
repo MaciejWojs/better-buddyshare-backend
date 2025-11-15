@@ -99,3 +99,11 @@ BEGIN
   DELETE FROM permissions WHERE name = p_name;
 END;
 $$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS Get_all_permissions() CASCADE;
+CREATE OR REPLACE FUNCTION Get_all_permissions()
+RETURNS SETOF permissions AS $$
+BEGIN
+  RETURN QUERY SELECT * FROM permissions;
+END;
+$$ LANGUAGE plpgsql;
