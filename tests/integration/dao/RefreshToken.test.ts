@@ -14,9 +14,10 @@ beforeEach(async () => {
   userDao = UserDAO.getInstance();
   await sql`
     TRUNCATE TABLE refresh_tokens,
-    sessions RESTART IDENTITY CASCADE
-  `;
-  await sql`TRUNCATE TABLE users RESTART IDENTITY CASCADE`;
+    sessions RESTART IDENTITY CASCADE;
+
+    TRUNCATE TABLE users RESTART IDENTITY CASCADE;
+  `.simple();
 
   await userDao.createUser('testuser', 'test@example.com', 'hashed_password');
 
