@@ -8,48 +8,48 @@ import {
 // -- get_recent_subscriptions_by_user(p_user_id INTEGER, p_limit INTEGER)
 export interface ISubscriptionsDAO {
   // Check if a subscription exists for a user and a streamer
-  subscriptionExists(userId: number, streamerId: number): Promise<boolean>;
+  subscriptionExists(user_id: number, streamer_id: number): Promise<boolean>;
 
   // Add a new subscription (or return existing one if already subscribed)
   addSubscription(
-    userId: number,
-    streamerId: number,
+    user_id: number,
+    streamer_id: number,
   ): Promise<Subscription | null>;
 
   // Remove a subscription
-  removeSubscription(userId: number, streamerId: number): Promise<boolean>;
+  removeSubscription(user_id: number, streamer_id: number): Promise<boolean>;
 
   // Get all subscriptions for a given user
-  getSubscriptionsByUser(userId: number): Promise<UserAsSubscriber[]>;
+  getSubscriptionsByUser(user_id: number): Promise<UserAsSubscriber[]>;
 
   // Get all subscribers for a given streamer
-  getSubscribersByStreamer(streamerId: number): Promise<UserAsSubscriber[]>;
+  getSubscribersByStreamer(streamer_id: number): Promise<UserAsSubscriber[]>;
 
   // Get subscription count for a user
-  getSubscriptionCountByUser(userId: number): Promise<number>;
+  getSubscriptionCountByUser(user_id: number): Promise<number>;
 
   // Get subscription count for a streamer
-  getSubscriptionCountByStreamer(streamerId: number): Promise<number>;
+  getSubscriptionCountByStreamer(streamer_id: number): Promise<number>;
 
   // Get a paginated list of subscribers for a given streamer
   getSubscribersPaginated(
-    streamerId: number,
-    limit: number,
+    streamer_id: number,
     offset: number,
+    limit: number,
   ): Promise<UserAsSubscriber[]>;
 
   // Get a paginated list of subscriptions for a given user
   getSubscriptionsPaginated(
-    userId: number,
-    limit: number,
+    user_id: number,
     offset: number,
+    limit: number,
   ): Promise<UserAsSubscriber[]>;
 
   // Remove all subscriptions for a given user
-  removeAllSubscriptionsByUser(userId: number): Promise<number>;
+  removeAllSubscriptionsByUser(user_id: number): Promise<number>;
 
   // Remove all subscribers for a given streamer
-  removeAllSubscribersByStreamer(streamerId: number): Promise<number>;
+  removeAllSubscribersByStreamer(streamer_id: number): Promise<number>;
 
   // Get the details of a subscriber by their subscription ID
   getSubscriberDetails(
@@ -58,8 +58,8 @@ export interface ISubscriptionsDAO {
 
   // Get the details of a subscription between a user and a streamer
   getSubscriptionDetails(
-    userId: number,
-    streamerId: number,
+    user_id: number,
+    streamer_id: number,
   ): Promise<UserAsSubscriberWithStreamer | null>;
 
   // Get the top streamers by subscriber count
@@ -67,7 +67,7 @@ export interface ISubscriptionsDAO {
 
   // Get the recent subscriptions of a user (e.g., the last few subscriptions)
   getRecentSubscriptionsByUser(
-    userId: number,
+    user_id: number,
     limit: number,
   ): Promise<UserAsSubscriber[]>;
 }

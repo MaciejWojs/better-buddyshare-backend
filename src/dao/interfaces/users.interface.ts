@@ -23,4 +23,5 @@ export interface IUserDAO {
     email: string,
     password: string,
   ): Promise<User | null>;
+  updateStreamToken(user_id: number): Promise<User | null>;
 }

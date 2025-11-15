@@ -270,4 +270,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
       `,
     );
   }
+
+  async updateStreamToken(user_id: number) {
+    return await this.executeQuery<User>(
+      () => sql`
+        SELECT
+          *
+        FROM
+          update_stream_token (${user_id})
+      `,
+    );
+  }
 }
