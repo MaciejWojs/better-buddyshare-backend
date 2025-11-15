@@ -1,14 +1,14 @@
 services:
   waf:
-    image:  owasp/modsecurity-crs:nginx-alpine
+    image: owasp/modsecurity-crs:nginx-alpine
     # build:
     #   context: ./nginx-waf
     #   dockerfile: Dockerfile
     container_name: modsecurity-nginx-waf
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       # - ./nginx-waf/modsecurity.conf:/etc/nginx/modsecurity.conf
       - ./nginx-waf/nginx.conf:/etc/nginx/templates/conf.d/default.conf.template
@@ -24,11 +24,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - backend
     # volumes:
-      # - postgres_data:/var/lib/postgresql/data
+    # - postgres_data:/var/lib/postgresql/data
     command: >
       postgres
       -c shared_preload_libraries=pg_stat_statements
@@ -77,7 +77,7 @@ services:
     # deploy:
     #   replicas: 3
     #   mode: replicated
-      # env
+    # env
   # app2:
   #   image: bs-backend:latest
   #   container_name: backend2
@@ -91,7 +91,7 @@ services:
   #     - "5001:5001"
   #   networks:
   #     - backend
-  
+
   # app3:
   #   image: bs-backend:latest
   #   container_name: backend3
@@ -105,7 +105,7 @@ services:
   #     - "5002:5002"
   #   networks:
   #     - backend
-    
+
   nginx:
     image: bs-load-balancer
     build:
@@ -120,27 +120,27 @@ services:
       HOST2: app
       HOST3: app
     # ports:
-      # - "1935:1935"
-      # - "8080:8080"
-      # - "80:80"
+    # - "1935:1935"
+    # - "8080:8080"
+    # - "80:80"
     networks:
       - backend
 
   srs:
     image: ossrs/srs:6
     ports:
-      - "1935:1935"     # RTMP
-      - "1985:1985"     # SRS HTTP API
-      - "8080:8080"     # HLS/HTTP/Web
-      - "8000:8000/udp" # WebRTC
+      - '1935:1935' # RTMP
+      - '1985:1985' # SRS HTTP API
+      - '8080:8080' # HLS/HTTP/Web
+      - '8000:8000/udp' # WebRTC
     volumes:
       - ./srs/srs.conf:/usr/local/srs/conf/srs.conf
       # - ./srs/srs-dvr-cron:/etc/cron.d/srs-dvr-cron
-    command: ["./objs/srs", "-c", "conf/srs.conf"]
+    command: ['./objs/srs', '-c', 'conf/srs.conf']
     restart: always
     networks:
       - backend
-  
+
   cache:
     image: valkey/valkey:9-alpine3.22
     container_name: valkey-redis
@@ -150,24 +150,24 @@ services:
       VALKEY_USER: ${VALKEY_USER}
     command: valkey-server --requirepass ${VALKEY_PASSWORD}
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - backend
 
   queue:
-      image: rabbitmq:4.1-management-alpine
-      container_name: rabbitmq
-      restart: unless-stopped
-      ports:
-        - "5672:5672"
-        - "15672:15672"
-      hostname: rabbitmq
-      environment:
-        RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-        RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-      networks:
-        - backend
-  
+    image: rabbitmq:4.1-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - backend
+
   media-worker:
     build:
       context: ./upload-media-worker
@@ -190,25 +190,25 @@ services:
 
     networks:
       - backend
-  
+
   simple-storage:
     image: minio/minio:latest
     container_name: minio
     restart: unless-stopped
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - '9000:9000'
+      - '9001:9001'
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s
       timeout: 20s
       retries: 3
     networks:
-       - backend
+      - backend
     entrypoint: >
       sh -c "
       /usr/bin/minio server /data --console-address ':9001' &
@@ -233,6 +233,5 @@ services:
 networks:
   backend:
     driver: bridge
-
 # volumes:
 #   postgres_data:

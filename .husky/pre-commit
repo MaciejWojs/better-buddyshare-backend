@@ -1,0 +1,7 @@
+echo "Checking for secrets with Gitleaks..."
+
+bun run gitleaks dir -v --no-banner
+
+bun test
+
+bun format
