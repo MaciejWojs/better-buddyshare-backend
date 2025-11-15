@@ -40,10 +40,7 @@ export interface IUserRolesDAO {
   getUserRoles(userId: number, streamerId: number): Promise<Role[]>;
 
   getUserPermissions(userId: number): Promise<Permission[]>;
-  getUserPermissions(
-    userId: number,
-    streamerId: number,
-  ): Promise<Permission[]>;
+  getUserPermissions(userId: number, streamerId: number): Promise<Permission[]>;
 
   checkIfUserHasPermission(
     userId: number,
