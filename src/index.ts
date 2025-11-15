@@ -3,8 +3,6 @@ import { serve } from 'bun';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
 import { UserRepository } from './repositories/user';
-import { UserDAO } from './dao/Users';
-import { UserCacheDao } from './dao/UsersCache';
 import { CacheService } from './services/cache.service';
 import { MediaWorkerService } from './services/media-worker.service';
 import { PermissionDAO } from './dao/Permissions';
