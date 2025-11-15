@@ -55,6 +55,7 @@ model Role {
 }
 
 model UserRole {
+    id         Int  @id @default(autoincrement()) @map("id")
     userID     Int  @map("user_id")
     roleID     Int  @map("role_id")
     streamerID Int? @map("streamer_id")
@@ -64,7 +65,7 @@ model UserRole {
     streamer User? @relation("UserRoleStreamer", fields: [streamerID], references: [userId])
 
     @@map("user_roles")
-    @@id([userID, roleID])
+    @@unique([userID, roleID, streamerID])
 }
 
 model Permission {
