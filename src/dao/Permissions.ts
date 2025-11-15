@@ -70,7 +70,7 @@ export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
     return isDeleted;
   }
 
-  /**
+  /**f
    * Delete a permission by its name.
    *
    * The name will be uppercased before invoking the DB function.
