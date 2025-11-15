@@ -190,15 +190,15 @@ describe('UserRolesDAO', () => {
   // 🔹 DaoError cases
   //
   test('should throw DaoError on invalid role type', async () => {
-    // @ts-expect-error
     await expect(
+      // @ts-expect-error
       userRolesDao.assignRoleToUser(userId, { invalid: 'role' }),
     ).rejects.toThrow(DaoError);
   });
 
   test('should throw DaoError on invalid permission type', async () => {
-    // @ts-expect-error
     await expect(
+      // @ts-expect-error
       userRolesDao.checkIfUserHasPermission(userId, { invalid: 'perm' }),
     ).rejects.toThrow(DaoError);
   });
