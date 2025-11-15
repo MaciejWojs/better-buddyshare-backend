@@ -5,7 +5,6 @@ import { swaggerUI } from '@hono/swagger-ui';
 import { UserRepository } from './repositories/user';
 import { CacheService } from './services/cache.service';
 import { MediaWorkerService } from './services/media-worker.service';
-import { PermissionDAO } from './dao/Permissions';
 
 const app = new Hono();
 
@@ -189,41 +188,3 @@ app.post('/dvr', async (c) => {
 });
 
 startServer(5000);
-
-const perms = PermissionDAO.getInstance();
-
-const x = async () => {
-  const perm_name = 'TEST_PERMISSION';
-  console.log(`Creating permission: ${perm_name}`);
-  await perms.createPermission(perm_name);
-  await perms.createPermission(perm_name + '_1');
-  await perms.createPermission(perm_name + '_2');
-  await perms.createPermission(perm_name + '_3');
-
-  console.log(`Fetching permission by name: ${perm_name}`);
-  await perms.getPermissionByName(perm_name);
-
-  console.log(`Fetching permission by ID: 1`);
-  await perms.getPermissionById(1);
-
-  console.log(`Deleting permission by name: ${perm_name}`);
-  await perms.deletePermissionByName(perm_name);
-
-  console.log(`Fetching all permissions after deletion:`);
-  await perms.getAllPermissions();
-
-  const perm_name_2 = 'ANOTHER_PERMISSION';
-  console.log(`Creating permission: ${perm_name_2}`);
-  await perms.createPermission(perm_name_2);
-
-  console.log(`Fetching all permissions:`);
-  await perms.getAllPermissions();
-
-  console.log(`Deleting permission by ID: 2`);
-  await perms.deletePermissionById(2);
-
-  console.log(`Fetching all permissions after deletion:`);
-  await perms.getAllPermissions();
-};
-
-x();
