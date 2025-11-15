@@ -16,7 +16,12 @@ beforeEach(async () => {
   await sql`TRUNCATE TABLE users CASCADE`;
 
   user = await userDao.createUser('streamer1', 'streamer@test.com', 'pass123');
-  await sql`SELECT * FROM update_stream_token(${user!.user_id})`;
+  await sql`
+    SELECT
+      *
+    FROM
+      update_stream_token (${user!.user_id})
+  `;
   streamerId = user!.user_id;
 });
 
@@ -29,41 +34,75 @@ describe('Stream Token Management', () => {
   test('should update stream_token with a provided value', async () => {
     const customToken = 'MY_CUSTOM_TOKEN_123';
     const [updated] = await sql`
-      SELECT * FROM update_stream_token(${user.user_id}, ${customToken})
+      SELECT
+        *
+      FROM
+        update_stream_token (
+          ${user.user_id},
+          ${customToken}
+        )
     `;
     expect(updated).not.toBeNull();
     expect(updated.stream_token).toBe(customToken);
 
-    const [dbUser] =
-      await sql`SELECT * FROM users WHERE user_id = ${user.user_id}`;
+    const [dbUser] = await sql`
+      SELECT
+        *
+      FROM
+        users
+      WHERE
+        user_id = ${user.user_id}
+    `;
     expect(dbUser.stream_token).toBe(customToken);
   });
 
   test('should generate a new random stream_token automatically', async () => {
-    const [updated] =
-      await sql`SELECT * FROM update_stream_token(${user.user_id})`;
+    const [updated] = await sql`
+      SELECT
+        *
+      FROM
+        update_stream_token (${user.user_id})
+    `;
     expect(updated).not.toBeNull();
     expect(updated.stream_token).toBeString();
     expect(updated.stream_token.length).toBeGreaterThanOrEqual(16);
 
-    const [dbUser] =
-      await sql`SELECT * FROM users WHERE user_id = ${user.user_id}`;
+    const [dbUser] = await sql`
+      SELECT
+        *
+      FROM
+        users
+      WHERE
+        user_id = ${user.user_id}
+    `;
     expect(dbUser.stream_token).toBe(updated.stream_token);
   });
 
   test('should return null if user does not exist', async () => {
-    const [result] =
-      await sql`SELECT * FROM update_stream_token(999999, 'FAKE_TOKEN')`;
+    const [result] = await sql`
+      SELECT
+        *
+      FROM
+        update_stream_token (999999, 'FAKE_TOKEN')
+    `;
     expect(result).toBeUndefined();
   });
 
   test('should overwrite old token with new one', async () => {
-    const [first] =
-      await sql`SELECT * FROM update_stream_token(${user.user_id}, 'FIRST_TOKEN')`;
+    const [first] = await sql`
+      SELECT
+        *
+      FROM
+        update_stream_token (${user.user_id}, 'FIRST_TOKEN')
+    `;
     expect(first.stream_token).toBe('FIRST_TOKEN');
 
-    const [second] =
-      await sql`SELECT * FROM update_stream_token(${user.user_id})`;
+    const [second] = await sql`
+      SELECT
+        *
+      FROM
+        update_stream_token (${user.user_id})
+    `;
     expect(second.stream_token).not.toBe('FIRST_TOKEN');
   });
 });
@@ -77,14 +116,24 @@ describe('Stream DAO checks', () => {
 
 describe('SQL Functions', () => {
   test('check_if_user_is_streamer returns true', async () => {
-    const [row] =
-      await sql`SELECT check_if_user_is_streamer(${streamerId}) AS is_streamer`;
+    const [row] = await sql`
+      SELECT
+        check_if_user_is_streamer (${streamerId}) AS is_streamer
+    `;
     expect(row.is_streamer).toBeTrue();
   });
 
   test('create_stream via SQL returns created stream', async () => {
-    const rows =
-      await sql`SELECT * FROM create_stream(${streamerId}, 'SQL Stream', 'desc')`;
+    const rows = await sql`
+      SELECT
+        *
+      FROM
+        create_stream (
+          ${streamerId},
+          'SQL Stream',
+          'desc'
+        )
+    `;
     expect(rows.length).toBeGreaterThanOrEqual(1);
     expect(rows[0].title).toBe('SQL Stream');
     expect(rows[0].is_live).toBeTrue();
@@ -97,7 +146,12 @@ describe('SQL Functions', () => {
       'pw',
     );
     try {
-      await sql`SELECT * FROM create_stream(${viewer!.user_id}, 'S', 'd')`;
+      await sql`
+        SELECT
+          *
+        FROM
+          create_stream (${viewer!.user_id}, 'S', 'd')
+      `;
       throw new Error('Expected create_stream to throw for non-streamer user');
     } catch (err: any) {
       expect(err).toBeDefined();
@@ -106,9 +160,27 @@ describe('SQL Functions', () => {
   });
 
   test('create_stream throws when active stream exists', async () => {
-    await sql`SELECT * FROM create_stream(${streamerId}, 'First SQL', 'd')`;
+    await sql`
+      SELECT
+        *
+      FROM
+        create_stream (
+          ${streamerId},
+          'First SQL',
+          'd'
+        )
+    `;
     try {
-      await sql`SELECT * FROM create_stream(${streamerId}, 'Second SQL', 'd')`;
+      await sql`
+        SELECT
+          *
+        FROM
+          create_stream (
+            ${streamerId},
+            'Second SQL',
+            'd'
+          )
+      `;
       throw new Error(
         'Expected create_stream to throw when active stream exists',
       );
@@ -119,29 +191,73 @@ describe('SQL Functions', () => {
   });
 
   test('end_stream sets is_live to false', async () => {
-    const [created] =
-      await sql`SELECT * FROM create_stream(${streamerId}, 'To End', 'd')`;
-    const [ended] = await sql`SELECT * FROM end_stream(${created.stream_id})`;
+    const [created] = await sql`
+      SELECT
+        *
+      FROM
+        create_stream (${streamerId}, 'To End', 'd')
+    `;
+    const [ended] = await sql`
+      SELECT
+        *
+      FROM
+        end_stream (${created.stream_id})
+    `;
     expect(ended.is_live).toBeFalse();
   });
 
   test('get_active_streams returns only public and live streams', async () => {
-    const [created] =
-      await sql`SELECT * FROM create_stream(${streamerId}, 'Public SQL', 'd')`;
-    await sql`UPDATE streams SET is_public = TRUE WHERE stream_id = ${created.stream_id}`;
+    const [created] = await sql`
+      SELECT
+        *
+      FROM
+        create_stream (
+          ${streamerId},
+          'Public SQL',
+          'd'
+        )
+    `;
+    await sql`
+      UPDATE streams
+      SET
+        is_public = TRUE
+      WHERE
+        stream_id = ${created.stream_id}
+    `;
 
-    const active = await sql`SELECT * FROM get_active_streams()`;
+    const active = await sql`
+      SELECT
+        *
+      FROM
+        get_active_streams ()
+    `;
     expect(active.length).toBeGreaterThanOrEqual(1);
     expect(active[0].is_public).toBeTrue();
     expect(active[0].is_live).toBeTrue();
   });
 
   test('check_if_user_is_streaming_and_public returns true for public live stream', async () => {
-    const [created] =
-      await sql`SELECT * FROM create_stream(${streamerId}, 'Public Check', 'd')`;
-    await sql`UPDATE streams SET is_public = TRUE WHERE stream_id = ${created.stream_id}`;
-    const [row] =
-      await sql`SELECT check_if_user_is_streaming_and_public(${streamerId}) AS is_public_stream`;
+    const [created] = await sql`
+      SELECT
+        *
+      FROM
+        create_stream (
+          ${streamerId},
+          'Public Check',
+          'd'
+        )
+    `;
+    await sql`
+      UPDATE streams
+      SET
+        is_public = TRUE
+      WHERE
+        stream_id = ${created.stream_id}
+    `;
+    const [row] = await sql`
+      SELECT
+        check_if_user_is_streaming_and_public (${streamerId}) AS is_public_stream
+    `;
     expect(row.is_public_stream).toBeTrue();
   });
 });
@@ -181,14 +297,40 @@ describe('Stream Operations via DAO', () => {
 
   test('should end all active streams for user (manual multiple streams)', async () => {
     const stream1 = await sql`
-      INSERT INTO streams (streamer_id, title, description, is_live, is_public)
-      VALUES (${streamerId}, 'Manual Stream 1', 'desc1', TRUE, TRUE)
-      RETURNING *;
+      INSERT INTO
+        streams (
+          streamer_id,
+          title,
+          description,
+          is_live,
+          is_public
+        )
+      VALUES
+        (
+          ${streamerId},
+          'Manual Stream 1',
+          'desc1',
+          TRUE,
+          TRUE
+        ) RETURNING *;
     `;
     const stream2 = await sql`
-      INSERT INTO streams (streamer_id, title, description, is_live, is_public)
-      VALUES (${streamerId}, 'Manual Stream 2', 'desc2', TRUE, TRUE)
-      RETURNING *;
+      INSERT INTO
+        streams (
+          streamer_id,
+          title,
+          description,
+          is_live,
+          is_public
+        )
+      VALUES
+        (
+          ${streamerId},
+          'Manual Stream 2',
+          'desc2',
+          TRUE,
+          TRUE
+        ) RETURNING *;
     `;
     const ended = await streamsDao.endAllStreamsForUser(streamerId);
     expect(ended.length).toBeGreaterThanOrEqual(2);
@@ -208,7 +350,13 @@ describe('Stream Operations via DAO', () => {
       'Public Stream',
       'desc',
     );
-    await sql`UPDATE streams SET is_public = true WHERE stream_id = ${stream!.stream_id}`;
+    await sql`
+      UPDATE streams
+      SET
+        is_public = TRUE
+      WHERE
+        stream_id = ${stream!.stream_id}
+    `;
     const activeStreams = await streamsDao.getActiveStreams();
     expect(activeStreams.length).toBeGreaterThanOrEqual(1);
     expect(activeStreams[0].is_public).toBeTrue();
@@ -227,7 +375,13 @@ describe('Stream Operations via DAO', () => {
       'Live Stream',
       'desc',
     );
-    await sql`UPDATE streams SET is_public = true WHERE stream_id = ${stream!.stream_id}`;
+    await sql`
+      UPDATE streams
+      SET
+        is_public = TRUE
+      WHERE
+        stream_id = ${stream!.stream_id}
+    `;
     const isPublic =
       await streamsDao.checkIfUserIsStreamingAndPublic(streamerId);
     expect(isPublic).toBeTrue();
