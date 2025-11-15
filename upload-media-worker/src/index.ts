@@ -172,14 +172,6 @@ rabbit.createConsumer(
     const respText = await resp.text();
     console.log('SRS deleter response text:', respText);
 
-    // const forgedLink = link.replace('simple-storage', 'localhost');
-
-    //! TODO Zaimplementowac usuwanie z SRS po udanym zapisaniu do S3
-    const file2 = await fetch(urlPath);
-
-    console.log('Post-deletion fetch response ok?:', file2.ok);
-    console.log('Post-deletion fetch response status:', file2);
-
     // Respond back to the client
     await reply(link);
   },
