@@ -22,14 +22,13 @@ export class UserDAO implements IUserDAO {
 
         if (user.length === 0) {
             console.log(`User with ID ${id} does not exist first time`);
-
             console.log(`user = ${user}`);
             return null; // No user found
         }
 
         if (user.count === 0) {
-            throw new Error(`User with ID ${id} does not exist second time`);
             console.log(`user = ${user}`);
+            throw new Error(`User with ID ${id} does not exist second time`);
         }
         return user;
     }

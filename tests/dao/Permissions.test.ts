@@ -17,14 +17,16 @@ afterEach(async () => {
 
 // --- TESTY ---
 test("powinien utworzyć nowe permission", async () => {
-    const result = await permissionDao.createPermission("test_read");
+    const resultRaw = await permissionDao.createPermission("test_read");
+    const result = resultRaw[0];
     expect(result).not.toBeNull();
     expect(result.name).toBe("TEST_READ");
 });
 
 test("powinien pobrać permission po nazwie", async () => {
     await permissionDao.createPermission("user_write");
-    const permission = await permissionDao.getPermissionByName("user_write");
+    const permissionRaw = await permissionDao.getPermissionByName("user_write");
+    const permission = permissionRaw[0];
 
     expect(permission).not.toBeNull();
     expect(permission!.name).toBe("USER_WRITE");
@@ -36,7 +38,8 @@ test("powinien zwrócić null gdy permission nie istnieje", async () => {
 });
 
 test("powinien usunąć permission po ID", async () => {
-    const created : Permission = await permissionDao.createPermission("delete_me");
+    const createdRaw : Permission = await permissionDao.createPermission("delete_me");
+    const created = createdRaw[0];
     const deleted = await permissionDao.deletePermissionById(created!.permission_id);
     expect(deleted).toBe(true);
 });
