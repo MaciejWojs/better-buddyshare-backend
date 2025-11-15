@@ -83,7 +83,7 @@ test('Update user profile fields', async () => {
 });
 
 test('Prevent duplicate users', async () => {
-  const orginal = await userDao.createUser(
+  const original = await userDao.createUser(
     'unique_user',
     'unique@example.com',
     'password',
@@ -94,5 +94,5 @@ test('Prevent duplicate users', async () => {
     'password',
   );
   //   expect(duplicate.length).toBe(1); // Should return the existing user
-  expect(duplicate?.user_id).toBe(orginal?.user_id);
+  expect(duplicate?.user_id).toBe(original?.user_id);
 });

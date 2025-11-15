@@ -44,19 +44,12 @@ export class UserRepository extends BaseRepository implements IUserRepository {
     username: string,
     email: string,
     password: string,
-  ): Promise<User> {
+  ): Promise<User | null> {
     const user = await this.safeDaoCall<User>(
       this.dao.createUser(username, email, password),
     );
     if (user) this.cache.upsertUser(user);
-    return user!;
-    // try {
-    //     const queryResults = await this.dao.createUser(username, email, password);
-    //     const user = queryResults[0];
-    // } catch (error) {
-    //     console.error("UserRepository.createUser error", { username, email, error });
-    //     throw error;
-    // }
+    return user ?? null;
   }
 
   /**
