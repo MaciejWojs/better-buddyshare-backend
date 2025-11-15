@@ -5,4 +5,6 @@ export interface IPermissionsDAO {
   deletePermissionById(permissionId: number): Promise<void>;
   deletePermissionByName(permissionName: string): Promise<void>;
   getAllPermissions(): Promise<Permission[] | null>;
+  getPermissionByName(permissionName: string): Promise<Permission | null>;
+  getPermissionById(permissionId: number): Promise<Permission | null>;
 }
