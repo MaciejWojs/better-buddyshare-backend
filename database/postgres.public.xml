@@ -1,0 +1,1990 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<database name="postgres" schema="public" type="PostgreSQL - 18.0">
+   <sequences>
+      <sequence increment="1" name="banned_users_per_streamer_ban_id_seq" startValue="1"/>
+      <sequence increment="1" name="chat_message_edit_histories_edit_id_seq" startValue="1"/>
+      <sequence increment="1" name="chat_messages_message_id_seq" startValue="1"/>
+      <sequence increment="1" name="permissions_permission_id_seq" startValue="1"/>
+      <sequence increment="1" name="roles_role_id_seq" startValue="1"/>
+      <sequence increment="1" name="streamStatisticsType_stream_statistic_type_id_seq" startValue="1"/>
+      <sequence increment="1" name="stream_statistics_in_time_id_seq" startValue="1"/>
+      <sequence increment="1" name="streams_stream_id_seq" startValue="1"/>
+      <sequence increment="1" name="subscribers_subscription_id_seq" startValue="1"/>
+      <sequence increment="1" name="user_roles_id_seq" startValue="1"/>
+      <sequence increment="1" name="users_user_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="_prisma_migrations" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="36" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="checksum" nullable="false" remarks="" size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="finished_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="migration_name" nullable="false" remarks="" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="logs" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="rolled_back_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="started_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="7" name="applied_steps_count" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="_prisma_migrations_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="banned_users_per_streamer" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('banned_users_per_streamer_ban_id_seq'::regclass)" digits="0" id="0" name="ban_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="streamer_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="banned_users_per_streamer_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="banned_users_per_streamer_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="'Unknown reason'::text" digits="0" id="3" name="reason" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="banned_by" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="banned_users_per_streamer_banned_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="5" name="banned_since" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="6" name="banned_until" nullable="true" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="7" name="is_permanent" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="ban_id" sequenceNumberInPK="1"/>
+         <index name="banned_users_per_streamer_pkey" unique="true">
+            <column ascending="true" name="ban_id"/>
+         </index>
+         <index name="banned_users_per_streamer_banned_by_idx" unique="false">
+            <column ascending="true" name="banned_by"/>
+         </index>
+         <index name="banned_users_per_streamer_banned_until_idx" unique="false">
+            <column ascending="true" name="banned_until"/>
+         </index>
+         <index name="banned_users_per_streamer_streamer_id_user_id_key" unique="true">
+            <column ascending="true" name="streamer_id"/>
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="chat_message_edit_histories" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('chat_message_edit_histories_edit_id_seq'::regclass)" digits="0" id="0" name="edit_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="message_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="message_id" foreignKey="chat_message_edit_histories_message_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="chat_messages"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="old_content" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="3" name="edited_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <primaryKey column="edit_id" sequenceNumberInPK="1"/>
+         <index name="chat_message_edit_histories_pkey" unique="true">
+            <column ascending="true" name="edit_id"/>
+         </index>
+         <index name="chat_message_edit_histories_edited_at_idx" unique="false">
+            <column ascending="true" name="edited_at"/>
+         </index>
+         <index name="chat_message_edit_histories_message_id_idx" unique="false">
+            <column ascending="true" name="message_id"/>
+         </index>
+      </table>
+      <table name="chat_messages" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('chat_messages_message_id_seq'::regclass)" digits="0" id="0" name="message_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="message_id" foreignKey="chat_message_edit_histories_message_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="chat_message_edit_histories"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="stream_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="stream_id" foreignKey="chat_messages_stream_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="streams"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="chat_messages_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="content" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="4" name="sent_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="is_deleted" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="message_id" sequenceNumberInPK="1"/>
+         <index name="chat_messages_pkey" unique="true">
+            <column ascending="true" name="message_id"/>
+         </index>
+         <index name="chat_messages_is_deleted_idx" unique="false">
+            <column ascending="true" name="is_deleted"/>
+         </index>
+         <index name="chat_messages_stream_id_sent_at_idx" unique="false">
+            <column ascending="true" name="stream_id"/>
+            <column ascending="true" name="sent_at"/>
+         </index>
+         <index name="chat_messages_user_id_idx" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="permissions" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('permissions_permission_id_seq'::regclass)" digits="0" id="0" name="permission_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="permission_id" foreignKey="role_permissions_permission_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="role_permissions"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="permission_id" sequenceNumberInPK="1"/>
+         <index name="permissions_pkey" unique="true">
+            <column ascending="true" name="permission_id"/>
+         </index>
+         <index name="permissions_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+      </table>
+      <table name="refresh_tokens" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="(gen_random_uuid())::text" digits="0" id="0" name="token_id" nullable="false" remarks="" size="2147483647" type="text" typeCode="12">
+            <child column="replaced_by_id" foreignKey="refresh_tokens_replaced_by_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="refresh_tokens"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="token_hash" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="refresh_tokens_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="session_id" nullable="false" remarks="" size="2147483647" type="text" typeCode="12">
+            <parent column="session_id" foreignKey="refresh_tokens_session_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="sessions"/>
+         </column>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="4" name="issued_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="5" name="expires_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="6" name="revoked_at" nullable="true" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="replaced_by_id" nullable="true" remarks="" size="2147483647" type="text" typeCode="12">
+            <parent column="token_id" foreignKey="refresh_tokens_replaced_by_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="refresh_tokens"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="8" name="used_at" nullable="true" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <primaryKey column="token_id" sequenceNumberInPK="1"/>
+         <index name="refresh_tokens_pkey" unique="true">
+            <column ascending="true" name="token_id"/>
+         </index>
+         <index name="idx_refresh_tokens_session_id" unique="false">
+            <column ascending="true" name="session_id"/>
+         </index>
+         <index name="idx_refresh_tokens_token_hash" unique="true">
+            <column ascending="true" name="token_hash"/>
+         </index>
+         <index name="refresh_tokens_issued_at_idx" unique="false">
+            <column ascending="true" name="issued_at"/>
+         </index>
+         <index name="refresh_tokens_session_id_idx" unique="false">
+            <column ascending="true" name="session_id"/>
+         </index>
+         <index name="refresh_tokens_user_id_idx" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+      </table>
+      <table name="role_permissions" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="role_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="role_id" foreignKey="role_permissions_role_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="roles"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="permission_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="permission_id" foreignKey="role_permissions_permission_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="permissions"/>
+         </column>
+         <primaryKey column="role_id" sequenceNumberInPK="1"/>
+         <primaryKey column="permission_id" sequenceNumberInPK="2"/>
+         <index name="role_permissions_pkey" unique="true">
+            <column ascending="true" name="role_id"/>
+            <column ascending="true" name="permission_id"/>
+         </index>
+      </table>
+      <table name="roles" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('roles_role_id_seq'::regclass)" digits="0" id="0" name="role_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="role_id" foreignKey="role_permissions_role_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="role_permissions"/>
+            <child column="role_id" foreignKey="user_roles_role_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="user_roles"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="role_id" sequenceNumberInPK="1"/>
+         <index name="roles_pkey" unique="true">
+            <column ascending="true" name="role_id"/>
+         </index>
+         <index name="roles_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+      </table>
+      <table name="sessions" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="false" defaultValue="(gen_random_uuid())::text" digits="0" id="0" name="session_id" nullable="false" remarks="" size="2147483647" type="text" typeCode="12">
+            <child column="session_id" foreignKey="refresh_tokens_session_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="refresh_tokens"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="sessions_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="ip_address" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="user_agent" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="device_info" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="5" name="created_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="6" name="last_used_at" nullable="true" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="7" name="revoked_at" nullable="true" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="8" name="expires_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="9" name="is_active" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="session_id" sequenceNumberInPK="1"/>
+         <index name="sessions_pkey" unique="true">
+            <column ascending="true" name="session_id"/>
+         </index>
+         <index name="idx_sessions_user_id" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="sessions_user_id_is_active_idx" unique="false">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="is_active"/>
+         </index>
+      </table>
+      <table name="stream_statistics_in_time" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('stream_statistics_in_time_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="stream_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="stream_id" foreignKey="stream_statistics_in_time_stream_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="streams"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="stream_statistic_type_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="stream_statistic_type_id" foreignKey="stream_statistics_in_time_stream_statistic_type_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="streamStatisticsType"/>
+         </column>
+         <column autoUpdated="false" defaultValue="0" digits="0" id="3" name="value" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="4" name="timepoint" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="stream_statistics_in_time_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="stream_statistics_in_time_stream_id_timepoint_idx" unique="false">
+            <column ascending="true" name="stream_id"/>
+            <column ascending="true" name="timepoint"/>
+         </index>
+         <index name="stream_statistics_in_time_stream_statistic_type_id_idx" unique="false">
+            <column ascending="true" name="stream_statistic_type_id"/>
+         </index>
+      </table>
+      <table name="streams" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('streams_stream_id_seq'::regclass)" digits="0" id="0" name="stream_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="stream_id" foreignKey="chat_messages_stream_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="chat_messages"/>
+            <child column="stream_id" foreignKey="stream_statistics_in_time_stream_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="stream_statistics_in_time"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="streamer_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="streams_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="'Untitled Stream'::text" digits="0" id="2" name="title" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'No description provided'::text" digits="0" id="3" name="description" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="''::text" digits="0" id="4" name="thumbnail" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="is_live" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="6" name="is_public" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="7" name="is_locked" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="8" name="started_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="9" name="ended_at" nullable="true" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="path" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="stream_id" sequenceNumberInPK="1"/>
+         <index name="streams_pkey" unique="true">
+            <column ascending="true" name="stream_id"/>
+         </index>
+         <index name="streams_is_live_started_at_idx" unique="false">
+            <column ascending="true" name="is_live"/>
+            <column ascending="true" name="started_at"/>
+         </index>
+         <index name="streams_streamer_id_idx" unique="false">
+            <column ascending="true" name="streamer_id"/>
+         </index>
+      </table>
+      <table name="streamStatisticsType" numRows="0" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('&quot;streamStatisticsType_stream_statistic_type_id_seq&quot;'::regclass)" digits="0" id="0" name="stream_statistic_type_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="stream_statistic_type_id" foreignKey="stream_statistics_in_time_stream_statistic_type_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="stream_statistics_in_time"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="stream_statistic_type_id" sequenceNumberInPK="1"/>
+         <index name="streamStatisticsType_pkey" unique="true">
+            <column ascending="true" name="stream_statistic_type_id"/>
+         </index>
+         <index name="streamStatisticsType_name_key" unique="true">
+            <column ascending="true" name="name"/>
+         </index>
+      </table>
+      <table name="subscribers" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('subscribers_subscription_id_seq'::regclass)" digits="0" id="0" name="subscription_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="subscribers_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="streamer_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="subscribers_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="3" name="subscribed_since" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <primaryKey column="subscription_id" sequenceNumberInPK="1"/>
+         <index name="subscribers_pkey" unique="true">
+            <column ascending="true" name="subscription_id"/>
+         </index>
+         <index name="subscribers_streamer_id_idx" unique="false">
+            <column ascending="true" name="streamer_id"/>
+         </index>
+         <index name="subscribers_user_id_idx" unique="false">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="subscribers_user_id_streamer_id_key" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="streamer_id"/>
+         </index>
+      </table>
+      <table name="user_roles" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('user_roles_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="user_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="user_roles_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="role_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="role_id" foreignKey="user_roles_role_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="roles"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="streamer_id" nullable="true" remarks="" size="10" type="int4" typeCode="4">
+            <parent column="user_id" foreignKey="user_roles_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="users"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="user_roles_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="user_roles_user_id_role_id_streamer_id_key" unique="true">
+            <column ascending="true" name="user_id"/>
+            <column ascending="true" name="role_id"/>
+            <column ascending="true" name="streamer_id"/>
+         </index>
+      </table>
+      <table name="users" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('users_user_id_seq'::regclass)" digits="0" id="0" name="user_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="banned_by" foreignKey="banned_users_per_streamer_banned_by_fkey" implied="false" onDeleteCascade="false" schema="public" table="banned_users_per_streamer"/>
+            <child column="streamer_id" foreignKey="banned_users_per_streamer_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="banned_users_per_streamer"/>
+            <child column="user_id" foreignKey="banned_users_per_streamer_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="banned_users_per_streamer"/>
+            <child column="user_id" foreignKey="chat_messages_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="chat_messages"/>
+            <child column="user_id" foreignKey="refresh_tokens_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="refresh_tokens"/>
+            <child column="user_id" foreignKey="sessions_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="sessions"/>
+            <child column="streamer_id" foreignKey="streams_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="streams"/>
+            <child column="streamer_id" foreignKey="subscribers_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="subscribers"/>
+            <child column="user_id" foreignKey="subscribers_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="subscribers"/>
+            <child column="streamer_id" foreignKey="user_roles_streamer_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="user_roles"/>
+            <child column="user_id" foreignKey="user_roles_user_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="user_roles"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email" nullable="false" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="username" nullable="false" remarks="" size="2147483647" type="citext" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="password" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="4" name="created_at" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="''::text" digits="0" id="5" name="avatar" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="''::text" digits="0" id="6" name="profile_banner" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="'Default description'::text" digits="0" id="7" name="description" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="8" name="is_banned" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="ban_reason" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="3" id="10" name="ban_expires_at" nullable="true" remarks="" size="26" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="''::text" digits="0" id="11" name="stream_token" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="user_id" sequenceNumberInPK="1"/>
+         <index name="users_pkey" unique="true">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="users_created_at_idx" unique="false">
+            <column ascending="true" name="created_at"/>
+         </index>
+         <index name="users_email_key" unique="true">
+            <column ascending="true" name="email"/>
+         </index>
+         <index name="users_user_id_key" unique="true">
+            <column ascending="true" name="user_id"/>
+         </index>
+         <index name="users_username_key" unique="true">
+            <column ascending="true" name="username"/>
+         </index>
+      </table>
+   </tables>
+   <routines>
+      <routine dataAccess="MODIFIES" deterministic="false" name="add_path_to_stream(p_stream_id integer, p_path text)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Associates a file path (e.g., media storage path) with a stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_path" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="add_subscription(p_user_id integer, p_streamer_id integer)" returnType="SETOF subscribers" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Adds a subscription from a user to a streamer. Returns existing subscription if already subscribed, otherwise creates new subscription.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="armor(bytea)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="armor(bytea, text[], text[])" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text[]"/>
+            <parameter mode="IN" type="text[]"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="assign_permission_to_role(p_role_id integer, p_permission_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Assigns a permission to a role. Returns TRUE if assignment was successful or already exists.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+            <parameter mode="IN" name="p_permission_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="assign_role_to_user_by_role_id(p_user_id integer, p_role_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Assigns a role to a user globally (without context). Returns TRUE if successful.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="assign_role_to_user_by_role_name(p_user_id integer, p_role_name text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Assigns a role (by name) to a user globally. Returns TRUE if successful, FALSE if role not found.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="assign_role_to_user_in_context_by_role_id(p_user_id integer, p_role_id integer, p_context_id integer DEFAULT NULL::integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Assigns a role to a user within a specific context (e.g., streamer moderator). Returns TRUE if assignment was successful.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="assign_role_to_user_in_context_by_role_name(p_user_id integer, p_role_name text, p_context_id integer DEFAULT NULL::integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_name" type="text"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="ban_user_globally(p_user_id integer, p_reason text DEFAULT 'Unknown reason'::text)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Globally bans a user with a specified reason. The user is marked as banned in the system.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_reason" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="ban_user_in_chat(p_streamer_id integer, p_user_id integer, p_banner_id integer, p_reason text DEFAULT 'Unknown reason'::text, p_is_permanent boolean DEFAULT false, p_ban_end_date timestamp without time zone DEFAULT NULL::timestamp without time zone)" returnType="SETOF banned_users_per_streamer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Bans a user from a streamer chat. Ban can be permanent or temporary with optional expiration date.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_banner_id" type="integer"/>
+            <parameter mode="IN" name="p_reason" type="text"/>
+            <parameter mode="IN" name="p_is_permanent" type="boolean"/>
+            <parameter mode="IN" name="p_ban_end_date" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="check_if_message_exists(p_message_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a chat message with the given ID exists.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="check_if_stream_exists(p_stream_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="check_if_user_exists(p_user_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user with the specified user ID exists in the database.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="check_if_user_is_streamer(p_user_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user is a streamer by verifying they have a non-empty stream token.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="check_if_user_is_streaming(p_streamer_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user currently has an active live stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="check_if_user_is_streaming_and_public(p_streamer_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user currently has an active public stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext(boolean)" returnType="citext" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="boolean"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext(character)" returnType="citext" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="character"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext(inet)" returnType="citext" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="inet"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_cmp(citext, citext)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_eq(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_ge(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_gt(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_hash(citext)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_hash_extended(citext, bigint)" returnType="bigint" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="bigint"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_larger(citext, citext)" returnType="citext" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_le(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_lt(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_ne(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_pattern_cmp(citext, citext)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_pattern_ge(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_pattern_gt(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_pattern_le(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_pattern_lt(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citext_smaller(citext, citext)" returnType="citext" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citextin(cstring)" returnType="citext" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="cstring"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="citextout(citext)" returnType="cstring" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="citextrecv(internal)" returnType="citext" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="internal"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="citextsend(citext)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="cleanup_expired_sessions_tokens()" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Cleanup function that marks expired sessions and tokens as inactive/revoked for database maintenance.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="cleanup_revoked_tokens_older_than(p_days integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Permanently deletes revoked tokens older than the specified number of days (database pruning/maintenance).]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_days" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="count_chat_messages(p_stream_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the number of non-deleted chat messages in a given stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="count_message_edits(p_message_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the number of edits made to a given chat message.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="create_chat_message(p_stream_id integer, p_user_id integer, p_content text)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Creates a new chat message in a stream and returns the created message.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_content" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="create_permission(p_name text)" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Creates a new permission if it does not already exist. Returns the existing or newly created permission.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="create_role(p_name text)" returnType="SETOF roles" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Creates a new role if it does not already exist. Returns the existing or newly created role.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="create_session(p_user_id integer, p_expires_at timestamp without time zone, p_ip_address text DEFAULT NULL::text, p_user_agent text DEFAULT NULL::text, p_device_info text DEFAULT NULL::text)" returnType="SETOF sessions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Creates a new user session with device information and expiration time. Returns the created session record.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_expires_at" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_ip_address" type="text"/>
+            <parameter mode="IN" name="p_user_agent" type="text"/>
+            <parameter mode="IN" name="p_device_info" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="create_stream(p_streamer_id integer, p_title text DEFAULT NULL::text, p_desc text DEFAULT NULL::text)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Creates a new live stream for a streamer. Raises exception if user is not a streamer or already has active stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+            <parameter mode="IN" name="p_title" type="text"/>
+            <parameter mode="IN" name="p_desc" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="create_user(p_username citext, p_email citext, p_password text)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Creates a new user account if username and email do not already exist. Returns the newly created or existing user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_username" type="citext"/>
+            <parameter mode="IN" name="p_email" type="citext"/>
+            <parameter mode="IN" name="p_password" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="crypt(text, text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="dearmor(text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="decrypt(bytea, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="decrypt_iv(bytea, bytea, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_chat_message(p_message_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Marks a chat message as deleted (soft delete).]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_permission_by_id(p_permission_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes a permission by ID. Returns TRUE on success, FALSE if permission not found.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_permission_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_permission_by_name(p_name text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes a permission by name. Returns TRUE on success, FALSE if permission not found.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_role_by_id(p_role_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes a role by ID if no permissions are assigned to it. Returns TRUE on success, FALSE if permissions are assigned.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_role_by_name(p_name text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes a role by name if no permissions are assigned to it. Returns TRUE on success, FALSE if permissions are assigned.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="digest(bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="digest(text, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="edit_chat_message(p_message_id integer, p_new_content text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the content of a chat message and records the old content in the edit history.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+            <parameter mode="IN" name="p_new_content" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="encrypt(bytea, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="encrypt_iv(bytea, bytea, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="end_all_streams()" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Ends all active streams in the system.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="end_all_streams_for_user(p_user_id integer)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Ends all active streams for a specific user/streamer.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="end_stream(p_stream_id integer)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Ends a live stream by marking it as not live and setting the end timestamp.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="extend_session_expiry(p_session_id text, p_new_expires_at timestamp without time zone)" returnType="SETOF sessions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Extends the expiration time of an existing session.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_session_id" type="text"/>
+            <parameter mode="IN" name="p_new_expires_at" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="fips_mode()" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="gen_random_bytes(integer)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="gen_random_uuid()" returnType="uuid" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="gen_salt(text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="gen_salt(text, integer)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="generate_access_token(length integer DEFAULT 16)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Generates a random access token of specified length using hexadecimal encoding. Minimum length is 8 characters.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="length" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="generate_token_hash(p_raw_token text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Generates a SHA256 hash of a raw token with optional pepper for secure token storage.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_raw_token" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_active_sessions(p_user_id integer)" returnType="SETOF sessions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all active and non-expired sessions for a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_active_streams()" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all currently active and public streams.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_all_messages_paginated(p_stream_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT NULL::integer)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns all chat messages in a stream, including deleted ones, paginated.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_all_permissions()" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all permissions from the system.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_all_roles()" returnType="SETOF roles" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all roles from the system.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_chat_messages(p_stream_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT NULL::integer)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns paginated chat messages for a given stream, excluding deleted messages.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_deleted_messages(p_stream_id integer)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns all deleted chat messages in a given stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_deleted_messages_paginated(p_stream_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT NULL::integer)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns deleted chat messages in a stream, paginated with optional LIMIT and OFFSET.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_last_message(p_stream_id integer)" returnType="chat_messages" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the most recent non-deleted chat message in a given stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_message_edit_history(p_message_id integer)" returnType="SETOF chat_message_edit_histories" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the edit history for a given chat message, sorted by most recent first.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_message_edit_history_paginated(p_message_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT NULL::integer)" returnType="SETOF chat_message_edit_histories" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the edit history for a chat message, paginated with optional LIMIT and OFFSET.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_permission_by_id(p_permission_id integer)" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a permission by its ID.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_permission_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_permission_by_name(p_name text)" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a permission by its name.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_permissions_by_role_id(p_role_id integer)" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all permissions assigned to a role by role ID.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_permissions_by_role_name(p_name text)" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all permissions assigned to a role by role name.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_permissions_by_user(p_user_id integer)" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all global permissions granted to a user through their assigned roles.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_recent_subscriptions_by_user(p_user_id integer, p_limit integer DEFAULT 5)" returnType="TABLE(streamer_id integer, username citext, subscribed_since timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves the most recent subscriptions for a user with optional limit.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="TABLE" name="streamer_id" type="integer"/>
+            <parameter mode="TABLE" name="username" type="citext"/>
+            <parameter mode="TABLE" name="subscribed_since" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_refresh_token(p_token_hash text)" returnType="refresh_tokens" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a refresh token record by its hash.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_token_hash" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_refresh_tokens_by_session(p_session_id text)" returnType="SETOF refresh_tokens" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all refresh tokens associated with a specific session.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_session_id" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_role_by_id(p_role_id integer)" returnType="SETOF roles" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a role by its ID.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_role_by_name(p_role_name text)" returnType="SETOF roles" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a role by its name.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_role_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_roles_by_user(p_user_id integer)" returnType="SETOF roles" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all global roles assigned to a user (without context).]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_roles_by_user_in_context(p_user_id integer, p_context_id integer)" returnType="SETOF roles" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all roles assigned to a user within a specific context.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_sessions_with_refresh_tokens(p_user_id integer)" returnType="TABLE(session_id text, last_token_issued_at timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all sessions with their last token issuance timestamp, useful for session management UI.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="TABLE" name="session_id" type="text"/>
+            <parameter mode="TABLE" name="last_token_issued_at" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_stream_by_id(p_stream_id integer)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a stream by its ID.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_streams_by_user_id(p_user_id integer)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all streams (active and inactive) for a specific user/streamer.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_subscribers_by_streamer(p_streamer_id integer)" returnType="TABLE(user_id integer, username citext, subscribed_since timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all users subscribed to a streamer with subscription timestamps.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+            <parameter mode="TABLE" name="user_id" type="integer"/>
+            <parameter mode="TABLE" name="username" type="citext"/>
+            <parameter mode="TABLE" name="subscribed_since" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_subscribers_paginated(p_streamer_id integer, p_offset integer DEFAULT 0, p_limit integer DEFAULT 10)" returnType="TABLE(user_id integer, username citext, subscribed_since timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves subscribers for a streamer with pagination, sorted by subscription date.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="TABLE" name="user_id" type="integer"/>
+            <parameter mode="TABLE" name="username" type="citext"/>
+            <parameter mode="TABLE" name="subscribed_since" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_subscription_count_by_streamer(p_streamer_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the number of subscribers for a streamer.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_subscription_count_by_user(p_user_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the number of streamers a user is subscribed to.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_subscription_details(p_user_id integer, p_streamer_id integer)" returnType="TABLE(user_id integer, streamer_id integer, subscribed_since timestamp without time zone, streamer_username citext, user_username citext)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves detailed subscription information including both usernames for a specific user-streamer relationship.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+            <parameter mode="TABLE" name="user_id" type="integer"/>
+            <parameter mode="TABLE" name="streamer_id" type="integer"/>
+            <parameter mode="TABLE" name="subscribed_since" type="timestamp without time zone"/>
+            <parameter mode="TABLE" name="streamer_username" type="citext"/>
+            <parameter mode="TABLE" name="user_username" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_subscriptions_by_user(p_user_id integer)" returnType="TABLE(user_id integer, username citext, subscribed_since timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all streamers that a user is subscribed to with subscription timestamps.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="TABLE" name="user_id" type="integer"/>
+            <parameter mode="TABLE" name="username" type="citext"/>
+            <parameter mode="TABLE" name="subscribed_since" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_subscriptions_paginated(p_user_id integer, p_offset integer DEFAULT 0, p_limit integer DEFAULT 10)" returnType="TABLE(streamer_id integer, username citext, subscribed_since timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves subscriptions for a user with pagination, sorted by subscription date.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="TABLE" name="streamer_id" type="integer"/>
+            <parameter mode="TABLE" name="username" type="citext"/>
+            <parameter mode="TABLE" name="subscribed_since" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_top_streamers_by_subscribers(p_limit integer DEFAULT 10)" returnType="TABLE(streamer_id integer, username citext, subscriber_count integer)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves the top streamers ranked by subscriber count, useful for discovery features.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="TABLE" name="streamer_id" type="integer"/>
+            <parameter mode="TABLE" name="username" type="citext"/>
+            <parameter mode="TABLE" name="subscriber_count" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_user_by_email(p_email citext)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a user by their email address.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_email" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_user_by_id(p_id integer)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a user by their user ID.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_user_messages_paginated(p_stream_id integer, p_user_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT NULL::integer)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns all non-deleted chat messages from a specific user in a stream, paginated.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_user_token_history(p_user_id integer, p_limit integer DEFAULT 100)" returnType="SETOF refresh_tokens" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves the token history for a user with optional limit, sorted by most recent first.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="hard_delete_chat_message(p_message_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Permanently deletes a chat message from the database and returns TRUE if a row was deleted, FALSE otherwise.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="hard_delete_user(IN p_user_id integer)" securityType="INVOKER" type="PROCEDURE">
+         <comment><![CDATA[Permanently deletes a user and all associated data from the system.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="hmac(bytea, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="hmac(text, text, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="is_refresh_token_valid(p_token_hash text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Validates a refresh token by checking if it is active, not revoked, not expired, not replaced, and its session is valid.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_token_hash" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="is_token_hash_unique(p_token_hash text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Validates that a token hash is unique before inserting (optional - unique index already exists)]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_token_hash" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="is_user_message_author(p_message_id integer, p_user_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if the specified user is the author of the given chat message.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="issue_refresh_token(p_session_id text, p_user_id integer, p_expires_at timestamp without time zone, p_raw_token text)" returnType="refresh_tokens" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Issues a new refresh token for a session by hashing the raw token and storing the hash in the database.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_session_id" type="text"/>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_expires_at" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_raw_token" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="mark_refresh_token_used(p_token_hash text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Marks a refresh token as used by updating its used_at timestamp for audit purposes.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_token_hash" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="max(citext)" returnType="citext" securityType="INVOKER" type="AGGREGATE">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="min(citext)" returnType="citext" securityType="INVOKER" type="AGGREGATE">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_armor_headers(text, OUT key text, OUT value text)" returnType="SETOF record" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="OUT" name="key" type="text"/>
+            <parameter mode="OUT" name="value" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_key_id(bytea)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_pub_decrypt(bytea, bytea)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_pub_decrypt(bytea, bytea, text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_pub_decrypt(bytea, bytea, text, text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_pub_decrypt_bytea(bytea, bytea)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_pub_decrypt_bytea(bytea, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_pub_decrypt_bytea(bytea, bytea, text, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_pub_encrypt(text, bytea)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="bytea"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_pub_encrypt(text, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_pub_encrypt_bytea(bytea, bytea)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_pub_encrypt_bytea(bytea, bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_sym_decrypt(bytea, text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_sym_decrypt(bytea, text, text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_sym_decrypt_bytea(bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="pgp_sym_decrypt_bytea(bytea, text, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_sym_encrypt(text, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_sym_encrypt(text, text, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_sym_encrypt_bytea(bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="pgp_sym_encrypt_bytea(bytea, text, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="c"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="bytea"/>
+            <parameter mode="IN" type="text"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_match(string citext, pattern citext)" returnType="text[]" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_match(string citext, pattern citext, flags text)" returnType="text[]" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+            <parameter mode="IN" name="flags" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_matches(string citext, pattern citext)" returnType="SETOF text[]" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_matches(string citext, pattern citext, flags text)" returnType="SETOF text[]" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+            <parameter mode="IN" name="flags" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_replace(string citext, pattern citext, replacement text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+            <parameter mode="IN" name="replacement" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_replace(string citext, pattern citext, replacement text, flags text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+            <parameter mode="IN" name="replacement" type="text"/>
+            <parameter mode="IN" name="flags" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_split_to_array(string citext, pattern citext)" returnType="text[]" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_split_to_array(string citext, pattern citext, flags text)" returnType="text[]" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+            <parameter mode="IN" name="flags" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_split_to_table(string citext, pattern citext)" returnType="SETOF text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="regexp_split_to_table(string citext, pattern citext, flags text)" returnType="SETOF text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" name="string" type="citext"/>
+            <parameter mode="IN" name="pattern" type="citext"/>
+            <parameter mode="IN" name="flags" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="remove_all_subscribers_by_streamer(p_streamer_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Removes all subscribers from a streamer and returns count of deleted subscriptions.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="remove_all_subscriptions_by_user(p_user_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Removes all subscriptions from a user and returns count of deleted subscriptions.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="remove_subscription(p_user_id integer, p_streamer_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Removes a subscription between a user and streamer. Returns TRUE if subscription was deleted, FALSE if it did not exist.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="replace(citext, citext, citext)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="replace_refresh_token(p_old_token_hash text, p_new_token_id text)" returnType="SETOF refresh_tokens" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates replaced_by_id field of an old token to link it to a new token during token rotation.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_old_token_hash" type="text"/>
+            <parameter mode="IN" name="p_new_token_id" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_all_user_sessions(p_user_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes all sessions and tokens for a specific user, effectively logging them out everywhere.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_permission_from_role(p_role_id integer, p_permission_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes a permission from a role. Returns TRUE on success, FALSE if permission assignment not found.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+            <parameter mode="IN" name="p_permission_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_refresh_token(p_token_hash text, p_revoke_session boolean DEFAULT false)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes a refresh token and optionally revokes its associated session.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_token_hash" type="text"/>
+            <parameter mode="IN" name="p_revoke_session" type="boolean"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_role_from_user_by_role_id(p_user_id integer, p_role_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes a role from a user globally. Returns TRUE on success, FALSE if role assignment not found.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_role_from_user_by_role_name(p_user_id integer, p_role_name text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes a role (by name) from a user globally. Returns TRUE on success, FALSE if role not found or assignment does not exist.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_role_from_user_in_context_by_role_id(p_user_id integer, p_role_id integer, p_context_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes a role from a user within a specific context. Returns TRUE on success, FALSE if role assignment not found.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_id" type="integer"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_role_from_user_in_context_by_role_name(p_user_id integer, p_role_name text, p_context_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes a role (by name) from a user within a specific context. Returns TRUE on success, FALSE if role not found or assignment does not exist.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_role_name" type="text"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_session(p_session_id text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes a session and all its associated refresh tokens.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_session_id" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="revoke_tokens_by_session(p_session_id text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Revokes all refresh tokens associated with a specific session.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_session_id" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="rotate_and_return_raw_token(p_old_token_hash text, p_new_expires_at timestamp without time zone)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Rotates a refresh token, generates a new raw token and returns it for client use (optional implementation).]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_old_token_hash" type="text"/>
+            <parameter mode="IN" name="p_new_expires_at" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="rotate_refresh_token(p_old_token_hash text, p_new_expires_at timestamp without time zone, p_new_raw_token text)" returnType="refresh_tokens" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Atomically rotates a refresh token by marking old token as replaced and creating a new one. Ensures race condition safety.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_old_token_hash" type="text"/>
+            <parameter mode="IN" name="p_new_expires_at" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_new_raw_token" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="set_stream_live_status(p_stream_id integer, p_is_live boolean)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Sets the live status of a stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_is_live" type="boolean"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="set_stream_lock_status(p_stream_id integer, p_is_locked boolean)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Sets the lock status of a stream (locks prevent new interactions)]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_is_locked" type="boolean"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="split_part(citext, citext, integer)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="strpos(citext, citext)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="subscription_exists(p_user_id integer, p_streamer_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a subscription relationship already exists between a user and a streamer.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_streamer_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticlike(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticlike(citext, text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticnlike(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticnlike(citext, text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticregexeq(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticregexeq(citext, text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticregexne(citext, citext)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="texticregexne(citext, text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="internal"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="touch_session_last_used(p_session_id text)" returnType="SETOF sessions" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the last_used_at timestamp of a session to track user activity.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_session_id" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="true" name="translate(citext, citext, text)" returnType="text" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="sql"/>
+         <parameters>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="citext"/>
+            <parameter mode="IN" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="unban_user_globally(p_user_id integer)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Removes the global ban from a user, clearing the ban reason and expiration timestamp.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="undelete_all_chat_messages(p_stream_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Restores all deleted chat messages in a given stream and returns the count of restored messages.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="undelete_chat_message(p_message_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Restores a previously deleted chat message.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_message_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_stream_details(p_stream_id integer, p_title text DEFAULT NULL::text, p_desc text DEFAULT NULL::text, p_thumbnail text DEFAULT NULL::text)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates stream metadata including title, description, and thumbnail. NULL values are not updated.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_title" type="text"/>
+            <parameter mode="IN" name="p_desc" type="text"/>
+            <parameter mode="IN" name="p_thumbnail" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_stream_token(p_user_id integer)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Generates and assigns a new random stream token to a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_stream_token(p_user_id integer, p_stream_token text)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the stream token for a user to the specified value.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_token" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_user_avatar(p_user_id integer, p_avatar text)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the avatar image URL for a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_avatar" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_user_description(p_user_id integer, p_description text)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the description/bio of a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_description" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_user_email(p_user_id integer, p_email citext)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the email address of a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_email" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_user_password(p_user_id integer, p_password text)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the password hash for a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_password" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_user_profile_banner(p_user_id integer, p_profile_banner text)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the profile banner image URL for a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_profile_banner" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_user_username(p_user_id integer, p_username citext)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates the username of a user.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_username" type="citext"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="user_has_permission(p_user_id integer, p_permission_name text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user has a specific global permission through their assigned roles.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_permission_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="user_has_permission_by_permission_id(p_user_id integer, p_permission_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user has a specific permission (by ID) through their assigned roles.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_permission_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="user_has_permission_by_permission_id_in_context(p_user_id integer, p_permission_id integer, p_context_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user has a specific permission (by ID) within a given context through their assigned roles.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_permission_id" type="integer"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="user_has_permission_by_permission_name_in_context(p_user_id integer, p_permission_name text, p_context_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user has a specific permission (by name) within a given context through their assigned roles.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_permission_name" type="text"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="user_has_permission_in_context(p_user_id integer, p_permission_name text, p_context_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a user has a specific permission within a given context.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_user_id" type="integer"/>
+            <parameter mode="IN" name="p_permission_name" type="text"/>
+            <parameter mode="IN" name="p_context_id" type="integer"/>
+         </parameters>
+      </routine>
+   </routines>
+</database>

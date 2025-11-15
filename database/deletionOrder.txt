@@ -1,0 +1,15 @@
+_prisma_migrations
+user_roles
+banned_users_per_streamer
+subscribers
+stream_statistics_in_time
+role_permissions
+chat_message_edit_histories
+chat_messages
+refresh_tokens
+sessions
+streams
+streamStatisticsType
+permissions
+roles
+users
