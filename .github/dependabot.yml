@@ -1,6 +1,7 @@
 version: 2
+enable-beta-ecosystems: true
 updates:
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/" # katalog gdzie jest package.json (np. "/backend" jeśli nie w repo root)
     schedule:
       interval: "weekly" # daily | weekly | monthly
@@ -12,4 +13,54 @@ updates:
     labels:
       - "dependencies"
     commit-message:
-      prefix: "chore" 
+      prefix: "chore"
+  - package-ecosystem: "bun"
+    directory: "/upload-media-worker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "00:00"
+      timezone: "Europe/Warsaw"
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+  - package-ecosystem: "bun"
+    directory: "/srs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "00:00"
+      timezone: "Europe/Warsaw"
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+  - package-ecosystem: "docker"
+    directory: "/nginx"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "00:00"
+      timezone: "Europe/Warsaw"
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "00:00"
+      timezone: "Europe/Warsaw"
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
