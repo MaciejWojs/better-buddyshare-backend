@@ -1,9 +1,11 @@
-sequenceDiagram
+sequenceDiagram title Image asset update sequence eg. profile picture change
     participant USER as User
     participant API as API Server
     participant RabbitMQ as Message Broker <br /> (RabbitMQ)
     participant Worker as Media Worker <br /> (video and photo)
     participant Storage as Object Storage <br /> (S3 / MinIO)
+
+    autonumber
 
     USER ->> API: Request media update
     Note over USER,API: HTTP request to update image asset <br /> (e.g., change profile picture)
@@ -18,6 +20,6 @@ sequenceDiagram
 
     Worker ->> Storage: Upload new files
     
-    Worker --> RabbitMQ: Notify task completed
-    RabbitMQ --> API: Update task status
+    Worker -->> RabbitMQ: Notify task completed
+    RabbitMQ -->> API: Update task status
     Note over API,RabbitMQ: store media URL in DB
