@@ -1,10 +1,11 @@
-sequenceDiagram
+sequenceDiagram title Database sequence to query data simplified
     participant Client as Service / Controller
     participant Repo as Repository
     participant CacheDao as Cache DAO
     participant DAO as Data Access Object
 
     participant Database as Database
+    autonumber
 
 
     Client ->> Repo: call method (e.g., getUserById)

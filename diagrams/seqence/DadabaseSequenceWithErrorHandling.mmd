@@ -1,0 +1,38 @@
+sequenceDiagram title Database sequence to query data with error handling
+    participant Client as Service / Controller
+    participant Repo as Repository
+    participant BaseRepo as Base Repository <br /> (Abstract)
+    participant DAO as Data Access Object
+    participant baseDao as Base DAO <br /> (Abstract)
+    participant Database as Database
+    
+    autonumber
+    Client ->> Repo: request data (e.g., getUserById)
+    Repo ->>  BaseRepo : Make call to dao <br /> via base repository
+    Note over Repo,BaseRepo: Calls are made via safeDaoCall <br /> method with error handling <br /> RepositoryError wrapping
+
+    BaseRepo ->> DAO: call DAO method
+    
+    DAO ->> baseDao: call base DAO method <br /> via executeQuery
+    Note over DAO,baseDao: executeQuery handles <br /> DB connection and errors
+
+    
+    baseDao ->> Database: perform actual DB query <br /> (procedures or functions)
+    Database -->> baseDao: return query results
+
+    baseDao -->> DAO: return results to DAO
+
+    DAO -->> BaseRepo: return results to Base Repository
+
+    BaseRepo -->> Repo: return results to Repository
+
+    Repo -->> Client: return final data to Client
+
+    alt Error Handling
+        Database -->> baseDao: raise DB error
+        baseDao -->> DAO: catch and wrap in DaoError
+        DAO -->> BaseRepo: catch and wrap in RepositoryError
+        BaseRepo -->> Repo: catch and wrap in RepositoryError
+        Repo -->> Client: return RepositoryError to Client
+
+    end
