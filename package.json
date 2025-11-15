@@ -1,5 +1,6 @@
 {
   "name": "better-buddy-share-backend",
+  "private": "true",
   "scripts": {
     "typecheck": "bunx tsc -p tsconfig.json --noEmit",
     "dev": "bun --hot src/index.ts",
@@ -12,7 +13,7 @@
   "dependencies": {
     "@hono/swagger-ui": "^0.5.2",
     "@prisma/client": "^6.18.0",
-    "hono": "^4.10.2",
+    "hono": "^4.10.4",
     "lodash": "^4.17.21",
     "rabbitmq-client": "^5.0.5"
   },
@@ -24,7 +25,7 @@
     "prisma": "^6.18.0",
     "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.28.14",
-    "typedoc-plugin-dt-links": "^2.0.25",
+    "typedoc-plugin-dt-links": "^2.0.26",
     "typedoc-plugin-markdown": "^4.9.0",
     "typedoc-plugin-mdn-links": "^5.0.10"
   }
