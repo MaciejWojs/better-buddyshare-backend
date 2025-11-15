@@ -1,5 +1,4 @@
-import { DaoError } from '@src/errors/DaoError';
-import { RepositoryError } from '@src/errors/RepositoryError';
+import { RepositoryError, DaoError } from '@src/errors';
 
 export class BaseRepository {
   private formatForLog(err: unknown) {
