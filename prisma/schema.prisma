@@ -30,7 +30,6 @@ model User {
 
     streamToken String? @default("") @map("stream_token")
 
-    // 👇 Tutaj jawnie rozróżniamy relacje
     roles       UserRole[] @relation("UserRoles")
     streamRoles UserRole[] @relation("UserRoleStreamer")
 
