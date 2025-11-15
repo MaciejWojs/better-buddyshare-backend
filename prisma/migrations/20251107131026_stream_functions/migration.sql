@@ -249,3 +249,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 COMMENT ON FUNCTION set_stream_lock_status(INTEGER, BOOLEAN) IS 'Sets the lock status of a stream (locks prevent new interactions)';
+
+
+DROP FUNCTION IF EXISTS check_if_stream_exists(p_stream_id INTEGER) CASCADE;
+CREATE OR REPLACE FUNCTION check_if_stream_exists(p_stream_id INTEGER)
+RETURNS BOOLEAN AS $$
+DECLARE
+    stream_exists BOOLEAN;
+BEGIN
+    SELECT EXISTS (
+        SELECT 1
+        FROM streams
+        WHERE stream_id = p_stream_id
+    ) INTO stream_exists;
+    RETURN stream_exists;
+END;
+$$ LANGUAGE plpgsql;
