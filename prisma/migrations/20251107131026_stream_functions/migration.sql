@@ -21,7 +21,7 @@ DROP FUNCTION IF EXISTS create_stream(p_streamer_id INTEGER, p_title TEXT, p_des
 CREATE OR REPLACE FUNCTION create_stream(p_streamer_id INTEGER, p_title TEXT DEFAULT NULL, p_desc TEXT DEFAULT NULL)
 RETURNS SETOF streams AS $$
 DECLARE
-    active_streams INT;
+    active_streams BOOLEAN;
 BEGIN
 
   IF NOT Check_if_user_is_streamer(p_streamer_id) THEN
@@ -34,7 +34,7 @@ BEGIN
       WHERE streamer_id = p_streamer_id AND is_live = TRUE
   ) INTO active_streams;
 
-  IF active_streams > 0 THEN
+  IF active_streams THEN
     RAISE EXCEPTION 'Streamer with ID % already has an active stream.', p_streamer_id;
   END IF;
 

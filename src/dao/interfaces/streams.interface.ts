@@ -6,7 +6,7 @@ export interface IStreamsDAO {
    * @param userId - The ID of the user to check.
    * @returns A promise that resolves to a boolean indicating whether the user is a streamer.
    */
-  checkIfUserIsStreamer(userId: number): Promise<boolean>;
+  checkIfUserIsStreamer(userId: number): Promise<boolean | null>;
 
   /**
    * Creates a new stream (create_stream) and returns the created record.
@@ -19,7 +19,7 @@ export interface IStreamsDAO {
     streamerId: number,
     title?: string | null,
     description?: string | null,
-  ): Promise<Stream>;
+  ): Promise<Stream | null>;
 
   /**
    * Ends a stream by its ID (end_stream) and returns the updated record or null.
