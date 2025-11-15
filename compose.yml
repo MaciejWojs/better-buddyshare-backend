@@ -16,11 +16,11 @@ services:
     networks:
       - backend
   db:
-    build: 
+    build:
       context: ./database
       dockerfile: Dockerfile
       args:
-        MAKE_PROCS: ${MAKE_PROCS:-8} 
+        MAKE_PROCS: ${MAKE_PROCS:-8}
     image: postgres:18.0-alpine-pgcron
     container_name: postgres-db-cron
     restart: unless-stopped
@@ -28,6 +28,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      JWT_PEPPER: ${JWT_PEPPER}
     ports:
       - '5432:5432'
     networks:
@@ -41,6 +42,7 @@ services:
       -c pg_stat_statements.max=10000
       -c pg_stat_statements.track_utility=off
       -c cron.database_name=${POSTGRES_DB}
+      -c security.jwt_pepper=${JWT_PEPPER}
     volumes:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
