@@ -1,4 +1,4 @@
-import { Stream } from '@src/types/db/Stream';
+import { Stream } from '@src/types/db/';
 
 export interface IStreamsDAO {
   /**
