@@ -91,3 +91,8 @@ nginx-waf/*
 nginx/*
 prisma/generated/*
 docs/*
+diagrams/*
+tests/*
+.husky/*
+.prettierrc
+typedoc.json
