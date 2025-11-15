@@ -112,8 +112,6 @@ CREATE OR REPLACE FUNCTION Assign_role_to_user_by_role_name(
     p_role_name TEXT
 )
 RETURNS BOOLEAN AS $$
-DECLARE
-    fetched_role_id INTEGER;
 BEGIN
     RETURN Assign_role_to_user_in_context_by_role_name(p_user_id, p_role_name);
 END;
