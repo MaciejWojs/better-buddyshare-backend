@@ -16,11 +16,12 @@ if (
 
 const app = new Hono();
 
-const API_TOKEN = process.env.DELETER_API_TOKEN || 'secret123';
+const API_TOKEN = process.env.DELETER_API_TOKEN;
 
 app.use('*', async (c, next) => {
-  const token = c.req.header('authorization') || '';
-  if (!token.includes(API_TOKEN)) {
+  const authHeader = c.req.header('authorization') || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  if (token !== API_TOKEN) {
     return c.text('Unauthorized', 401);
   }
   await next();

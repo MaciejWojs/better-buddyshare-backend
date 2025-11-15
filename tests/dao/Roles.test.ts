@@ -1,4 +1,4 @@
-import { describe, expect, test, beforeAll, afterAll } from 'bun:test';
+import { describe, expect, test, beforeAll } from 'bun:test';
 import { RolesDAO } from '../../src/dao/Roles';
 import { PermissionDAO } from '../../src/dao/Permissions';
 
@@ -41,7 +41,7 @@ describe('RolesDAO', () => {
   test('should return all roles', async () => {
     const roles = await dao.getAllRoles();
     expect(Array.isArray(roles)).toBeTrue();
-    expect((roles ?? []).length).toBeGreaterThan(0);
+    expect(roles.length).toBeGreaterThan(0);
   });
 
   test('should assign a permission to a role', async () => {
@@ -52,7 +52,7 @@ describe('RolesDAO', () => {
     expect(result).toBeTrue();
 
     const perms = await dao.getPermissionsByRoleId(testRoleId);
-    expect((perms ?? []).some((p) => p.name === 'TEST_PERMISSION')).toBeTrue();
+    expect(perms.some((p) => p.name === 'TEST_PERMISSION')).toBeTrue();
   });
 
   test('should revoke a permission from a role', async () => {
@@ -63,7 +63,7 @@ describe('RolesDAO', () => {
     expect(result).toBeTrue();
 
     const perms = await dao.getPermissionsByRoleId(testRoleId);
-    expect((perms ?? []).some((p) => p.name === 'TEST_PERMISSION')).toBeFalse();
+    expect(perms.some((p) => p.name === 'TEST_PERMISSION')).toBeFalse();
   });
 
   test('should return role permissions by ID', async () => {
@@ -71,13 +71,13 @@ describe('RolesDAO', () => {
     await dao.assignPermissionToRole(testRoleId, testPermissionId);
     const perms = await dao.getPermissionsByRoleId(testRoleId);
     expect(Array.isArray(perms)).toBeTrue();
-    expect((perms ?? []).length).toBeGreaterThan(0);
+    expect(perms.length).toBeGreaterThan(0);
   });
 
   test('should return role permissions by name', async () => {
     const perms = await dao.getPermissionsByRoleName('TEST_ROLE');
     expect(Array.isArray(perms)).toBeTrue();
-    expect((perms ?? []).some((p) => p.name === 'TEST_PERMISSION')).toBeTrue();
+    expect(perms.some((p) => p.name === 'TEST_PERMISSION')).toBeTrue();
   });
 
   test('should NOT delete role by ID if it has assigned permissions', async () => {

@@ -104,7 +104,7 @@ export abstract class BaseDAO {
     try {
       const results = await query();
 
-      if (!results)
+      if (results === null || results === undefined)
         console.log(`[QUERY RESULT] during ${query.toString()}`, results);
 
       if (!Array.isArray(results)) {
