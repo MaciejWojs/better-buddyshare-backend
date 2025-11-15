@@ -1,8 +1,7 @@
 import { beforeEach, afterEach, describe, test, expect } from 'bun:test';
 import { sql } from 'bun';
-import { SubscriptionsDAO } from '@src/dao/Subscriptions';
-import { UserDAO } from '@src/dao/Users';
-import { User } from '@src/types/db/User';
+import { SubscriptionsDAO, UserDAO } from '@src/dao';
+import { User } from '@src/types/db';
 
 let subscriptionsDao: SubscriptionsDAO;
 let userDao: UserDAO;
