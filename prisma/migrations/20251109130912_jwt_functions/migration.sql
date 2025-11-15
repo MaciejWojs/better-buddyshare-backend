@@ -1,3 +1,6 @@
+ALTER TABLE refresh_tokens ALTER COLUMN token_id SET DEFAULT gen_random_uuid()::text;
+ALTER TABLE sessions ALTER COLUMN session_id SET DEFAULT gen_random_uuid()::text;
+
 -- 1. Unique index on token_hash in refresh_tokens
 CREATE UNIQUE INDEX IF NOT EXISTS idx_refresh_tokens_token_hash
 ON refresh_tokens (token_hash);
@@ -65,8 +68,8 @@ DECLARE
     token_hash TEXT;
 BEGIN
     token_hash := generate_token_hash(p_raw_token);
-    INSERT INTO refresh_tokens (token_hash, user_id, session_id, expires_at)
-    VALUES (token_hash, p_user_id, p_session_id, p_expires_at)
+    INSERT INTO refresh_tokens (token_id, token_hash, user_id, session_id, expires_at)
+    VALUES (gen_random_uuid()::text,  token_hash, p_user_id, p_session_id, p_expires_at)
     RETURNING * INTO new_token;
     RETURN new_token;
 END;
@@ -108,7 +111,7 @@ BEGIN
     RETURNING * INTO new_token;
     -- 5. Zaktualizuj replaced_by_id w starym tokenie
     UPDATE refresh_tokens
-    SET replaced_by_id = new_token.id
+    SET replaced_by_id = new_token.token_id
     WHERE token_hash = p_old_token_hash;
     RETURN new_token;
 END;
@@ -152,24 +155,27 @@ $$ LANGUAGE plpgsql;
 --   -> ustawia revoked_at, opcjonalnie unieważnia sesję powiązaną
 DROP FUNCTION IF EXISTS revoke_refresh_token(TEXT, BOOLEAN) CASCADE;
 CREATE OR REPLACE FUNCTION revoke_refresh_token(p_token_hash TEXT, p_revoke_session BOOLEAN DEFAULT FALSE)
-RETURNS VOID AS $$
+RETURNS BOOLEAN AS $$
 DECLARE
     token_record refresh_tokens%ROWTYPE;
+    updated_count INTEGER := 0;
 BEGIN
     SELECT * INTO token_record
     FROM refresh_tokens
     WHERE token_hash = p_token_hash;
     IF NOT FOUND THEN
-        RAISE EXCEPTION 'Token not found';
+        RETURN FALSE;
     END IF;
     UPDATE refresh_tokens
     SET revoked_at = NOW()
     WHERE token_hash = p_token_hash;
+    GET DIAGNOSTICS updated_count = ROW_COUNT;
     IF p_revoke_session THEN
         UPDATE sessions
         SET is_active = FALSE, revoked_at = NOW()
         WHERE session_id = token_record.session_id;
     END IF;
+    RETURN (updated_count > 0);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -202,16 +208,24 @@ $$ LANGUAGE plpgsql;
 --   -> unieważnia wszystkie sesje i tokeny użytkownika
 DROP FUNCTION IF EXISTS revoke_all_user_sessions(INTEGER) CASCADE;
 CREATE OR REPLACE FUNCTION revoke_all_user_sessions(p_user_id INTEGER)
-RETURNS VOID AS $$
+RETURNS BOOLEAN AS $$
+DECLARE
+    updated_sessions INTEGER := 0;
+    updated_tokens   INTEGER := 0;
 BEGIN
     -- Unieważnij sesje użytkownika
     UPDATE sessions
     SET is_active = FALSE, revoked_at = NOW()
     WHERE user_id = p_user_id;
+    GET DIAGNOSTICS updated_sessions = ROW_COUNT;
+
     -- Unieważnij powiązane tokeny
     UPDATE refresh_tokens
     SET revoked_at = NOW()
     WHERE user_id = p_user_id;
+    GET DIAGNOSTICS updated_tokens = ROW_COUNT;
+
+    RETURN (updated_sessions > 0 OR updated_tokens > 0);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -278,11 +292,15 @@ $$ LANGUAGE plpgsql;
 --   -> ustawia used_at dla tokena (audyt użycia)
 DROP FUNCTION IF EXISTS mark_refresh_token_used(TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION mark_refresh_token_used(p_token_hash TEXT)
-RETURNS VOID AS $$
+RETURNS BOOLEAN AS $$
+DECLARE
+    updated_count INTEGER := 0;
 BEGIN
     UPDATE refresh_tokens
     SET used_at = NOW()
     WHERE token_hash = p_token_hash;
+    GET DIAGNOSTICS updated_count = ROW_COUNT;
+    RETURN (updated_count > 0);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -290,11 +308,13 @@ $$ LANGUAGE plpgsql;
 --   -> ustawia replaced_by_id dla old_token
 DROP FUNCTION IF EXISTS replace_refresh_token(TEXT, TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION replace_refresh_token(p_old_token_hash TEXT, p_new_token_id TEXT)
-RETURNS VOID AS $$
+RETURNS SETOF refresh_tokens AS $$
 BEGIN
+    RETURN QUERY
     UPDATE refresh_tokens
     SET replaced_by_id = p_new_token_id
-    WHERE token_hash = p_old_token_hash;
+    WHERE token_hash = p_old_token_hash
+    RETURNING *;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -326,10 +346,14 @@ $$ LANGUAGE plpgsql;
 
 DROP FUNCTION IF EXISTS cleanup_revoked_tokens_older_than(INTEGER) CASCADE;
 CREATE OR REPLACE FUNCTION cleanup_revoked_tokens_older_than(p_days INTEGER)
-RETURNS VOID AS $$
+RETURNS BOOLEAN AS $$
+DECLARE
+    deleted_count INTEGER := 0;
 BEGIN
     DELETE FROM refresh_tokens
     WHERE revoked_at IS NOT NULL AND revoked_at < NOW() - INTERVAL '1 day' * p_days;
+    GET DIAGNOSTICS deleted_count = ROW_COUNT;
+    RETURN (deleted_count > 0);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -383,11 +407,15 @@ $$ LANGUAGE plpgsql;
 --   -> unieważnia wszystkie tokeny powiązane z daną sesją
 DROP FUNCTION IF EXISTS revoke_tokens_by_session(TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION revoke_tokens_by_session(p_session_id TEXT)
-RETURNS VOID AS $$
+RETURNS BOOLEAN AS $$
+DECLARE
+    updated_count INTEGER := 0;
 BEGIN
     UPDATE refresh_tokens
     SET revoked_at = NOW()
     WHERE session_id = p_session_id;
+    GET DIAGNOSTICS updated_count = ROW_COUNT;
+    RETURN (updated_count > 0);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -427,7 +455,7 @@ BEGIN
     RETURNING * INTO new_token;
     -- 6. Zaktualizuj replaced_by_id w starym tokenie
     UPDATE refresh_tokens
-    SET replaced_by_id = new_token.id
+    SET replaced_by_id = new_token.token_id
     WHERE token_hash = p_old_token_hash;
     RETURN new_raw_token;
 END;
