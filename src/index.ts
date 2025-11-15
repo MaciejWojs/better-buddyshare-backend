@@ -38,9 +38,7 @@ const openApiDoc = {
 CacheService.getInstance();
 MediaWorkerService.getInstance();
 
-const userDAO = UserDAO.getInstance();
-const userCache = UserCacheDao.getInstance();
-const userRepository = new UserRepository(userDAO, userCache);
+const userRepository = new UserRepository();
 
 app.use('*', cors());
 
