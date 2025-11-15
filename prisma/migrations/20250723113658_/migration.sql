@@ -75,16 +75,17 @@ CREATE TABLE "streams" (
 
 -- CreateTable
 CREATE TABLE "subscribers" (
-    "id" SERIAL NOT NULL,
+    "subscription_id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "streamer_id" INTEGER NOT NULL,
+    "subscribed_since" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "subscribers_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "subscribers_pkey" PRIMARY KEY ("subscription_id")
 );
 
 -- CreateTable
 CREATE TABLE "banned_users_per_streamer" (
-    "id" SERIAL NOT NULL,
+    "ban_id" SERIAL NOT NULL,
     "streamer_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
     "reason" TEXT NOT NULL DEFAULT 'Unknown reason',
@@ -93,7 +94,7 @@ CREATE TABLE "banned_users_per_streamer" (
     "banned_until" TIMESTAMP(3),
     "is_permanent" BOOLEAN NOT NULL DEFAULT true,
 
-    CONSTRAINT "banned_users_per_streamer_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "banned_users_per_streamer_pkey" PRIMARY KEY ("ban_id")
 );
 
 -- CreateTable
