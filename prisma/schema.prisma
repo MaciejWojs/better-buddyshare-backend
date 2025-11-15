@@ -30,12 +30,10 @@ model User {
 
     streamToken String? @default("") @map("stream_token")
 
-    roles              UserRole[]
-    // użytkownik jako moderator
-    moderatedStreamers Moderator[] @relation("ModeratorUser")
+    // 👇 Tutaj jawnie rozróżniamy relacje
+    roles       UserRole[] @relation("UserRoles")
+    streamRoles UserRole[] @relation("UserRoleStreamer")
 
-    // użytkownik jako streamer (moderowani przez innych)
-    myModerators  Moderator[]   @relation("ModeratorStreamer")
     Stream        Stream[]
     Subscribers   Subscribers[] @relation("SubscriberUser")
     Subscriptions Subscribers[] @relation("SubscriberStreamer")
@@ -58,12 +56,15 @@ model Role {
 }
 
 model UserRole {
-    userID Int @map("user_id")
-    roleID Int @map("role_id")
+    userID     Int  @map("user_id")
+    roleID     Int  @map("role_id")
+    streamerID Int? @map("streamer_id")
 
-    user User @relation(fields: [userID], references: [userId])
-    role Role @relation(fields: [roleID], references: [roleId])
+    user     User  @relation("UserRoles", fields: [userID], references: [userId])
+    role     Role  @relation(fields: [roleID], references: [roleId])
+    streamer User? @relation("UserRoleStreamer", fields: [streamerID], references: [userId])
 
+    @@map("user_roles")
     @@id([userID, roleID])
 }
 
@@ -84,37 +85,6 @@ model RolePermission {
 
     @@id([roleId, permissionId])
     @@map("role_permissions")
-}
-
-model Moderator {
-    moderatorId Int @id @default(autoincrement()) @map("moderator_id")
-
-    userId     Int @map("user_id") // moderator
-    streamerId Int @map("streamer_id") // streamer
-
-    user     User @relation("ModeratorUser", fields: [userId], references: [userId])
-    streamer User @relation("ModeratorStreamer", fields: [streamerId], references: [userId])
-
-    permissions ModeratorPermission[]
-
-    @@unique([userId, streamerId]) // jeden moderator dla danego streamera
-    @@map("moderators")
-}
-
-model ModeratorPermission {
-    id          Int @id @default(autoincrement())
-    moderatorId Int
-
-    type ModeratorPermissionType
-
-    moderator Moderator @relation(fields: [moderatorId], references: [moderatorId])
-
-    @@map("moderator_permissions")
-}
-
-enum ModeratorPermissionType {
-    CHAT_MANAGE
-    STREAM_CONTROL
 }
 
 model Stream {
