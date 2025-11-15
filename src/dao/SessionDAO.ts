@@ -4,8 +4,17 @@ import { ISessionDAO } from './interfaces/auth/session.interface';
 import { Session } from '@src/types/db/Session';
 
 export class SessionDAO extends BaseDAO implements ISessionDAO {
+  private static instance: SessionDAO;
   constructor() {
     super();
+  }
+
+  public static getInstance(): SessionDAO {
+    if (!this.instance) {
+      this.instance = new SessionDAO();
+    }
+
+    return this.instance;
   }
 
   private now_30_days_later(): Date {
@@ -45,12 +54,21 @@ export class SessionDAO extends BaseDAO implements ISessionDAO {
   }
 
   async revokeSession(session_id: string): Promise<boolean> {
-    return this.getBooleanFromQuery(
+    return await this.getBooleanFromQuery(
       async () => sql`
         SELECT
           *
         FROM
           revoke_session (${session_id})
+      `,
+    );
+  }
+
+  async revokeAllUserSessions(userId: number): Promise<boolean> {
+    return await this.getBooleanFromQuery(
+      async () => sql`
+        SELECT
+          revoke_all_user_sessions (${userId}) AS RESULT
       `,
     );
   }
