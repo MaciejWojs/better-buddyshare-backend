@@ -1,6 +1,6 @@
-// deleter.ts
 import { Hono } from 'hono';
 import { serve } from 'bun';
+import { promises as fs } from 'fs';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 
@@ -36,7 +36,8 @@ app.delete('/delete', async (c) => {
   const resolvedBase = path.resolve(baseDir) + path.sep;
   const resolved = path.resolve(baseDir, relPath);
 
-  if (!resolved.startsWith(resolvedBase)) {
+  const relativePath = path.relative(resolvedBase, resolved);
+  if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
     return c.json({ ok: false, error: 'invalid path' }, 400);
   }
 

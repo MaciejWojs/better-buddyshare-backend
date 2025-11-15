@@ -206,16 +206,16 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
    *
    * Overloads:
    * @overload
-   * getUserRoles(userId: number): Promise<Role[] | null>
+   * getUserRoles(userId: number): Promise<Role[]>
    * Get all roles assigned to the user globally.
    *
    * @overload
-   * getUserRoles(userId: number, streamerId: number): Promise<Role[] | null>
+   * getUserRoles(userId: number, streamerId: number): Promise<Role[]>
    * Get roles assigned to the user within the given streamer/context.
    *
    * @param userId - ID of the user.
    * @param streamerId - Optional context id to limit the query.
-   * @returns Array of Role objects or null when no records found.
+   * @returns Array of Role objects, or empty array when no records found.
    */
   async getUserRoles(userId: number): Promise<Role[] | null>;
   async getUserRoles(
@@ -242,26 +242,26 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
    *
    * Overloads:
    * @overload
-   * getUserPermissions(userId: number): Promise<Permission[] | null>
+   * getUserPermissions(userId: number): Promise<Permission[]>
    * Get all permissions for the user globally.
    *
    * @overload
-   * getUserPermissions(userId: number, streamerId: number): Promise<Permission[] | null>
+   * getUserPermissions(userId: number, streamerId: number): Promise<Permission[]>
    * Get permissions for the user within the given streamer/context.
    *
    * @param userId - ID of the user.
    * @param streamerId - Optional context id to limit the query.
-   * @returns Array of Permission objects or null when no records found.
+   * @returns Array of Permission objects, or empty array when no records found.
    */
-  async getUserPermissions(userId: number): Promise<Permission[] | null>;
+  async getUserPermissions(userId: number): Promise<Permission[]>;
   async getUserPermissions(
     userId: number,
     streamerId: number,
-  ): Promise<Permission[] | null>;
+  ): Promise<Permission[]>;
   async getUserPermissions(
     userId: number,
     streamerId?: number,
-  ): Promise<Permission[] | null> {
+  ): Promise<Permission[]> {
     if (streamerId) {
       return await this.executeQueryMultiple<Permission>(
         () =>
