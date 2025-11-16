@@ -27,7 +27,7 @@
         "prisma": "^6.19.0",
         "tsconfig-paths": "^4.2.0",
         "typedoc": "^0.28.14",
-        "typedoc-plugin-dt-links": "^2.0.28",
+        "typedoc-plugin-dt-links": "^2.0.29",
         "typedoc-plugin-markdown": "^4.9.0",
         "typedoc-plugin-mdn-links": "^5.0.10",
         "typedoc-plugin-mermaid": "^1.12.0",
@@ -948,7 +948,7 @@
 
     "typedoc": ["typedoc@0.28.14", "", { "dependencies": { "@gerrit0/mini-shiki": "^3.12.0", "lunr": "^2.3.9", "markdown-it": "^14.1.0", "minimatch": "^9.0.5", "yaml": "^2.8.1" }, "peerDependencies": { "typescript": "5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x || 5.9.x" }, "bin": { "typedoc": "bin/typedoc" } }, "sha512-ftJYPvpVfQvFzpkoSfHLkJybdA/geDJ8BGQt/ZnkkhnBYoYW6lBgPQXu6vqLxO4X75dA55hX8Af847H5KXlEFA=="],
 
-    "typedoc-plugin-dt-links": ["typedoc-plugin-dt-links@2.0.28", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-rI2kZwJ90HToy1lbWx4dk7o1FVx1Mnmjk/eE62b9H2Y6j0rQxyiAN9wksoqamthqFNJNLAZgh0AsFHhMVOYvCQ=="],
+    "typedoc-plugin-dt-links": ["typedoc-plugin-dt-links@2.0.29", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-12hNrJohkcRDJSi1oviZbHlFBWaPydRtCNuhnmlsQrl38ZJ/XVdHl0ptbhoFZju8sNjw9wP+57keYBbMnd2pfw=="],
 
     "typedoc-plugin-markdown": ["typedoc-plugin-markdown@4.9.0", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-9Uu4WR9L7ZBgAl60N/h+jqmPxxvnC9nQAlnnO/OujtG2ubjnKTVUFY1XDhcMY+pCqlX3N2HsQM2QTYZIU9tJuw=="],
 
