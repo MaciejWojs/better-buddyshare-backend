@@ -214,10 +214,11 @@ model streamStatisticsType {
   name                   String                   @unique @map("name")
   description            String?                  @map("description")
   streamStatisticsInTime streamStatisticsInTime[]
+  @@map("stream_statistics_types")
 }
 
 model streamStatisticsInTime {
-  id                    Int      @id @default(autoincrement()) @map("id")
+  id                    Int      @id @default(autoincrement()) @map("statistic_in_time_id")
   streamId              Int      @map("stream_id")
   streamStatisticTypeId Int      @map("stream_statistic_type_id")
   value                 Int      @default(0) @map("value")

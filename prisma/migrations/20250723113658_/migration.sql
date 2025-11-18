@@ -141,23 +141,23 @@ CREATE TABLE "chat_messages" (
 );
 
 -- CreateTable
-CREATE TABLE "streamStatisticsType" (
+CREATE TABLE "stream_statistics_types" (
     "stream_statistic_type_id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
 
-    CONSTRAINT "streamStatisticsType_pkey" PRIMARY KEY ("stream_statistic_type_id")
+    CONSTRAINT "stream_statistics_types_pkey" PRIMARY KEY ("stream_statistic_type_id")
 );
 
 -- CreateTable
 CREATE TABLE "stream_statistics_in_time" (
-    "id" SERIAL NOT NULL,
+    "statistic_in_time_id" SERIAL NOT NULL,
     "stream_id" INTEGER NOT NULL,
     "stream_statistic_type_id" INTEGER NOT NULL,
     "value" INTEGER NOT NULL DEFAULT 0,
     "timepoint" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "stream_statistics_in_time_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "stream_statistics_in_time_pkey" PRIMARY KEY ("statistic_in_time_id")
 );
 
 -- CreateTable
@@ -237,7 +237,7 @@ CREATE INDEX "chat_messages_user_id_idx" ON "chat_messages"("user_id");
 CREATE INDEX "chat_messages_is_deleted_idx" ON "chat_messages"("is_deleted");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "streamStatisticsType_name_key" ON "streamStatisticsType"("name");
+CREATE UNIQUE INDEX "stream_statistics_types_name_key" ON "stream_statistics_types"("name");
 
 -- CreateIndex
 CREATE INDEX "stream_statistics_in_time_stream_id_timepoint_idx" ON "stream_statistics_in_time"("stream_id", "timepoint");
@@ -306,7 +306,7 @@ ALTER TABLE "chat_messages" ADD CONSTRAINT "chat_messages_user_id_fkey" FOREIGN 
 ALTER TABLE "stream_statistics_in_time" ADD CONSTRAINT "stream_statistics_in_time_stream_id_fkey" FOREIGN KEY ("stream_id") REFERENCES "streams"("stream_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "stream_statistics_in_time" ADD CONSTRAINT "stream_statistics_in_time_stream_statistic_type_id_fkey" FOREIGN KEY ("stream_statistic_type_id") REFERENCES "streamStatisticsType"("stream_statistic_type_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "stream_statistics_in_time" ADD CONSTRAINT "stream_statistics_in_time_stream_statistic_type_id_fkey" FOREIGN KEY ("stream_statistic_type_id") REFERENCES "stream_statistics_types"("stream_statistic_type_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "chat_message_edit_histories" ADD CONSTRAINT "chat_message_edit_histories_message_id_fkey" FOREIGN KEY ("message_id") REFERENCES "chat_messages"("message_id") ON DELETE RESTRICT ON UPDATE CASCADE;
