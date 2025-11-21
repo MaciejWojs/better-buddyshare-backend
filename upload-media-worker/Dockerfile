@@ -4,7 +4,7 @@ WORKDIR /queue
 
 COPY bun.lock package.json /queue/
 
-RUN bun install --frozen-lockfile
+RUN bun install --ignore-scripts --frozen-lockfile --production
 
 COPY . /queue
 
