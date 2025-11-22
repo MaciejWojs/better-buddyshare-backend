@@ -4,7 +4,7 @@
   "scripts": {
     "typecheck": "bunx tsc -p tsconfig.json --noEmit",
     "dev": "bun --hot src/index.ts",
-    "db": "bunx prisma migrate deploy",
+    "db": "bunx --bun prisma migrate deploy",
     "minify": "bun run typecheck && bun build src/index.ts --target bun --outdir .dist --minify --sourcemap",
     "prod": "bun run db && bun run --bun .dist/index.js",
     "docs": "typedoc && bun run scripts/fix-wiki-links.js",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.5.2",
-    "@prisma/client": "^6.19.0",
+    "@prisma/client": "7",
     "hono": "^4.10.6",
     "lodash": "^4.17.21",
     "rabbitmq-client": "^5.0.7"
@@ -40,7 +40,7 @@
     "prettier-plugin-nginx": "^1.0.3",
     "prettier-plugin-prisma": "^5.0.0",
     "prettier-plugin-sql": "^0.19.2",
-    "prisma": "^6.19.0",
+    "prisma": "7",
     "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.28.14",
     "typedoc-plugin-dt-links": "^2.0.29",
