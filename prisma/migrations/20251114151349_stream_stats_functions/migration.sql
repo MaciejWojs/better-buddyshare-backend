@@ -68,8 +68,8 @@ BEGIN
 
     UPDATE stream_statistics_types
     SET
-        name = p_name,
-        description = COALESCE(p_description, description)
+      name = p_name,
+      description = p_description
     WHERE stream_statistic_type_id = p_stream_statistic_type_id
     RETURNING * INTO updated_row;
 
@@ -205,12 +205,12 @@ COMMENT ON FUNCTION update_stream_statistic_value(INTEGER, INTEGER)
 
 -- Delete a specific stream statistic entry
 CREATE
-OR REPLACE FUNCTION delete_stream_statistic(p_id INTEGER) RETURNS BOOLEAN LANGUAGE plpgsql AS $$
+OR REPLACE FUNCTION delete_stream_statistic(p_statistic_in_time_id INTEGER) RETURNS BOOLEAN LANGUAGE plpgsql AS $$
 DECLARE
     deleted_count INTEGER;
 BEGIN
     Delete FROM stream_statistics_in_time
-    WHERE statistic_in_time_id = p_id;
+    WHERE statistic_in_time_id = p_statistic_in_time_id;
     GET DIAGNOSTICS deleted_count = ROW_COUNT;
     RETURN deleted_count = 1;
 END;

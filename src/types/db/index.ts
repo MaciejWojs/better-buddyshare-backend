@@ -10,3 +10,4 @@ export * from './UserAsSubscriber';
 export * from './UserAsSubscriberWithStreamer';
 export * from './Message';
 export * from './OldMessageRecord';
+export * from './Statistic';
