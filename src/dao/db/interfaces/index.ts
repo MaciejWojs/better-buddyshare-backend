@@ -9,3 +9,4 @@ export * from './auth/IRefreshTokenDAO';
 export * from './auth/ISessionDAO';
 export * from './IMessagesDAO';
 export * from './IStreamStatsDAO';
+export * from './IStreamStatisticsDAO';

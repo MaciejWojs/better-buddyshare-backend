@@ -14,7 +14,7 @@ export interface IStreamStatisticsDAO {
     statistic_in_time_id: number,
     value: number,
   ): Promise<StreamStatisticInTime | null>;
-  deleteStreamStatisticById(statistic_in_time_id: number): Promise<boolean>;
+  deleteStreamStatistic(statistic_in_time_id: number): Promise<boolean>;
   deleteStatisticsForStream(stream_id: number): Promise<number>;
   deleteStatisticsForType(stream_statistic_type_id: number): Promise<number>;
 
@@ -42,22 +42,6 @@ export interface IStreamStatisticsDAO {
   ): Promise<StreamStatsInTimeCombinedWithStreamID[]>;
 
   countStatisticsForStream(stream_id: number): Promise<number>;
-  bulkInsertStreamStatistics(
-    statistics: {
-      stream_id: number;
-      stream_statistic_type_id: number;
-      value: number;
-      timepoint: Date | null;
-    }[],
-  ): Promise<number>;
-  bulkUpdateStreamStatistics(
-    statistics: {
-      stream_id: number;
-      stream_statistic_type_id: number;
-      value: number;
-      timepoint: Date | null;
-    }[],
-  ): Promise<number>;
   deleteOldStatisticsForStream(
     stream_id: number,
     olderThan: Date,
