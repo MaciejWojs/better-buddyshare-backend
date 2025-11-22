@@ -157,6 +157,15 @@
                                         <td></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/get_latest_statistic_for_stream_8eb3a8a8.html">get_latest_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Retrieves the latest statistic entry for a specific stream and statistic type.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/delete_role_by_name_p_name_text_5545aa20.html">delete_role_by_name(p_name text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>plpgsql</td>
@@ -211,6 +220,15 @@
                                         <td><p>Returns the number of streamers a user is subscribed to.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/get_average_statistic_for_strea_a6248284.html">get_average_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>numeric</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns the average value of a statistic for the given stream and type. If the stream ended, averages only values until the ended_at.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/pgp_sym_encrypt_text__text__f72bd93a.html">pgp_sym_encrypt(text, text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>c</td>
@@ -236,6 +254,15 @@
                                         <td>SETOF permissions</td>
                                         <td>INVOKER</td>
                                         <td><p>Retrieves all permissions assigned to a role by role ID.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_sum_statistic_for_stream_an_9e642b16.html">get_sum_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>bigint</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Calculates the sum of statistic values for a specific stream and type. If the stream has ended, the sum includes only values up to ended_at.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/get_message_edit_history_p_mess_b76ee441.html">get_message_edit_history(p_message_id integer)</a></td>
@@ -319,6 +346,15 @@
                                         <td><p>Assigns a role (by name) to a user globally. Returns TRUE if successful, FALSE if role not found.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/get_statistic_type_by_name_p_na_beeb44d8.html">get_statistic_type_by_name(p_name text)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>stream_statistics_types</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Retrieves a stream statistic type by its exact name.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/pgp_pub_encrypt_bytea_bytea__by_cb97902c.html">pgp_pub_encrypt_bytea(bytea, bytea)</a></td>
                                         <td>FUNCTION</td>
                                         <td>c</td>
@@ -355,6 +391,15 @@
                                         <td><p>Returns all chat messages in a stream, including deleted ones, paginated.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/count_statistics_for_stream_p_s_856f6246.html">count_statistics_for_stream(p_stream_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns the total number of statistic entries for a specific stream.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/touch_session_last_used_p_sessio_dac9f7a.html">touch_session_last_used(p_session_id text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>plpgsql</td>
@@ -362,6 +407,15 @@
                                         <td>SETOF sessions</td>
                                         <td>INVOKER</td>
                                         <td><p>Updates the last_used_at timestamp of a session to track user activity.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_statistics_for_stream_by_da_319b3f72.html">get_statistics_for_stream_by_date_range(p_stream_id integer, p_start_date timestamp without time zone, p_end_date timestamp without time zone, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT 0)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Retrieves statistic entries for a specific stream within a date range, including type name and description, ordered by timepoint descending. Supports pagination with limit and offset parameters.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/revoke_role_from_user_by_role_i_1b3c21cb.html">revoke_role_from_user_by_role_id(p_user_id integer, p_role_id integer)</a></td>
@@ -544,6 +598,15 @@
                                         <td></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/delete_old_statistics_for_stream_e8abda8.html">delete_old_statistics_for_stream(p_stream_id integer, p_before_date timestamp without time zone)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Deletes statistic entries for a specific stream older than the specified date. Returns the number of deleted records.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/user_has_permission_by_permissi_7fd7b187.html">user_has_permission_by_permission_id_in_context(p_user_id integer, p_permission_id integer, p_context_id integer)</a></td>
                                         <td>FUNCTION</td>
                                         <td>plpgsql</td>
@@ -551,6 +614,15 @@
                                         <td>boolean</td>
                                         <td>INVOKER</td>
                                         <td><p>Checks if a user has a specific permission (by ID) within a given context through their assigned roles.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/delete_statistics_for_type_p_st_5452b07a.html">delete_statistics_for_type(p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Deletes all statistic entries for a specific statistic type across all streams. Returns the number of deleted entries.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/create_stream_p_streamer_id_int_2e9cb42b.html">create_stream(p_streamer_id integer, p_title text DEFAULT NULL::text, p_desc text DEFAULT NULL::text)</a></td>
@@ -634,6 +706,15 @@
                                         <td><p>Returns the edit history for a chat message, paginated with optional LIMIT and OFFSET.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/update_statistic_type_p_stream__d7068301.html">update_statistic_type(p_stream_statistic_type_id integer, p_name text, p_description text DEFAULT NULL::text)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>stream_statistics_types</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Updates an existing stream statistic type by ID. Returns the updated statistic type. Raises an exception if the type does not exist.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/update_user_avatar_p_user_id_in_91cbc845.html">update_user_avatar(p_user_id integer, p_avatar text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>plpgsql</td>
@@ -650,6 +731,15 @@
                                         <td>boolean</td>
                                         <td>INVOKER</td>
                                         <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/count_statistic_types___eb76a81b.html">count_statistic_types()</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns the total number of stream statistic types.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/user_has_permission_by_permissi_cdd6b3f3.html">user_has_permission_by_permission_id(p_user_id integer, p_permission_id integer)</a></td>
@@ -677,6 +767,15 @@
                                         <td>SETOF users</td>
                                         <td>INVOKER</td>
                                         <td><p>Updates the username of a user.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_top_streams_by_statistic_ty_fd5c9081.html">get_top_streams_by_statistic_type(p_stream_statistic_type_id integer, p_limit integer DEFAULT 10, p_start_date timestamp without time zone DEFAULT NULL::timestamp without time zone, p_end_date timestamp without time zone DEFAULT NULL::timestamp without time zone)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(stream_id integer, total_value bigint, avg_value numeric, max_value integer, count_entries integer)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns the top streams ranked by total statistic value for a specific type, optionally within a date range.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/decrypt_bytea__bytea__text__5a1b3521.html">decrypt(bytea, bytea, text)</a></td>
@@ -713,6 +812,15 @@
                                         <td>boolean</td>
                                         <td>INVOKER</td>
                                         <td><p>Checks if the specified user is the author of the given chat message.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/delete_statistics_for_stream_p_s_6c7e42a.html">delete_statistics_for_stream(p_stream_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Deletes all statistic entries for a specific stream. Returns the number of deleted entries.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/citext_ge_citext__citext__27c407b1.html">citext_ge(citext, citext)</a></td>
@@ -760,6 +868,15 @@
                                         <td><p>Checks if a user currently has an active live stream.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/delete_old_statistics_p_before__48627d66.html">delete_old_statistics(p_before_date timestamp without time zone)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Deletes all statistic entries older than the specified date. Returns the number of deleted records.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/digest_bytea__text__97446213.html">digest(bytea, text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>c</td>
@@ -803,6 +920,24 @@
                                         <td>boolean</td>
                                         <td>INVOKER</td>
                                         <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/delete_statistic_type_p_stream__eee907df.html">delete_statistic_type(p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>boolean</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Deletes a stream statistic type by ID. This will also cascade delete all related stream statistics. Returns TRUE if the deletion was successful, FALSE otherwise.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_statistic_type_by_id_p_stre_d68079d8.html">get_statistic_type_by_id(p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>SETOF stream_statistics_types</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Retrieves a specific stream statistic type by ID.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/ban_user_in_chat_p_streamer_id__d9099d1b.html">ban_user_in_chat(p_streamer_id integer, p_user_id integer, p_banner_id integer, p_reason text DEFAULT &#39;Unknown reason&#39;::text, p_is_permanent boolean DEFAULT false, p_ban_end_date timestamp without time zone DEFAULT NULL::timestamp without time zone)</a></td>
@@ -922,6 +1057,15 @@
                                         <td><p>Creates a new user session with device information and expiration time. Returns the created session record.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/get_statistics_summary___7f41d454.html">get_statistics_summary()</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(total_statistic_types integer, total_statistic_entries bigint, oldest_entry_date timestamp without time zone, newest_entry_date timestamp without time zone, total_streams_with_statistics integer)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns a summary of all statistics in the database including counts, date ranges, and streams with statistics.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/set_stream_lock_status_p_stream_d52b3c8a.html">set_stream_lock_status(p_stream_id integer, p_is_locked boolean)</a></td>
                                         <td>FUNCTION</td>
                                         <td>plpgsql</td>
@@ -994,20 +1138,20 @@
                                         <td><p>Deletes a permission by name. Returns TRUE on success, FALSE if permission not found.</p></td>
                                     </tr>
                                     <tr>
-                                        <td><a href="routines/split_part_citext__citext__inte_a9d08569.html">split_part(citext, citext, integer)</a></td>
-                                        <td>FUNCTION</td>
-                                        <td>sql</td>
-                                        <td>true</td>
-                                        <td>text</td>
-                                        <td>INVOKER</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
                                         <td><a href="routines/pgp_sym_encrypt_bytea_bytea__te_d63a69d6.html">pgp_sym_encrypt_bytea(bytea, text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>c</td>
                                         <td>false</td>
                                         <td>bytea</td>
+                                        <td>INVOKER</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/split_part_citext__citext__inte_a9d08569.html">split_part(citext, citext, integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>sql</td>
+                                        <td>true</td>
+                                        <td>text</td>
                                         <td>INVOKER</td>
                                         <td></td>
                                     </tr>
@@ -1028,6 +1172,15 @@
                                         <td>SETOF streams</td>
                                         <td>INVOKER</td>
                                         <td><p>Ends a live stream by marking it as not live and setting the end timestamp.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/statistic_type_exists_by_name_p_f46cb918.html">statistic_type_exists_by_name(p_name text)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>boolean</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Checks if a stream statistic type with the given name exists. Returns TRUE if exists, FALSE otherwise.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/update_user_password_p_user_id__4daa54c9.html">update_user_password(p_user_id integer, p_password text)</a></td>
@@ -1066,6 +1219,15 @@
                                         <td><p>Retrieves all permissions from the system.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/get_statistics_for_stream_and_t_b78b6d02.html">get_statistics_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT 0)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Retrieves statistic entries for a specific stream and statistic type, including type name and description, ordered by timepoint descending. Supports pagination with limit and offset.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/texticlike_citext__text__f1f03d2b.html">texticlike(citext, text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>internal</td>
@@ -1091,6 +1253,15 @@
                                         <td>boolean</td>
                                         <td>INVOKER</td>
                                         <td><p>Permanently deletes revoked tokens older than the specified number of days (database pruning/maintenance).</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_hourly_statistics_for_strea_c9c4ce44.html">get_hourly_statistics_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer, p_start_date timestamp without time zone, p_end_date timestamp without time zone)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(hour_timestamp timestamp without time zone, avg_value numeric, min_value integer, max_value integer, count_entries integer)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns hourly aggregated statistics (avg, min, max, count) for a stream and type within a date range.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/citextsend_citext__365e5869.html">citextsend(citext)</a></td>
@@ -1228,6 +1399,15 @@
                                         <td><p>Retrieves all users subscribed to a streamer with subscription timestamps.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/update_stream_statistic_value_p_9567d37b.html">update_stream_statistic_value(p_statistic_in_time_id integer, p_value integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>stream_statistics_in_time</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Updates an existing stream statistic entry by ID. Returns the updated statistic entry. Raises an exception if the entry does not exist.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/get_active_streams___9a63c904.html">get_active_streams()</a></td>
                                         <td>FUNCTION</td>
                                         <td>plpgsql</td>
@@ -1237,20 +1417,20 @@
                                         <td><p>Retrieves all currently active and public streams.</p></td>
                                     </tr>
                                     <tr>
-                                        <td><a href="routines/citext_hash_extended_citext__bi_5cc2f969.html">citext_hash_extended(citext, bigint)</a></td>
-                                        <td>FUNCTION</td>
-                                        <td>c</td>
-                                        <td>true</td>
-                                        <td>bigint</td>
-                                        <td>INVOKER</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
                                         <td><a href="routines/texticnlike_citext__text__5947d86b.html">texticnlike(citext, text)</a></td>
                                         <td>FUNCTION</td>
                                         <td>internal</td>
                                         <td>true</td>
                                         <td>boolean</td>
+                                        <td>INVOKER</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/citext_hash_extended_citext__bi_5cc2f969.html">citext_hash_extended(citext, bigint)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>c</td>
+                                        <td>true</td>
+                                        <td>bigint</td>
                                         <td>INVOKER</td>
                                         <td></td>
                                     </tr>
@@ -1271,6 +1451,15 @@
                                         <td>SETOF sessions</td>
                                         <td>INVOKER</td>
                                         <td><p>Retrieves all active and non-expired sessions for a user.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_max_statistic_for_stream_an_540d9fdd.html">get_max_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns the maximum value for the requested statistic type. If the stream ended, it only considers values up to ended_at.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/regexp_split_to_table_string_ci_c82c8dd9.html">regexp_split_to_table(string citext, pattern citext, flags text)</a></td>
@@ -1372,20 +1561,20 @@
                                         <td><p>Issues a new refresh token for a session by hashing the raw token and storing the hash in the database.</p></td>
                                     </tr>
                                     <tr>
-                                        <td><a href="routines/citext_smaller_citext__citext__715983ef.html">citext_smaller(citext, citext)</a></td>
-                                        <td>FUNCTION</td>
-                                        <td>c</td>
-                                        <td>true</td>
-                                        <td>citext</td>
-                                        <td>INVOKER</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
                                         <td><a href="routines/texticnlike_citext__citext__a9fee405.html">texticnlike(citext, citext)</a></td>
                                         <td>FUNCTION</td>
                                         <td>internal</td>
                                         <td>true</td>
                                         <td>boolean</td>
+                                        <td>INVOKER</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/citext_smaller_citext__citext__715983ef.html">citext_smaller(citext, citext)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>c</td>
+                                        <td>true</td>
+                                        <td>citext</td>
                                         <td>INVOKER</td>
                                         <td></td>
                                     </tr>
@@ -1507,6 +1696,15 @@
                                         <td><p>Returns paginated chat messages for a given stream, excluding deleted messages.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/add_stream_statistic_p_stream_i_aa2ecb44.html">add_stream_statistic(p_stream_id integer, p_stream_statistic_type_id integer, p_value integer, p_timepoint timestamp without time zone DEFAULT CURRENT_TIMESTAMP)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>stream_statistics_in_time</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Adds a new stream statistic entry for the specified stream and statistic type. Returns the newly created statistic entry.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/revoke_role_from_user_in_context_d8e2ecb.html">revoke_role_from_user_in_context_by_role_id(p_user_id integer, p_role_id integer, p_context_id integer)</a></td>
                                         <td>FUNCTION</td>
                                         <td>plpgsql</td>
@@ -1525,6 +1723,24 @@
                                         <td><p>Adds a subscription from a user to a streamer. Returns existing subscription if already subscribed, otherwise creates new subscription.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/get_statistics_for_stream_p_str_44b4a960.html">get_statistics_for_stream(p_stream_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT 0)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Retrieves all statistic entries for a specific stream, including type name and description, ordered by timepoint descending. Supports pagination with limit and offset parameters.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/statistic_type_exists_by_id_p_st_59e2d98.html">statistic_type_exists_by_id(p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>boolean</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Checks if a stream statistic type with the given ID exists. Returns TRUE if exists, FALSE otherwise.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/regexp_matches_string_citext__p_68d09cbb.html">regexp_matches(string citext, pattern citext)</a></td>
                                         <td>FUNCTION</td>
                                         <td>sql</td>
@@ -1541,6 +1757,15 @@
                                         <td>text</td>
                                         <td>INVOKER</td>
                                         <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_daily_statistics_for_stream_ffab373a.html">get_daily_statistics_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer, p_start_date timestamp without time zone, p_end_date timestamp without time zone)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>TABLE(day_date date, avg_value numeric, min_value integer, max_value integer, count_entries integer)</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Returns daily aggregated statistics (avg, min, max, count) for a stream and type within a date range.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/user_has_permission_p_user_id_i_bcdafdb6.html">user_has_permission(p_user_id integer, p_permission_name text)</a></td>
@@ -1568,6 +1793,15 @@
                                         <td>text</td>
                                         <td>INVOKER</td>
                                         <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_all_statistic_types___d3e89c04.html">get_all_statistic_types()</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>SETOF stream_statistics_types</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Retrieves all stream statistic types ordered by name.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/citext_ne_citext__citext__87c1368a.html">citext_ne(citext, citext)</a></td>
@@ -1604,6 +1838,15 @@
                                         <td>boolean</td>
                                         <td>INVOKER</td>
                                         <td><p>Revokes a session and all its associated refresh tokens.</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/get_min_statistic_for_stream_an_c4bce32f.html">get_min_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>integer</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Gets the minimum statistic value for a specific stream and type. If the stream has ended, the result includes only values up to ended_at.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/pgp_sym_encrypt_text__text__tex_ab2eabf9.html">pgp_sym_encrypt(text, text, text)</a></td>
@@ -1696,6 +1939,15 @@
                                         <td><p>Revokes a role (by name) from a user globally. Returns TRUE on success, FALSE if role not found or assignment does not exist.</p></td>
                                     </tr>
                                     <tr>
+                                        <td><a href="routines/delete_stream_statistic_p_stati_7c5d2eb7.html">delete_stream_statistic(p_statistic_in_time_id integer)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>boolean</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Deletes a specific stream statistic entry by ID. Returns TRUE if the deletion was successful, FALSE otherwise.</p></td>
+                                    </tr>
+                                    <tr>
                                         <td><a href="routines/gen_random_uuid___5c5d1249.html">gen_random_uuid()</a></td>
                                         <td>FUNCTION</td>
                                         <td>c</td>
@@ -1723,20 +1975,20 @@
                                         <td><p>Removes all subscriptions from a user and returns count of deleted subscriptions.</p></td>
                                     </tr>
                                     <tr>
-                                        <td><a href="routines/pgp_pub_encrypt_text__bytea__te_be7ad0db.html">pgp_pub_encrypt(text, bytea, text)</a></td>
-                                        <td>FUNCTION</td>
-                                        <td>c</td>
-                                        <td>false</td>
-                                        <td>bytea</td>
-                                        <td>INVOKER</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
                                         <td><a href="routines/texticregexeq_citext__citext__1f7093f3.html">texticregexeq(citext, citext)</a></td>
                                         <td>FUNCTION</td>
                                         <td>internal</td>
                                         <td>true</td>
                                         <td>boolean</td>
+                                        <td>INVOKER</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/pgp_pub_encrypt_text__bytea__te_be7ad0db.html">pgp_pub_encrypt(text, bytea, text)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>c</td>
+                                        <td>false</td>
+                                        <td>bytea</td>
                                         <td>INVOKER</td>
                                         <td></td>
                                     </tr>
@@ -1883,6 +2135,15 @@
                                         <td>boolean</td>
                                         <td>INVOKER</td>
                                         <td><p>Marks a chat message as deleted (soft delete).</p></td>
+                                    </tr>
+                                    <tr>
+                                        <td><a href="routines/create_statistic_type_p_name_te_93ff3c61.html">create_statistic_type(p_name text, p_description text DEFAULT NULL::text)</a></td>
+                                        <td>FUNCTION</td>
+                                        <td>plpgsql</td>
+                                        <td>false</td>
+                                        <td>stream_statistics_types</td>
+                                        <td>INVOKER</td>
+                                        <td><p>Creates a new stream statistic type with the given name and optional description. Returns the newly created statistic type. If a type with the same name already exists, returns the existing type.</p></td>
                                     </tr>
                                     <tr>
                                         <td><a href="routines/citext_character__62531fd5.html">citext(character)</a></td>

@@ -6,8 +6,8 @@
       <sequence increment="1" name="chat_messages_message_id_seq" startValue="1"/>
       <sequence increment="1" name="permissions_permission_id_seq" startValue="1"/>
       <sequence increment="1" name="roles_role_id_seq" startValue="1"/>
-      <sequence increment="1" name="streamStatisticsType_stream_statistic_type_id_seq" startValue="1"/>
-      <sequence increment="1" name="stream_statistics_in_time_id_seq" startValue="1"/>
+      <sequence increment="1" name="stream_statistics_in_time_statistic_in_time_id_seq" startValue="1"/>
+      <sequence increment="1" name="stream_statistics_types_stream_statistic_type_id_seq" startValue="1"/>
       <sequence increment="1" name="streams_stream_id_seq" startValue="1"/>
       <sequence increment="1" name="subscribers_subscription_id_seq" startValue="1"/>
       <sequence increment="1" name="user_roles_id_seq" startValue="1"/>
@@ -211,18 +211,18 @@
          </index>
       </table>
       <table name="stream_statistics_in_time" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('stream_statistics_in_time_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="true" defaultValue="nextval('stream_statistics_in_time_statistic_in_time_id_seq'::regclass)" digits="0" id="0" name="statistic_in_time_id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="stream_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
             <parent column="stream_id" foreignKey="stream_statistics_in_time_stream_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="streams"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="stream_statistic_type_id" nullable="false" remarks="" size="10" type="int4" typeCode="4">
-            <parent column="stream_statistic_type_id" foreignKey="stream_statistics_in_time_stream_statistic_type_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="streamStatisticsType"/>
+            <parent column="stream_statistic_type_id" foreignKey="stream_statistics_in_time_stream_statistic_type_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="stream_statistics_types"/>
          </column>
          <column autoUpdated="false" defaultValue="0" digits="0" id="3" name="value" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="CURRENT_TIMESTAMP" digits="3" id="4" name="timepoint" nullable="false" remarks="" size="26" type="timestamp" typeCode="93"/>
-         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <primaryKey column="statistic_in_time_id" sequenceNumberInPK="1"/>
          <index name="stream_statistics_in_time_pkey" unique="true">
-            <column ascending="true" name="id"/>
+            <column ascending="true" name="statistic_in_time_id"/>
          </index>
          <index name="stream_statistics_in_time_stream_id_timepoint_idx" unique="false">
             <column ascending="true" name="stream_id"/>
@@ -230,6 +230,20 @@
          </index>
          <index name="stream_statistics_in_time_stream_statistic_type_id_idx" unique="false">
             <column ascending="true" name="stream_statistic_type_id"/>
+         </index>
+      </table>
+      <table name="stream_statistics_types" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('stream_statistics_types_stream_statistic_type_id_seq'::regclass)" digits="0" id="0" name="stream_statistic_type_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
+            <child column="stream_statistic_type_id" foreignKey="stream_statistics_in_time_stream_statistic_type_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="stream_statistics_in_time"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="stream_statistic_type_id" sequenceNumberInPK="1"/>
+         <index name="stream_statistics_types_pkey" unique="true">
+            <column ascending="true" name="stream_statistic_type_id"/>
+         </index>
+         <index name="stream_statistics_types_name_key" unique="true">
+            <column ascending="true" name="name"/>
          </index>
       </table>
       <table name="streams" remarks="" schema="public" type="TABLE">
@@ -259,20 +273,6 @@
          </index>
          <index name="streams_streamer_id_idx" unique="false">
             <column ascending="true" name="streamer_id"/>
-         </index>
-      </table>
-      <table name="streamStatisticsType" numRows="0" remarks="" schema="public" type="TABLE">
-         <column autoUpdated="true" defaultValue="nextval('&quot;streamStatisticsType_stream_statistic_type_id_seq&quot;'::regclass)" digits="0" id="0" name="stream_statistic_type_id" nullable="false" remarks="" size="10" type="serial" typeCode="4">
-            <child column="stream_statistic_type_id" foreignKey="stream_statistics_in_time_stream_statistic_type_id_fkey" implied="false" onDeleteCascade="false" schema="public" table="stream_statistics_in_time"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="" size="2147483647" type="text" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="description" nullable="true" remarks="" size="2147483647" type="text" typeCode="12"/>
-         <primaryKey column="stream_statistic_type_id" sequenceNumberInPK="1"/>
-         <index name="streamStatisticsType_pkey" unique="true">
-            <column ascending="true" name="stream_statistic_type_id"/>
-         </index>
-         <index name="streamStatisticsType_name_key" unique="true">
-            <column ascending="true" name="name"/>
          </index>
       </table>
       <table name="subscribers" remarks="" schema="public" type="TABLE">
@@ -370,6 +370,16 @@
          <parameters>
             <parameter mode="IN" name="p_stream_id" type="integer"/>
             <parameter mode="IN" name="p_path" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="add_stream_statistic(p_stream_id integer, p_stream_statistic_type_id integer, p_value integer, p_timepoint timestamp without time zone DEFAULT CURRENT_TIMESTAMP)" returnType="stream_statistics_in_time" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Adds a new stream statistic entry for the specified stream and statistic type. Returns the newly created statistic entry.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+            <parameter mode="IN" name="p_value" type="integer"/>
+            <parameter mode="IN" name="p_timepoint" type="timestamp without time zone"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="add_subscription(p_user_id integer, p_streamer_id integer)" returnType="SETOF subscribers" securityType="INVOKER" type="FUNCTION">
@@ -704,6 +714,20 @@
             <parameter mode="IN" name="p_message_id" type="integer"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="count_statistic_types()" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the total number of stream statistic types.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="count_statistics_for_stream(p_stream_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the total number of statistic entries for a specific stream.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="create_chat_message(p_stream_id integer, p_user_id integer, p_content text)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Creates a new chat message in a stream and returns the created message.]]></comment>
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
@@ -736,6 +760,14 @@
             <parameter mode="IN" name="p_ip_address" type="text"/>
             <parameter mode="IN" name="p_user_agent" type="text"/>
             <parameter mode="IN" name="p_device_info" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="create_statistic_type(p_name text, p_description text DEFAULT NULL::text)" returnType="stream_statistics_types" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Creates a new stream statistic type with the given name and optional description. Returns the newly created statistic type. If a type with the same name already exists, returns the existing type.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+            <parameter mode="IN" name="p_description" type="text"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="create_stream(p_streamer_id integer, p_title text DEFAULT NULL::text, p_desc text DEFAULT NULL::text)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
@@ -797,6 +829,21 @@
             <parameter mode="IN" name="p_message_id" type="integer"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_old_statistics(p_before_date timestamp without time zone)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes all statistic entries older than the specified date. Returns the number of deleted records.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_before_date" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_old_statistics_for_stream(p_stream_id integer, p_before_date timestamp without time zone)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes statistic entries for a specific stream older than the specified date. Returns the number of deleted records.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_before_date" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="delete_permission_by_id(p_permission_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Deletes a permission by ID. Returns TRUE on success, FALSE if permission not found.]]></comment>
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
@@ -823,6 +870,34 @@
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
          <parameters>
             <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_statistic_type(p_stream_statistic_type_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes a stream statistic type by ID. This will also cascade delete all related stream statistics. Returns TRUE if the deletion was successful, FALSE otherwise.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_statistics_for_stream(p_stream_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes all statistic entries for a specific stream. Returns the number of deleted entries.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_statistics_for_type(p_stream_statistic_type_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes all statistic entries for a specific statistic type across all streams. Returns the number of deleted entries.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="delete_stream_statistic(p_statistic_in_time_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Deletes a specific stream statistic entry by ID. Returns TRUE if the deletion was successful, FALSE otherwise.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_statistic_in_time_id" type="integer"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="true" name="digest(bytea, text)" returnType="bytea" securityType="INVOKER" type="FUNCTION">
@@ -984,6 +1059,21 @@
             <parameter mode="IN"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_all_statistic_types()" returnType="SETOF stream_statistics_types" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all stream statistic types ordered by name.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_average_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)" returnType="numeric" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the average value of a statistic for the given stream and type. If the stream ended, averages only values until the ended_at.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_chat_messages(p_stream_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT NULL::integer)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Returns paginated chat messages for a given stream, excluding deleted messages.]]></comment>
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
@@ -991,6 +1081,21 @@
             <parameter mode="IN" name="p_stream_id" type="integer"/>
             <parameter mode="IN" name="p_limit" type="integer"/>
             <parameter mode="IN" name="p_offset" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_daily_statistics_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer, p_start_date timestamp without time zone, p_end_date timestamp without time zone)" returnType="TABLE(day_date date, avg_value numeric, min_value integer, max_value integer, count_entries integer)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns daily aggregated statistics (avg, min, max, count) for a stream and type within a date range.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+            <parameter mode="IN" name="p_start_date" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_end_date" type="timestamp without time zone"/>
+            <parameter mode="TABLE" name="day_date" type="date"/>
+            <parameter mode="TABLE" name="avg_value" type="numeric"/>
+            <parameter mode="TABLE" name="min_value" type="integer"/>
+            <parameter mode="TABLE" name="max_value" type="integer"/>
+            <parameter mode="TABLE" name="count_entries" type="integer"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_deleted_messages(p_stream_id integer)" returnType="SETOF chat_messages" securityType="INVOKER" type="FUNCTION">
@@ -1009,11 +1114,49 @@
             <parameter mode="IN" name="p_offset" type="integer"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_hourly_statistics_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer, p_start_date timestamp without time zone, p_end_date timestamp without time zone)" returnType="TABLE(hour_timestamp timestamp without time zone, avg_value numeric, min_value integer, max_value integer, count_entries integer)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns hourly aggregated statistics (avg, min, max, count) for a stream and type within a date range.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+            <parameter mode="IN" name="p_start_date" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_end_date" type="timestamp without time zone"/>
+            <parameter mode="TABLE" name="hour_timestamp" type="timestamp without time zone"/>
+            <parameter mode="TABLE" name="avg_value" type="numeric"/>
+            <parameter mode="TABLE" name="min_value" type="integer"/>
+            <parameter mode="TABLE" name="max_value" type="integer"/>
+            <parameter mode="TABLE" name="count_entries" type="integer"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_last_message(p_stream_id integer)" returnType="chat_messages" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Returns the most recent non-deleted chat message in a given stream.]]></comment>
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
          <parameters>
             <parameter mode="IN" name="p_stream_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_latest_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)" returnType="TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves the latest statistic entry for a specific stream and statistic type.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+            <parameter mode="TABLE" name="statistic_in_time_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_statistic_type_id" type="integer"/>
+            <parameter mode="TABLE" name="statistic_type_name" type="text"/>
+            <parameter mode="TABLE" name="statistic_type_description" type="text"/>
+            <parameter mode="TABLE" name="value" type="integer"/>
+            <parameter mode="TABLE" name="timepoint" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_max_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the maximum value for the requested statistic type. If the stream ended, it only considers values up to ended_at.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_message_edit_history(p_message_id integer)" returnType="SETOF chat_message_edit_histories" securityType="INVOKER" type="FUNCTION">
@@ -1030,6 +1173,14 @@
             <parameter mode="IN" name="p_message_id" type="integer"/>
             <parameter mode="IN" name="p_limit" type="integer"/>
             <parameter mode="IN" name="p_offset" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_min_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)" returnType="integer" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Gets the minimum statistic value for a specific stream and type. If the stream has ended, the result includes only values up to ended_at.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_permission_by_id(p_permission_id integer)" returnType="SETOF permissions" securityType="INVOKER" type="FUNCTION">
@@ -1130,6 +1281,82 @@
             <parameter mode="TABLE" name="last_token_issued_at" type="timestamp without time zone"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_statistic_type_by_id(p_stream_statistic_type_id integer)" returnType="SETOF stream_statistics_types" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a specific stream statistic type by ID.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_statistic_type_by_name(p_name text)" returnType="stream_statistics_types" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves a stream statistic type by its exact name.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_statistics_for_stream(p_stream_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT 0)" returnType="TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves all statistic entries for a specific stream, including type name and description, ordered by timepoint descending. Supports pagination with limit and offset parameters.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+            <parameter mode="TABLE" name="statistic_in_time_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_statistic_type_id" type="integer"/>
+            <parameter mode="TABLE" name="statistic_type_name" type="text"/>
+            <parameter mode="TABLE" name="statistic_type_description" type="text"/>
+            <parameter mode="TABLE" name="value" type="integer"/>
+            <parameter mode="TABLE" name="timepoint" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_statistics_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT 0)" returnType="TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves statistic entries for a specific stream and statistic type, including type name and description, ordered by timepoint descending. Supports pagination with limit and offset.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+            <parameter mode="TABLE" name="statistic_in_time_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_statistic_type_id" type="integer"/>
+            <parameter mode="TABLE" name="statistic_type_name" type="text"/>
+            <parameter mode="TABLE" name="statistic_type_description" type="text"/>
+            <parameter mode="TABLE" name="value" type="integer"/>
+            <parameter mode="TABLE" name="timepoint" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_statistics_for_stream_by_date_range(p_stream_id integer, p_start_date timestamp without time zone, p_end_date timestamp without time zone, p_limit integer DEFAULT NULL::integer, p_offset integer DEFAULT 0)" returnType="TABLE(statistic_in_time_id integer, stream_id integer, stream_statistic_type_id integer, statistic_type_name text, statistic_type_description text, value integer, timepoint timestamp without time zone)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Retrieves statistic entries for a specific stream within a date range, including type name and description, ordered by timepoint descending. Supports pagination with limit and offset parameters.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_start_date" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_end_date" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_offset" type="integer"/>
+            <parameter mode="TABLE" name="statistic_in_time_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_id" type="integer"/>
+            <parameter mode="TABLE" name="stream_statistic_type_id" type="integer"/>
+            <parameter mode="TABLE" name="statistic_type_name" type="text"/>
+            <parameter mode="TABLE" name="statistic_type_description" type="text"/>
+            <parameter mode="TABLE" name="value" type="integer"/>
+            <parameter mode="TABLE" name="timepoint" type="timestamp without time zone"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_statistics_summary()" returnType="TABLE(total_statistic_types integer, total_statistic_entries bigint, oldest_entry_date timestamp without time zone, newest_entry_date timestamp without time zone, total_streams_with_statistics integer)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns a summary of all statistics in the database including counts, date ranges, and streams with statistics.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="TABLE" name="total_statistic_types" type="integer"/>
+            <parameter mode="TABLE" name="total_statistic_entries" type="bigint"/>
+            <parameter mode="TABLE" name="oldest_entry_date" type="timestamp without time zone"/>
+            <parameter mode="TABLE" name="newest_entry_date" type="timestamp without time zone"/>
+            <parameter mode="TABLE" name="total_streams_with_statistics" type="integer"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_stream_by_id(p_stream_id integer)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Retrieves a stream by its ID.]]></comment>
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
@@ -1215,6 +1442,14 @@
             <parameter mode="TABLE" name="subscribed_since" type="timestamp without time zone"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_sum_statistic_for_stream_and_type(p_stream_id integer, p_stream_statistic_type_id integer)" returnType="bigint" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Calculates the sum of statistic values for a specific stream and type. If the stream has ended, the sum includes only values up to ended_at.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_id" type="integer"/>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_top_streamers_by_subscribers(p_limit integer DEFAULT 10)" returnType="TABLE(streamer_id integer, username citext, subscriber_count integer)" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Retrieves the top streamers ranked by subscriber count, useful for discovery features.]]></comment>
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
@@ -1223,6 +1458,21 @@
             <parameter mode="TABLE" name="streamer_id" type="integer"/>
             <parameter mode="TABLE" name="username" type="citext"/>
             <parameter mode="TABLE" name="subscriber_count" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="get_top_streams_by_statistic_type(p_stream_statistic_type_id integer, p_limit integer DEFAULT 10, p_start_date timestamp without time zone DEFAULT NULL::timestamp without time zone, p_end_date timestamp without time zone DEFAULT NULL::timestamp without time zone)" returnType="TABLE(stream_id integer, total_value bigint, avg_value numeric, max_value integer, count_entries integer)" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Returns the top streams ranked by total statistic value for a specific type, optionally within a date range.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+            <parameter mode="IN" name="p_limit" type="integer"/>
+            <parameter mode="IN" name="p_start_date" type="timestamp without time zone"/>
+            <parameter mode="IN" name="p_end_date" type="timestamp without time zone"/>
+            <parameter mode="TABLE" name="stream_id" type="integer"/>
+            <parameter mode="TABLE" name="total_value" type="bigint"/>
+            <parameter mode="TABLE" name="avg_value" type="numeric"/>
+            <parameter mode="TABLE" name="max_value" type="integer"/>
+            <parameter mode="TABLE" name="count_entries" type="integer"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="get_user_by_email(p_email citext)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">
@@ -1753,6 +2003,20 @@
             <parameter mode="IN" type="integer"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="statistic_type_exists_by_id(p_stream_statistic_type_id integer)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a stream statistic type with the given ID exists. Returns TRUE if exists, FALSE otherwise.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="statistic_type_exists_by_name(p_name text)" returnType="boolean" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Checks if a stream statistic type with the given name exists. Returns TRUE if exists, FALSE otherwise.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_name" type="text"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="true" name="strpos(citext, citext)" returnType="integer" securityType="INVOKER" type="FUNCTION">
          <comment/>
          <definition language="sql"/>
@@ -1870,6 +2134,15 @@
             <parameter mode="IN" name="p_message_id" type="integer"/>
          </parameters>
       </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_statistic_type(p_stream_statistic_type_id integer, p_name text, p_description text DEFAULT NULL::text)" returnType="stream_statistics_types" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates an existing stream statistic type by ID. Returns the updated statistic type. Raises an exception if the type does not exist.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_stream_statistic_type_id" type="integer"/>
+            <parameter mode="IN" name="p_name" type="text"/>
+            <parameter mode="IN" name="p_description" type="text"/>
+         </parameters>
+      </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="update_stream_details(p_stream_id integer, p_title text DEFAULT NULL::text, p_desc text DEFAULT NULL::text, p_thumbnail text DEFAULT NULL::text)" returnType="SETOF streams" securityType="INVOKER" type="FUNCTION">
          <comment><![CDATA[Updates stream metadata including title, description, and thumbnail. NULL values are not updated.]]></comment>
          <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
@@ -1878,6 +2151,14 @@
             <parameter mode="IN" name="p_title" type="text"/>
             <parameter mode="IN" name="p_desc" type="text"/>
             <parameter mode="IN" name="p_thumbnail" type="text"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="update_stream_statistic_value(p_statistic_in_time_id integer, p_value integer)" returnType="stream_statistics_in_time" securityType="INVOKER" type="FUNCTION">
+         <comment><![CDATA[Updates an existing stream statistic entry by ID. Returns the updated statistic entry. Raises an exception if the entry does not exist.]]></comment>
+         <definition language="plpgsql"><![CDATA[Redacted, use --include-routine-definition]]></definition>
+         <parameters>
+            <parameter mode="IN" name="p_statistic_in_time_id" type="integer"/>
+            <parameter mode="IN" name="p_value" type="integer"/>
          </parameters>
       </routine>
       <routine dataAccess="MODIFIES" deterministic="false" name="update_stream_token(p_user_id integer)" returnType="SETOF users" securityType="INVOKER" type="FUNCTION">

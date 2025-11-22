@@ -9,7 +9,7 @@ chat_messages
 refresh_tokens
 sessions
 streams
-streamStatisticsType
+stream_statistics_types
 permissions
 roles
 users
