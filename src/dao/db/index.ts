@@ -9,3 +9,5 @@ export * from './Subscriptions';
 export * from './UserRoles';
 export * from './Users';
 export * from './Messages';
+export * from './StreamStatsTypes';
+export * from './StreamStatisticsDAO';

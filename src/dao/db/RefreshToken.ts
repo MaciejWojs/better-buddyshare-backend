@@ -1,4 +1,4 @@
-import { RefreshToken } from '@src/types/db/RefreshToken';
+import { RefreshToken } from '@src/types';
 import { BaseDAO } from './BaseDao';
 import { IRefreshTokenDAO, SessionWithLastToken } from './interfaces';
 import { sql } from 'bun';

@@ -4,7 +4,7 @@ WORKDIR /BS
 
 COPY bun.lock package.json /BS/
 
-RUN bun install --frozen-lockfile
+RUN bun install --ignore-scripts --frozen-lockfile
 
 COPY . /BS
 

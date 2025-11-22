@@ -5,6 +5,7 @@
 Better BuddyShare is a backend media server written in TypeScript + Bun, using a layered architecture (DAO → Repository → Controller) and asynchronous services (RabbitMQ, Redis, S3/Minio, PostgreSQL).
 
 The project emphasizes:
+
 - clean, strongly-typed TypeScript code
 - clear separation of responsibilities between layers
 - controlled error handling
@@ -16,6 +17,7 @@ The project emphasizes:
 ## 🏗️ Project architecture
 
 ### 1️⃣ DAO (Data Access Object)
+
 - DAO is the only layer that communicates with the database (PostgreSQL).
 - It uses Bun SQL or Prisma ORM (depending on the module).
 - Each DAO should:
@@ -24,11 +26,15 @@ The project emphasizes:
   - NOT implement business logic — only data access
 
 Example:
+
 ```ts
 export class UserDAO extends BaseDAO {
   async findById(id: number): Promise<User> {
     try {
-      return await this.db.query(/* SQL */`SELECT * FROM users WHERE id = $1`, [id]);
+      return await this.db.query(
+        /* SQL */ `SELECT * FROM users WHERE id = $1`,
+        [id],
+      );
     } catch (err) {
       throw new DaoError('Failed to fetch user', err);
     }
@@ -37,14 +43,16 @@ export class UserDAO extends BaseDAO {
 ```
 
 ### 2️⃣ Repository
+
 Combines DAO and cache to perform domain operations. Handles application logic and data consistency. Repository methods should mirror DAO methods unless additional logic is required.
 
 Example:
+
 ```ts
 export class UserRepository {
   constructor(
     private readonly dao: UserDAO,
-    private readonly cache: UserCacheDao
+    private readonly cache: UserCacheDao,
   ) {}
 
   async getUser(id: number): Promise<User> {
@@ -59,9 +67,11 @@ export class UserRepository {
 ```
 
 ### 3️⃣ Controller / Service Layer
+
 The layer between external world (API, worker, events) and repository logic. Usually does not communicate directly with DAOs.
 
 Example:
+
 ```ts
 export class UserController {
   constructor(private readonly userRepo: UserRepository) {}
@@ -86,6 +96,7 @@ export class UserController {
 ## ⚠️ Error handling
 
 Example error hierarchy:
+
 ```text
 AppError
  ├── DaoError
@@ -96,6 +107,7 @@ AppError
 ```
 
 Rules:
+
 - DAO throws `DaoError`.
 - Repository may wrap errors into `RepositoryError`.
 - Controllers return known error types, not raw exceptions.
@@ -130,6 +142,7 @@ Recommended method names: `findById`, `findAll`, `create`, `update`, `delete`. A
 ---
 
 ## 🧩 Example directory structure
+
 ```text
 ├── dao
 │   ├── BaseCache.ts

@@ -1,4 +1,4 @@
-import { RefreshToken } from '@src/types/db/RefreshToken';
+import { RefreshToken } from '@src/types';
 
 export interface IRefreshTokenDAO {
   // Issue a new refresh token

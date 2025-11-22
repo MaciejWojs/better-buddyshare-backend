@@ -8,7 +8,7 @@
  */
 import { sql } from 'bun';
 import { IPermissionsDAO } from './interfaces';
-import { Permission } from '@src/types/db/Permission';
+import { Permission } from '@src/types';
 import { BaseDAO } from './BaseDao';
 
 export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
