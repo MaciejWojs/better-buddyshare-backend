@@ -1,4 +1,4 @@
-import { Session } from '@src/types/db/Session';
+import { Session } from '@src/types';
 
 export interface ISessionDAO {
   // Tworzy nową sesję i zwraca jej ID

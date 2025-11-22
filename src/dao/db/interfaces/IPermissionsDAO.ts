@@ -1,4 +1,4 @@
-import { Permission } from '@src/types/db/';
+import { Permission } from '@src/types';
 
 export interface IPermissionsDAO {
   createPermission(permissionName: string): Promise<Permission | null>;

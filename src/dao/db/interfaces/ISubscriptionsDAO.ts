@@ -3,7 +3,7 @@ import {
   TopStreamer,
   UserAsSubscriber,
   UserAsSubscriberWithStreamer,
-} from '@src/types/db/';
+} from '@src/types';
 
 // -- get_recent_subscriptions_by_user(p_user_id INTEGER, p_limit INTEGER)
 export interface ISubscriptionsDAO {

@@ -1,4 +1,4 @@
-import { Message, OldMessageRecord } from '@src/types/db/';
+import { Message, OldMessageRecord } from '@src/types';
 
 export interface IMessagesDAO {
   createChatMessage(
