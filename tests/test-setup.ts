@@ -24,7 +24,7 @@ beforeAll(async () => {
 
   // run migrations
   // console.log("🚀 Uruchamiam migracje Prisma...");
-  await $`bunx prisma migrate deploy`;
+  await $`bun run db`;
 
   // (optional) - if you want to create schema without versioning:
   // await $`bunx prisma db push`;
