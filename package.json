@@ -43,7 +43,7 @@
     "prisma": "7",
     "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.28.14",
-    "typedoc-plugin-dt-links": "^2.0.29",
+    "typedoc-plugin-dt-links": "^2.0.30",
     "typedoc-plugin-markdown": "^4.9.0",
     "typedoc-plugin-mdn-links": "^5.0.10",
     "typedoc-plugin-mermaid": "^1.12.0",
