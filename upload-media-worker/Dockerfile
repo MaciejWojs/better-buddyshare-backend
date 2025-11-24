@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.2-alpine AS builder
+FROM oven/bun:1.3.3-alpine AS builder
 
 WORKDIR /queue
 
@@ -10,7 +10,7 @@ COPY . /queue
 
 RUN bun run minify
 
-FROM oven/bun:1.3.2-alpine
+FROM oven/bun:1.3.3-alpine
 
 WORKDIR /app
 
