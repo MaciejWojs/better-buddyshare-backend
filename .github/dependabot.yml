@@ -36,6 +36,8 @@ updates:
       - "/"
       - "/nginx"
       - "/database"
+      - "upload-media-worker"
+      - "/srs"
     schedule:
       interval: "weekly"
       day: "monday"
