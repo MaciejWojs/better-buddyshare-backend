@@ -1,5 +1,5 @@
 # --- Etap 1: build bun binary ---------------------------------
-FROM oven/bun:1.3.2-alpine AS builder
+FROM oven/bun:1.3.3-alpine AS builder
 
 WORKDIR /app
 
