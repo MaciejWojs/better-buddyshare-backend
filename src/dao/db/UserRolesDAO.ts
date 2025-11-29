@@ -24,28 +24,10 @@ import { Role, Permission } from '@src/types/db';
  */
 export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
   /**
-   * Singleton instance holder.
-   */
-  private static instance: UserRolesDAO;
-
-  /**
    * Protected constructor to enforce singleton usage via getInstance.
    */
   private constructor() {
     super();
-  }
-
-  /**
-   * Get singleton instance of UserRolesDAO.
-   *
-   * @returns UserRolesDAO singleton
-   */
-  public static getInstance(): UserRolesDAO {
-    if (!this.instance) {
-      this.instance = new UserRolesDAO();
-      console.log(`Creating new ${this.name} instance`);
-    }
-    return this.instance;
   }
 
   /**

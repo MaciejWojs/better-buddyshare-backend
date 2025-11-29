@@ -2,17 +2,7 @@ import { sql } from 'bun';
 import { IStreamersDAO } from './interfaces';
 
 export class StreamersDAO implements IStreamersDAO {
-  private static instance: StreamersDAO | null = null;
-
   private constructor() {}
-
-  public static getInstance(): StreamersDAO {
-    if (!this.instance) {
-      this.instance = new StreamersDAO();
-    }
-
-    return this.instance;
-  }
 
   async findById(id: number) {
     return await sql`

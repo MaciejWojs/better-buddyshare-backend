@@ -4,17 +4,9 @@ import { StreamStatisticsType } from '@src/types';
 import { sql } from 'bun';
 
 export class StreamStatsTypesDAO extends BaseDAO implements IStreamStatsDAO {
-  private static instance: StreamStatsTypesDAO;
 
   private constructor() {
     super();
-  }
-
-  public static getInstance(): StreamStatsTypesDAO {
-    if (!this.instance) {
-      this.instance = new StreamStatsTypesDAO();
-    }
-    return this.instance;
   }
 
   async createStatisticType(

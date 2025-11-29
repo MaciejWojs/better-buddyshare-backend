@@ -4,18 +4,8 @@ import { IRefreshTokenDAO, SessionWithLastToken } from './interfaces';
 import { sql } from 'bun';
 
 export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {
-  private static instance: RefreshTokenDAO;
-
   private constructor() {
     super();
-  }
-
-  public static getInstance(): RefreshTokenDAO {
-    if (!this.instance) {
-      this.instance = new RefreshTokenDAO();
-      console.log(`Creating new ${this.name} instance`);
-    }
-    return this.instance;
   }
 
   async issueRefreshToken(

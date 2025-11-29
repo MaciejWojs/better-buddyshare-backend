@@ -14,29 +14,10 @@ import { User } from '@src/types/db';
 
 export class UserDAO extends BaseDAO implements IUserDAO {
   /**
-   * Singleton instance holder.
-   */
-  private static instance: UserDAO | null = null;
-
-  /**
    * Protected constructor to enforce singleton usage via getInstance.
    */
   private constructor() {
     super();
-  }
-
-  /**
-   * Get singleton instance of UserDAO.
-   *
-   * @returns UserDAO singleton instance
-   */
-  public static getInstance(): UserDAO {
-    if (!this.instance) {
-      this.instance = new UserDAO();
-      console.log(`Creating new ${this.prototype.constructor.name} instance`);
-    }
-
-    return this.instance;
   }
 
   /**

@@ -12,29 +12,12 @@ import { Permission } from '@src/types';
 import { BaseDAO } from './BaseDao';
 
 export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
-  /**
-   * Singleton instance holder.
-   */
-  private static instance: PermissionDAO;
 
   /**
    * Protected constructor to enforce singleton usage via getInstance.
    */
   private constructor() {
     super();
-  }
-
-  /**
-   * Get singleton instance of PermissionDAO.
-   *
-   * @returns PermissionDAO singleton
-   */
-  public static getInstance(): PermissionDAO {
-    if (!this.instance) {
-      this.instance = new PermissionDAO();
-      console.log(`Creating new ${this.name} instance`);
-    }
-    return this.instance;
   }
 
   /**

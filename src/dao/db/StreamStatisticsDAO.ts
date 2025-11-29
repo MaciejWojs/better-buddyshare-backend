@@ -8,19 +8,10 @@ import { sql } from 'bun';
 
 export class StreamStatisticsDAO
   extends BaseDAO
-  implements IStreamStatisticsDAO
-{
-  private static instance: StreamStatisticsDAO;
+  implements IStreamStatisticsDAO {
 
   private constructor() {
     super();
-  }
-
-  public static getInstance(): StreamStatisticsDAO {
-    if (!this.instance) {
-      this.instance = new StreamStatisticsDAO();
-    }
-    return this.instance;
   }
 
   async addStreamStatistic(

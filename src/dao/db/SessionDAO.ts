@@ -4,17 +4,8 @@ import { ISessionDAO } from './interfaces';
 import { Session } from '@src/types/db';
 
 export class SessionDAO extends BaseDAO implements ISessionDAO {
-  private static instance: SessionDAO;
   private constructor() {
     super();
-  }
-
-  public static getInstance(): SessionDAO {
-    if (!this.instance) {
-      this.instance = new SessionDAO();
-    }
-
-    return this.instance;
   }
 
   private now_30_days_later(): Date {

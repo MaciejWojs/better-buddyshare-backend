@@ -4,16 +4,8 @@ import { Message, OldMessageRecord } from '@src/types/db';
 import { sql } from 'bun';
 
 export class MessagesDAO extends BaseDAO implements IMessagesDAO {
-  private static instance: MessagesDAO;
   private constructor() {
     super();
-  }
-  public static getInstance(): MessagesDAO {
-    if (!this.instance) {
-      this.instance = new MessagesDAO();
-      console.log(`Creating new ${this.name} instance`);
-    }
-    return this.instance;
   }
 
   async createChatMessage(

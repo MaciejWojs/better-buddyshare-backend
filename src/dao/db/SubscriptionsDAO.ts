@@ -9,17 +9,8 @@ import { ISubscriptionsDAO } from './interfaces';
 import { sql } from 'bun';
 
 export class SubscriptionsDAO extends BaseDAO implements ISubscriptionsDAO {
-  private static instance: SubscriptionsDAO;
-
   private constructor() {
     super();
-  }
-
-  public static getInstance(): SubscriptionsDAO {
-    if (!SubscriptionsDAO.instance) {
-      SubscriptionsDAO.instance = new SubscriptionsDAO();
-    }
-    return SubscriptionsDAO.instance;
   }
 
   async subscriptionExists(

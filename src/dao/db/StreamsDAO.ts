@@ -4,18 +4,9 @@ import { IStreamsDAO } from './interfaces';
 import { Stream } from '@src/types/db';
 
 export class StreamsDAO extends BaseDAO implements IStreamsDAO {
-  private static instance: StreamsDAO | null = null;
 
   private constructor() {
     super();
-  }
-
-  public static getInstance(): StreamsDAO {
-    if (!this.instance) {
-      this.instance = new StreamsDAO();
-    }
-
-    return this.instance;
   }
 
   async checkIfUserIsStreamer(userId: number): Promise<boolean | null> {
