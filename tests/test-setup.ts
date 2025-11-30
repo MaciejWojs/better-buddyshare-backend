@@ -1,6 +1,6 @@
 import { beforeAll, afterAll } from 'bun:test';
 import { $, sleep } from 'bun';
-
+import { DaoFactory } from '@src/dao';
 const DB_NAME = 'testdb';
 const DB_USER = 'testuser';
 const DB_PASSWORD = 'testpass';
@@ -8,13 +8,13 @@ const DB_PORT = 5431;
 
 const POSTGRESS_SLEEP_TIME = 2000;
 
+const daoFactory = DaoFactory.getInstance();
 const originalConsoleLog = console.log;
 
 beforeAll(async () => {
   if (process.env.CI) {
     return;
   }
-
   await $`docker run -d --rm --name test-db -e POSTGRES_USER=${DB_USER} -e POSTGRES_PASSWORD=${DB_PASSWORD} -e POSTGRES_DB=${DB_NAME} -p ${DB_PORT}:5432 postgres:18.0-alpine3.22`;
   console.log('🚀 Uruchamiam bazę danych PostgreSQL w Dockerze...');
   await sleep(POSTGRESS_SLEEP_TIME);
@@ -42,3 +42,17 @@ afterAll(async () => {
   console.log('🛑 Zatrzymano bazę danych PostgreSQL w Dockerze.');
   // await sleep(1000);
 });
+
+export const MessagesDAO = daoFactory.db.Messages();
+export const PermissionDAO = daoFactory.db.Permission();
+export const RefreshTokenDAO = daoFactory.db.RefreshToken();
+export const RolesDAO = daoFactory.db.Roles();
+export const SessionDAO = daoFactory.db.Session();
+export const StreamAnalyticsDAO = daoFactory.db.StreamAnalytics();
+export const StreamStatisticsDAO = daoFactory.db.StreamStatistics();
+export const StreamStatsTypesDAO = daoFactory.db.StreamStatsTypes();
+export const StreamersDAO = daoFactory.db.Streamers();
+export const StreamsDAO = daoFactory.db.Streams();
+export const SubscriptionsDAO = daoFactory.db.Subscriptions();
+export const UserDAO = daoFactory.db.User();
+export const UserRolesDAO = daoFactory.db.UserRoles();

@@ -12,38 +12,13 @@
  * ```
  */
 import { BaseCache } from './BaseCache';
-import { User } from '@src/types/db';
+import { User } from '@src/types';
 import { CacheService } from '@src/services/cache.service';
 import isEqual from 'lodash/isEqual';
 
 export class UserCacheDao extends BaseCache {
-  private static instance: UserCacheDao | null = null;
-  /**
-   * Private constructor for the Singleton pattern.
-   * @private
-   */
-  private constructor() {
+  public constructor() {
     super();
-  }
-  /**
-   * Returns the single instance of UserCacheDao class (Singleton pattern)
-   *
-   * Creates a new instance only if it doesn't exist, otherwise returns the existing one
-   *
-   * @returns The UserCacheDao instance
-   *
-   * @example
-   * ```typescript
-   * const userCache = UserCacheDao.getInstance();
-   * ```
-   */
-  public static getInstance(): UserCacheDao {
-    if (!this.instance) {
-      this.instance = new UserCacheDao();
-      console.log(`Creating new ${this.prototype.constructor.name} instance`);
-    }
-
-    return this.instance;
   }
 
   /**

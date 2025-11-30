@@ -8,11 +8,9 @@ import {
   afterEach,
 } from 'bun:test';
 import { sql } from 'bun';
-import { StreamStatsTypesDAO } from '@src/dao';
+import { StreamStatsTypesDAO } from '../../test-setup';
 
 // ⚠ Uwaga: upewnij się, że import jest poprawny względem struktury Twojego projektu
-
-const dao = StreamStatsTypesDAO.getInstance();
 
 describe('StreamStatsTypesDAO – Integration Tests', () => {
   afterEach(async () => {
@@ -25,23 +23,32 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   // -------------------------------------------------------------------------
 
   it('should create a statistic type', async () => {
-    const res = await dao.createStatisticType('viewers', 'Number of viewers');
+    const res = await StreamStatsTypesDAO.createStatisticType(
+      'viewers',
+      'Number of viewers',
+    );
 
     expect(res).not.toBeNull();
     expect(res!.name).toBe('viewers');
     expect(res!.description).toBe('Number of viewers');
 
-    const count = await dao.countStatisticTypes();
+    const count = await StreamStatsTypesDAO.countStatisticTypes();
     expect(count).toBe(1);
   });
 
   it('should return existing statistic type when creating with duplicate name', async () => {
-    const r1 = await dao.createStatisticType('likes', 'Likes count');
-    const r2 = await dao.createStatisticType('likes', 'Another description');
+    const r1 = await StreamStatsTypesDAO.createStatisticType(
+      'likes',
+      'Likes count',
+    );
+    const r2 = await StreamStatsTypesDAO.createStatisticType(
+      'likes',
+      'Another description',
+    );
 
     expect(r2!.stream_statistic_type_id).toBe(r1!.stream_statistic_type_id);
 
-    const all = await dao.getAllStatisticTypes();
+    const all = await StreamStatsTypesDAO.getAllStatisticTypes();
 
     expect(all.length).toBe(1);
   });
@@ -51,12 +58,12 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   // -------------------------------------------------------------------------
 
   it('should update an existing statistic type', async () => {
-    const created = await dao.createStatisticType(
+    const created = await StreamStatsTypesDAO.createStatisticType(
       'followers',
       'User followers',
     );
 
-    const updated = await dao.updateStatisticType(
+    const updated = await StreamStatsTypesDAO.updateStatisticType(
       created!.stream_statistic_type_id,
       'followers_updated',
       'Updated desc',
@@ -68,7 +75,7 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
 
   it('should throw when updating non-existent type', async () => {
     await expect(async () => {
-      await dao.updateStatisticType(9999, 'x', 'y');
+      await StreamStatsTypesDAO.updateStatisticType(9999, 'x', 'y');
     }).toThrow();
   });
 
@@ -77,22 +84,25 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   // -------------------------------------------------------------------------
 
   it('should delete statistic type by id', async () => {
-    const created = await dao.createStatisticType('messages', 'Chat messages');
+    const created = await StreamStatsTypesDAO.createStatisticType(
+      'messages',
+      'Chat messages',
+    );
 
-    const deleted = await dao.deleteStatisticTypeById(
+    const deleted = await StreamStatsTypesDAO.deleteStatisticTypeById(
       created!.stream_statistic_type_id,
     );
 
     expect(deleted).toBe(true);
 
-    const exists = await dao.statisticTypeExistsById(
+    const exists = await StreamStatsTypesDAO.statisticTypeExistsById(
       created!.stream_statistic_type_id,
     );
     expect(exists).toBe(false);
   });
 
   it('should return false when deleting non-existent type', async () => {
-    const deleted = await dao.deleteStatisticTypeById(12345);
+    const deleted = await StreamStatsTypesDAO.deleteStatisticTypeById(12345);
     expect(deleted).toBe(false);
   });
 
@@ -101,9 +111,12 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   // -------------------------------------------------------------------------
 
   it('should confirm existence by id', async () => {
-    const created = await dao.createStatisticType('duration', null);
+    const created = await StreamStatsTypesDAO.createStatisticType(
+      'duration',
+      null,
+    );
 
-    const exists = await dao.statisticTypeExistsById(
+    const exists = await StreamStatsTypesDAO.statisticTypeExistsById(
       created!.stream_statistic_type_id,
     );
 
@@ -111,15 +124,16 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   });
 
   it('should confirm existence by name', async () => {
-    await dao.createStatisticType('fps', 'Frames per second');
+    await StreamStatsTypesDAO.createStatisticType('fps', 'Frames per second');
 
-    const exists = await dao.statisticTypeExistsByName('fps');
+    const exists = await StreamStatsTypesDAO.statisticTypeExistsByName('fps');
 
     expect(exists).toBe(true);
   });
 
   it('should return false when checking non-existent name', async () => {
-    const exists = await dao.statisticTypeExistsByName('not_exists');
+    const exists =
+      await StreamStatsTypesDAO.statisticTypeExistsByName('not_exists');
     expect(exists).toBe(false);
   });
 
@@ -128,9 +142,12 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   // -------------------------------------------------------------------------
 
   it('should get statistic type by ID', async () => {
-    const created = await dao.createStatisticType('bitrate', 'Video bitrate');
+    const created = await StreamStatsTypesDAO.createStatisticType(
+      'bitrate',
+      'Video bitrate',
+    );
 
-    const fetched = await dao.getStatisticTypeById(
+    const fetched = await StreamStatsTypesDAO.getStatisticTypeById(
       created!.stream_statistic_type_id,
     );
 
@@ -138,12 +155,13 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   });
 
   it('should get statistic type by name', async () => {
-    const created = await dao.createStatisticType(
+    const created = await StreamStatsTypesDAO.createStatisticType(
       'resolution',
       'Stream resolution',
     );
 
-    const fetched = await dao.getStatisticTypeByName('resolution');
+    const fetched =
+      await StreamStatsTypesDAO.getStatisticTypeByName('resolution');
 
     expect(fetched!.stream_statistic_type_id).toBe(
       created!.stream_statistic_type_id,
@@ -151,13 +169,13 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   });
 
   it('should return null from getStatisticTypeById for non-existent ID', async () => {
-    const fetched = await dao.getStatisticTypeById(123456);
+    const fetched = await StreamStatsTypesDAO.getStatisticTypeById(123456);
     expect(fetched).toBeNull();
   });
 
   it('should throw for getStatisticTypeByName when not exists', async () => {
     await expect(async () => {
-      await dao.getStatisticTypeByName('unknown');
+      await StreamStatsTypesDAO.getStatisticTypeByName('unknown');
     }).toThrow();
   });
 
@@ -166,20 +184,20 @@ describe('StreamStatsTypesDAO – Integration Tests', () => {
   // -------------------------------------------------------------------------
 
   it('should return all statistic types', async () => {
-    await dao.createStatisticType('t1');
-    await dao.createStatisticType('t2');
-    await dao.createStatisticType('t3');
+    await StreamStatsTypesDAO.createStatisticType('t1');
+    await StreamStatsTypesDAO.createStatisticType('t2');
+    await StreamStatsTypesDAO.createStatisticType('t3');
 
-    const all = await dao.getAllStatisticTypes();
+    const all = await StreamStatsTypesDAO.getAllStatisticTypes();
 
     expect(all.length).toBe(3);
   });
 
   it('should count statistic types', async () => {
-    await dao.createStatisticType('t1', null);
-    await dao.createStatisticType('t2', null);
+    await StreamStatsTypesDAO.createStatisticType('t1', null);
+    await StreamStatsTypesDAO.createStatisticType('t2', null);
 
-    const count = await dao.countStatisticTypes();
+    const count = await StreamStatsTypesDAO.countStatisticTypes();
     expect(count).toBe(2);
   });
 });

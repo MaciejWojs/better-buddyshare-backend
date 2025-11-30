@@ -1,14 +1,14 @@
 import { beforeAll, beforeEach, test, expect, describe } from 'bun:test';
 import { sql } from 'bun';
-import { UserRolesDAO, RolesDAO, PermissionDAO, UserDAO } from '@src/dao';
+import {
+  UserRolesDAO,
+  RolesDAO,
+  PermissionDAO,
+  UserDAO,
+} from '../../test-setup';
 import { DaoError } from '@src/errors';
 
 describe('UserRolesDAO', () => {
-  let userRolesDao: UserRolesDAO;
-  let rolesDao: RolesDAO;
-  let permsDao: PermissionDAO;
-  let userDao: UserDAO;
-
   let userId: number;
   let streamerId: number;
   let viewerRoleId: number;
@@ -16,18 +16,13 @@ describe('UserRolesDAO', () => {
   let watchPermId: number;
 
   beforeAll(async () => {
-    userRolesDao = UserRolesDAO.getInstance();
-    rolesDao = RolesDAO.getInstance();
-    permsDao = PermissionDAO.getInstance();
-    userDao = UserDAO.getInstance();
-
     // Create base data
-    const user = await userDao.createUser(
+    const user = await UserDAO.createUser(
       'testuser',
       'test@test.com',
       'password',
     );
-    const streamer = await userDao.createUser(
+    const streamer = await UserDAO.createUser(
       'streamer1',
       'streamer@test.com',
       'password',
@@ -36,9 +31,9 @@ describe('UserRolesDAO', () => {
     streamerId = streamer!.user_id;
 
     const [viewerRoleRes, moderatorRoleRes, watchPermRes] = await Promise.all([
-      rolesDao.createRole('VIEWER'),
-      rolesDao.createRole('MODERATOR'),
-      permsDao.createPermission('WATCH_STREAM'),
+      RolesDAO.createRole('VIEWER'),
+      RolesDAO.createRole('MODERATOR'),
+      PermissionDAO.createPermission('WATCH_STREAM'),
     ]);
 
     const viewerRole = viewerRoleRes;
@@ -49,7 +44,7 @@ describe('UserRolesDAO', () => {
     moderatorRoleId = moderatorRole!.role_id;
     watchPermId = watchPerm!.permission_id;
 
-    await rolesDao.assignPermissionToRole(viewerRoleId, watchPermId);
+    await RolesDAO.assignPermissionToRole(viewerRoleId, watchPermId);
   });
 
   beforeEach(async () => {
@@ -60,41 +55,41 @@ describe('UserRolesDAO', () => {
   // 🔹 assignRoleToUser
   //
   test('should assign role to user by name', async () => {
-    const result = await userRolesDao.assignRoleToUser(userId, 'VIEWER');
+    const result = await UserRolesDAO.assignRoleToUser(userId, 'VIEWER');
     expect(result).toBeTrue();
 
-    const roles = await userRolesDao.getUserRoles(userId);
+    const roles = await UserRolesDAO.getUserRoles(userId);
     expect(roles!.some((r) => r.name === 'VIEWER')).toBeTrue();
   });
 
   test('should assign role to user by ID', async () => {
-    const result = await userRolesDao.assignRoleToUser(userId, moderatorRoleId);
+    const result = await UserRolesDAO.assignRoleToUser(userId, moderatorRoleId);
     expect(result).toBeTrue();
 
-    const roles = await userRolesDao.getUserRoles(userId);
+    const roles = await UserRolesDAO.getUserRoles(userId);
     expect(roles!.some((r) => r.role_id === moderatorRoleId)).toBeTrue();
   });
 
   test('should assign role in context (streamerId)', async () => {
-    const result = await userRolesDao.assignRoleToUser(
+    const result = await UserRolesDAO.assignRoleToUser(
       userId,
       'MODERATOR',
       streamerId,
     );
     expect(result).toBeTrue();
 
-    const roles = await userRolesDao.getUserRoles(userId, streamerId);
+    const roles = await UserRolesDAO.getUserRoles(userId, streamerId);
     expect(roles!.some((r) => r.name === 'MODERATOR')).toBeTrue();
   });
 
   test('should return TRUE even when reassigning the same role (idempotency)', async () => {
-    await userRolesDao.assignRoleToUser(userId, 'VIEWER');
-    const result = await userRolesDao.assignRoleToUser(userId, 'VIEWER');
+    await UserRolesDAO.assignRoleToUser(userId, 'VIEWER');
+    const result = await UserRolesDAO.assignRoleToUser(userId, 'VIEWER');
     expect(result).toBeTrue();
   });
 
   test('should return FALSE when assigning non-existing role by name', async () => {
-    const result = await userRolesDao.assignRoleToUser(userId, 'FAKE_ROLE');
+    const result = await UserRolesDAO.assignRoleToUser(userId, 'FAKE_ROLE');
     expect(result).toBeFalse();
   });
 
@@ -102,36 +97,36 @@ describe('UserRolesDAO', () => {
   // 🔹 revokeRoleFromUser
   //
   test("should remove user's role by name", async () => {
-    await userRolesDao.assignRoleToUser(userId, 'VIEWER');
-    const result = await userRolesDao.revokeRoleFromUser(userId, 'VIEWER');
+    await UserRolesDAO.assignRoleToUser(userId, 'VIEWER');
+    const result = await UserRolesDAO.revokeRoleFromUser(userId, 'VIEWER');
     expect(result).toBeTrue();
 
-    const roles = await userRolesDao.getUserRoles(userId);
+    const roles = await UserRolesDAO.getUserRoles(userId);
     expect(roles!.some((r) => r.name === 'VIEWER')).toBeFalse();
   });
 
   test("should remove user's role by ID", async () => {
-    await userRolesDao.assignRoleToUser(userId, moderatorRoleId);
-    const result = await userRolesDao.revokeRoleFromUser(
+    await UserRolesDAO.assignRoleToUser(userId, moderatorRoleId);
+    const result = await UserRolesDAO.revokeRoleFromUser(
       userId,
       moderatorRoleId,
     );
     expect(result).toBeTrue();
 
-    const roles = await userRolesDao.getUserRoles(userId);
+    const roles = await UserRolesDAO.getUserRoles(userId);
     expect(roles!.some((r) => r.role_id === moderatorRoleId)).toBeFalse();
   });
 
   test('should remove role in context (streamerId)', async () => {
-    await userRolesDao.assignRoleToUser(userId, 'MODERATOR', streamerId);
-    const result = await userRolesDao.revokeRoleFromUser(
+    await UserRolesDAO.assignRoleToUser(userId, 'MODERATOR', streamerId);
+    const result = await UserRolesDAO.revokeRoleFromUser(
       userId,
       'MODERATOR',
       streamerId,
     );
     expect(result).toBeTrue();
 
-    const roles = await userRolesDao.getUserRoles(userId, streamerId);
+    const roles = await UserRolesDAO.getUserRoles(userId, streamerId);
     expect(roles!.some((r) => r.name === 'MODERATOR')).toBeFalse();
   });
 
@@ -140,29 +135,29 @@ describe('UserRolesDAO', () => {
   //
   test('should return user roles', async () => {
     await Promise.all([
-      userRolesDao.assignRoleToUser(userId, 'VIEWER'),
-      userRolesDao.assignRoleToUser(userId, 'MODERATOR'),
+      UserRolesDAO.assignRoleToUser(userId, 'VIEWER'),
+      UserRolesDAO.assignRoleToUser(userId, 'MODERATOR'),
     ]);
-    const roles = await userRolesDao.getUserRoles(userId);
+    const roles = await UserRolesDAO.getUserRoles(userId);
     expect(roles!.length).toBeGreaterThanOrEqual(2);
   });
 
   test('should return user roles in context', async () => {
     await Promise.all([
-      userRolesDao.assignRoleToUser(userId, 'MODERATOR', streamerId),
-      userRolesDao.assignRoleToUser(userId, 'VIEWER', streamerId),
+      UserRolesDAO.assignRoleToUser(userId, 'MODERATOR', streamerId),
+      UserRolesDAO.assignRoleToUser(userId, 'VIEWER', streamerId),
     ]);
-    const roles = await userRolesDao.getUserRoles(userId, streamerId);
+    const roles = await UserRolesDAO.getUserRoles(userId, streamerId);
     expect(roles!.some((r) => r.name === 'MODERATOR')).toBeTrue();
     expect(roles!.some((r) => r.name === 'VIEWER')).toBeTrue();
   });
 
   test('should return user permissions (indirectly via roles)', async () => {
     await Promise.all([
-      userRolesDao.assignRoleToUser(userId, 'VIEWER'),
-      userRolesDao.assignRoleToUser(userId, 'MODERATOR'),
+      UserRolesDAO.assignRoleToUser(userId, 'VIEWER'),
+      UserRolesDAO.assignRoleToUser(userId, 'MODERATOR'),
     ]);
-    const permissions = await userRolesDao.getUserPermissions(userId);
+    const permissions = await UserRolesDAO.getUserPermissions(userId);
     expect(permissions!.some((p) => p.name === 'WATCH_STREAM')).toBeTrue();
   });
 
@@ -171,10 +166,10 @@ describe('UserRolesDAO', () => {
   //
   test('should confirm user permission by name', async () => {
     await Promise.all([
-      userRolesDao.assignRoleToUser(userId, 'VIEWER'),
-      userRolesDao.assignRoleToUser(userId, 'MODERATOR'),
+      UserRolesDAO.assignRoleToUser(userId, 'VIEWER'),
+      UserRolesDAO.assignRoleToUser(userId, 'MODERATOR'),
     ]);
-    const hasPermission = await userRolesDao.checkIfUserHasPermission(
+    const hasPermission = await UserRolesDAO.checkIfUserHasPermission(
       userId,
       'WATCH_STREAM',
     );
@@ -182,7 +177,7 @@ describe('UserRolesDAO', () => {
   });
 
   test('should return FALSE if user does not have permission', async () => {
-    const hasPermission = await userRolesDao.checkIfUserHasPermission(
+    const hasPermission = await UserRolesDAO.checkIfUserHasPermission(
       userId,
       'FAKE_PERMISSION',
     );
@@ -192,10 +187,10 @@ describe('UserRolesDAO', () => {
   test('should check permission in context', async () => {
     // assign role and permission in context
     await Promise.all([
-      userRolesDao.assignRoleToUser(userId, 'MODERATOR', streamerId),
-      rolesDao.assignPermissionToRole(moderatorRoleId, watchPermId),
+      UserRolesDAO.assignRoleToUser(userId, 'MODERATOR', streamerId),
+      RolesDAO.assignPermissionToRole(moderatorRoleId, watchPermId),
     ]);
-    const hasPermission = await userRolesDao.checkIfUserHasPermission(
+    const hasPermission = await UserRolesDAO.checkIfUserHasPermission(
       userId,
       'WATCH_STREAM',
       streamerId,
@@ -209,14 +204,14 @@ describe('UserRolesDAO', () => {
   test('should throw DaoError on invalid role type', async () => {
     await expect(
       // @ts-expect-error
-      userRolesDao.assignRoleToUser(userId, { invalid: 'role' }),
+      UserRolesDAO.assignRoleToUser(userId, { invalid: 'role' }),
     ).rejects.toThrow(DaoError);
   });
 
   test('should throw DaoError on invalid permission type', async () => {
     await expect(
       // @ts-expect-error
-      userRolesDao.checkIfUserHasPermission(userId, { invalid: 'perm' }),
+      UserRolesDAO.checkIfUserHasPermission(userId, { invalid: 'perm' }),
     ).rejects.toThrow(DaoError);
   });
 });

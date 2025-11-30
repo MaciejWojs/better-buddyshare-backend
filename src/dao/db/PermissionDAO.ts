@@ -6,37 +6,18 @@
  *
  * @module dao/Permissions
  */
-import { sql } from 'bun';
+import { IDbClient } from '@src/db/interfaces';
 import { IPermissionsDAO } from './interfaces';
 import { Permission } from '@src/types';
 import { BaseDAO } from './BaseDao';
 
 export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
   /**
-   * Singleton instance holder.
-   */
-  private static instance: PermissionDAO;
-
-  /**
    * Protected constructor to enforce singleton usage via getInstance.
    */
-  private constructor() {
-    super();
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
   }
-
-  /**
-   * Get singleton instance of PermissionDAO.
-   *
-   * @returns PermissionDAO singleton
-   */
-  public static getInstance(): PermissionDAO {
-    if (!this.instance) {
-      this.instance = new PermissionDAO();
-      console.log(`Creating new ${this.name} instance`);
-    }
-    return this.instance;
-  }
-
   /**
    * Create a new permission by name.
    *
@@ -47,13 +28,9 @@ export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
    * @returns The created Permission or null
    */
   async createPermission(permissionName: string): Promise<Permission | null> {
-    return await this.executeQuery<Permission>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Create_permission (${permissionName.toUpperCase()})
-      `,
+    return this.executeQuery<Permission>(
+      'SELECT * FROM Create_permission($1)',
+      [permissionName.toUpperCase()],
     );
   }
 
@@ -67,12 +44,8 @@ export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
    */
   async deletePermissionById(permissionId: number): Promise<boolean> {
     const res = await this.executeQuery<{ delete_permission_by_id: boolean }>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Delete_permission_by_id (${permissionId})
-      `,
+      'SELECT * FROM Delete_permission_by_id($1)',
+      [permissionId],
     );
     const isDeleted = res?.delete_permission_by_id ?? false;
     console.log('[ID] Delete permission result:', isDeleted);
@@ -89,12 +62,8 @@ export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
    */
   async deletePermissionByName(permissionName: string): Promise<boolean> {
     const res = await this.executeQuery<{ delete_permission_by_name: boolean }>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Delete_permission_by_name (${permissionName.toUpperCase()})
-      `,
+      'SELECT * FROM Delete_permission_by_name($1)',
+      [permissionName.toUpperCase()],
     );
     const isDeleted = res?.delete_permission_by_name ?? false;
     console.log('[NAME] Delete permission result:', isDeleted);
@@ -107,13 +76,9 @@ export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
    * @returns Array of Permission or null if none
    */
   async getAllPermissions(): Promise<Permission[] | null> {
-    return await this.executeQueryMultiple<Permission>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_all_permissions ()
-      `,
+    return this.executeQueryMultiple<Permission>(
+      'SELECT * FROM Get_all_permissions()',
+      [],
     );
   }
 
@@ -126,13 +91,9 @@ export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
   async getPermissionByName(
     permissionName: string,
   ): Promise<Permission | null> {
-    return await this.executeQuery<Permission>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_permission_by_name (${permissionName.toUpperCase()})
-      `,
+    return this.executeQuery<Permission>(
+      'SELECT * FROM Get_permission_by_name($1)',
+      [permissionName.toUpperCase()],
     );
   }
 
@@ -143,13 +104,9 @@ export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
    * @returns Permission or null if not found
    */
   async getPermissionById(permissionId: number): Promise<Permission | null> {
-    return await this.executeQuery<Permission>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_permission_by_id (${permissionId})
-      `,
+    return this.executeQuery<Permission>(
+      'SELECT * FROM Get_permission_by_id($1)',
+      [permissionId],
     );
   }
 }

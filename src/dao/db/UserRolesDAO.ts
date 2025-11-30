@@ -8,10 +8,10 @@
  * @module dao/UserRoles
  */
 import { BaseDAO } from './BaseDao';
-import { sql } from 'bun';
+import { IDbClient } from '@src/db/interfaces';
 import { DaoError } from '@src/errors';
 import { IUserRolesDAO } from './interfaces';
-import { Role, Permission } from '@src/types/db';
+import { Role, Permission } from '@src/types';
 
 /**
  * UserRoles DAO.
@@ -24,28 +24,10 @@ import { Role, Permission } from '@src/types/db';
  */
 export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
   /**
-   * Singleton instance holder.
-   */
-  private static instance: UserRolesDAO;
-
-  /**
    * Protected constructor to enforce singleton usage via getInstance.
    */
-  private constructor() {
-    super();
-  }
-
-  /**
-   * Get singleton instance of UserRolesDAO.
-   *
-   * @returns UserRolesDAO singleton
-   */
-  public static getInstance(): UserRolesDAO {
-    if (!this.instance) {
-      this.instance = new UserRolesDAO();
-      console.log(`Creating new ${this.name} instance`);
-    }
-    return this.instance;
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
   }
 
   /**
@@ -100,55 +82,25 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
   ): Promise<boolean | null> {
     if (typeof role === 'number') {
       if (streamerId) {
-        return await this.getBooleanFromQuery(
-          () => sql`
-            SELECT
-              *
-            FROM
-              Assign_role_to_user_in_context_by_role_id (
-                ${userId},
-                ${role},
-                ${streamerId}
-              )
-          `,
+        return await this.scalar(
+          'SELECT * FROM Assign_role_to_user_in_context_by_role_id($1,$2,$3)',
+          [userId, role, streamerId],
         );
       }
-      return await this.getBooleanFromQuery(
-        () => sql`
-          SELECT
-            *
-          FROM
-            Assign_role_to_user_by_role_id (
-              ${userId},
-              ${role}
-            )
-        `,
+      return await this.scalar(
+        'SELECT * FROM Assign_role_to_user_by_role_id($1,$2)',
+        [userId, role],
       );
     } else if (typeof role === 'string') {
       if (streamerId) {
-        return await this.getBooleanFromQuery(
-          () => sql`
-            SELECT
-              *
-            FROM
-              Assign_role_to_user_in_context_by_role_name (
-                ${userId},
-                ${role},
-                ${streamerId}
-              )
-          `,
+        return await this.scalar(
+          'SELECT * FROM Assign_role_to_user_in_context_by_role_name($1,$2,$3)',
+          [userId, role, streamerId],
         );
       }
-      return await this.getBooleanFromQuery(
-        () => sql`
-          SELECT
-            *
-          FROM
-            Assign_role_to_user_by_role_name (
-              ${userId},
-              ${role}
-            )
-        `,
+      return await this.scalar(
+        'SELECT * FROM Assign_role_to_user_by_role_name($1,$2)',
+        [userId, role],
       );
     }
     throw new DaoError('Invalid role identifier type');
@@ -206,55 +158,25 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
   ): Promise<boolean | null> {
     if (typeof role === 'number') {
       if (streamerId) {
-        return await this.getBooleanFromQuery(
-          () => sql`
-            SELECT
-              *
-            FROM
-              Revoke_role_from_user_in_context_by_role_id (
-                ${userId},
-                ${role},
-                ${streamerId}
-              )
-          `,
+        return await this.scalar(
+          'SELECT * FROM Revoke_role_from_user_in_context_by_role_id($1,$2,$3)',
+          [userId, role, streamerId],
         );
       }
-      return await this.getBooleanFromQuery(
-        () => sql`
-          SELECT
-            *
-          FROM
-            Revoke_role_from_user_by_role_id (
-              ${userId},
-              ${role}
-            )
-        `,
+      return await this.scalar(
+        'SELECT * FROM Revoke_role_from_user_by_role_id($1,$2)',
+        [userId, role],
       );
     } else if (typeof role === 'string') {
       if (streamerId) {
-        return await this.getBooleanFromQuery(
-          () => sql`
-            SELECT
-              *
-            FROM
-              Revoke_role_from_user_in_context_by_role_name (
-                ${userId},
-                ${role},
-                ${streamerId}
-              )
-          `,
+        return await this.scalar(
+          'SELECT * FROM Revoke_role_from_user_in_context_by_role_name($1,$2,$3)',
+          [userId, role, streamerId],
         );
       }
-      return await this.getBooleanFromQuery(
-        () => sql`
-          SELECT
-            *
-          FROM
-            Revoke_role_from_user_by_role_name (
-              ${userId},
-              ${role}
-            )
-        `,
+      return await this.scalar(
+        'SELECT * FROM Revoke_role_from_user_by_role_name($1,$2)',
+        [userId, role],
       );
     }
     throw new DaoError('Invalid role identifier type');
@@ -287,24 +209,13 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
   ): Promise<Role[] | null> {
     if (streamerId) {
       return await this.executeQueryMultiple<Role>(
-        () => sql`
-          SELECT
-            *
-          FROM
-            Get_roles_by_user_in_context (
-              ${userId},
-              ${streamerId}
-            )
-        `,
+        'SELECT * FROM Get_roles_by_user_in_context($1,$2)',
+        [userId, streamerId],
       );
     }
     return await this.executeQueryMultiple<Role>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_roles_by_user (${userId})
-      `,
+      'SELECT * FROM Get_roles_by_user($1)',
+      [userId],
     );
   }
 
@@ -335,24 +246,13 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
   ): Promise<Permission[]> {
     if (streamerId) {
       return await this.executeQueryMultiple<Permission>(
-        () => sql`
-          SELECT
-            *
-          FROM
-            Get_permissions_by_user_in_context (
-              ${userId},
-              ${streamerId}
-            )
-        `,
+        'SELECT * FROM Get_permissions_by_user_in_context($1,$2)',
+        [userId, streamerId],
       );
     }
     return await this.executeQueryMultiple<Permission>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_permissions_by_user (${userId})
-      `,
+      'SELECT * FROM Get_permissions_by_user($1)',
+      [userId],
     );
   }
 
@@ -408,58 +308,28 @@ export class UserRolesDAO extends BaseDAO implements IUserRolesDAO {
   ): Promise<boolean | null> {
     if (typeof permission === 'number') {
       if (streamerId) {
-        const res = await this.getBooleanFromQuery(
-          () => sql`
-            SELECT
-              *
-            FROM
-              User_has_permission_by_permission_id_in_context (
-                ${userId},
-                ${permission},
-                ${streamerId}
-              )
-          `,
+        const res = await this.scalar(
+          'SELECT * FROM User_has_permission_by_permission_id_in_context($1,$2,$3)',
+          [userId, permission, streamerId],
         );
         return res;
       }
-      const res = await this.getBooleanFromQuery(
-        () => sql`
-          SELECT
-            *
-          FROM
-            User_has_permission_by_permission_id (
-              ${userId},
-              ${permission}
-            )
-        `,
+      const res = await this.scalar(
+        'SELECT * FROM User_has_permission_by_permission_id($1,$2)',
+        [userId, permission],
       );
       return res;
     } else if (typeof permission === 'string') {
       if (streamerId) {
-        const res = await this.getBooleanFromQuery(
-          () => sql`
-            SELECT
-              *
-            FROM
-              User_has_permission_by_permission_name_in_context (
-                ${userId},
-                ${permission},
-                ${streamerId}
-              )
-          `,
+        const res = await this.scalar(
+          'SELECT * FROM User_has_permission_by_permission_name_in_context($1,$2,$3)',
+          [userId, permission, streamerId],
         );
         return res;
       }
-      const res = await this.getBooleanFromQuery(
-        () => sql`
-          SELECT
-            *
-          FROM
-            User_has_permission (
-              ${userId},
-              ${permission}
-            )
-        `,
+      const res = await this.scalar(
+        'SELECT * FROM User_has_permission($1,$2)',
+        [userId, permission],
       );
       return res;
     }

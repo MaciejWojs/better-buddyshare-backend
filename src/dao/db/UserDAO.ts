@@ -7,36 +7,17 @@
  *
  * @module dao/Users
  */
-import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
+import { IDbClient } from '@src/db/interfaces';
 import { IUserDAO } from './interfaces';
-import { User } from '@src/types/db';
+import { User } from '@src/types';
 
 export class UserDAO extends BaseDAO implements IUserDAO {
   /**
-   * Singleton instance holder.
-   */
-  private static instance: UserDAO | null = null;
-
-  /**
    * Protected constructor to enforce singleton usage via getInstance.
    */
-  private constructor() {
-    super();
-  }
-
-  /**
-   * Get singleton instance of UserDAO.
-   *
-   * @returns UserDAO singleton instance
-   */
-  public static getInstance(): UserDAO {
-    if (!this.instance) {
-      this.instance = new UserDAO();
-      console.log(`Creating new ${this.prototype.constructor.name} instance`);
-    }
-
-    return this.instance;
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
   }
 
   /**
@@ -46,14 +27,9 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    * @returns The User record or null when not found
    */
   async findById(id: number) {
-    return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_user_by_id (${id})
-      `,
-    );
+    return await this.executeQuery<User>('SELECT * FROM get_user_by_id($1)', [
+      id,
+    ]);
   }
 
   /**
@@ -64,12 +40,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async findByEmail(email: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_user_by_email (${email})
-      `,
+      'SELECT * FROM get_user_by_email($1)',
+      [email],
     );
   }
 
@@ -81,12 +53,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async unbanUser(user_id: number) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          unban_user_globally (${user_id})
-      `,
+      'SELECT * FROM unban_user_globally($1)',
+      [user_id],
     );
   }
 
@@ -100,25 +68,14 @@ export class UserDAO extends BaseDAO implements IUserDAO {
   async banUser(user_id: number, reason: string | null = null) {
     if (reason) {
       return await this.executeQuery<User>(
-        () => sql`
-          SELECT
-            *
-          FROM
-            ban_user_globally (
-              ${user_id},
-              ${reason}
-            )
-        `,
+        'SELECT * FROM ban_user_globally($1,$2)',
+        [user_id, reason],
       );
     }
 
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          ban_user_globally (${user_id})
-      `,
+      'SELECT * FROM ban_user_globally($1)',
+      [user_id],
     );
   }
 
@@ -131,15 +88,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateProfilePicture(user_id: number, profile_picture: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_user_avatar (
-            ${user_id},
-            ${profile_picture}
-          )
-      `,
+      'SELECT * FROM update_user_avatar($1,$2)',
+      [user_id, profile_picture],
     );
   }
 
@@ -152,15 +102,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateProfileBanner(user_id: number, profile_banner: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_user_profile_banner (
-            ${user_id},
-            ${profile_banner}
-          )
-      `,
+      'SELECT * FROM update_user_profile_banner($1,$2)',
+      [user_id, profile_banner],
     );
   }
 
@@ -173,15 +116,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateBio(user_id: number, description: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_user_description (
-            ${user_id},
-            ${description}
-          )
-      `,
+      'SELECT * FROM update_user_description($1,$2)',
+      [user_id, description],
     );
   }
 
@@ -194,15 +130,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateUsername(user_id: number, username: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_user_username (
-            ${user_id},
-            ${username}
-          )
-      `,
+      'SELECT * FROM update_user_username($1,$2)',
+      [user_id, username],
     );
   }
 
@@ -215,15 +144,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updateEmail(user_id: number, email: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_user_email (
-            ${user_id},
-            ${email}
-          )
-      `,
+      'SELECT * FROM update_user_email($1,$2)',
+      [user_id, email],
     );
   }
 
@@ -236,15 +158,8 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async updatePassword(user_id: number, password: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_user_password (
-            ${user_id},
-            ${password}
-          )
-      `,
+      'SELECT * FROM update_user_password($1,$2)',
+      [user_id, password],
     );
   }
 
@@ -258,27 +173,15 @@ export class UserDAO extends BaseDAO implements IUserDAO {
    */
   async createUser(username: string, email: string, password: string) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          create_user (
-            ${username},
-            ${email},
-            ${password}
-          )
-      `,
+      'SELECT * FROM create_user($1,$2,$3)',
+      [username, email, password],
     );
   }
 
   async updateStreamToken(user_id: number) {
     return await this.executeQuery<User>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_stream_token (${user_id})
-      `,
+      'SELECT * FROM update_stream_token($1)',
+      [user_id],
     );
   }
 }
