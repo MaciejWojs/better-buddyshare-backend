@@ -1,7 +1,8 @@
 import { IUserRepository } from './user.interface';
 import { BaseRepository } from './BaseRepository';
 import { UserCacheDao, UserDAO } from '@src/dao';
-import { User } from '@src/types/db';
+import { User } from '@src/types';
+import { DaoFactory } from '@src/dao/factory';
 
 /**
  * Repository for user operations with caching support.
@@ -10,10 +11,11 @@ import { User } from '@src/types/db';
 export class UserRepository extends BaseRepository implements IUserRepository {
   private readonly dao: UserDAO;
   private readonly cache: UserCacheDao;
+  private readonly daoFactory = DaoFactory.getInstance();
 
   constructor(dao?: UserDAO, cache?: UserCacheDao) {
     super();
-    this.dao = dao ?? UserDAO.getInstance();
+    this.dao = dao ?? this.daoFactory.db.User();
     this.cache = cache ?? UserCacheDao.getInstance();
   }
 

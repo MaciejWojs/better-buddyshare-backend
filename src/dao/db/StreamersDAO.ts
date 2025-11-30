@@ -1,27 +1,21 @@
-import { sql } from 'bun';
+import { BaseDAO } from './BaseDao';
 import { IStreamersDAO } from './interfaces';
+import { User } from '@src/types';
+import { IDbClient } from '@src/db/interfaces';
 
-export class StreamersDAO implements IStreamersDAO {
-  private constructor() {}
+export class StreamersDAO extends BaseDAO implements IStreamersDAO {
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
+  }
 
   async findById(id: number) {
-    return await sql`
-      SELECT
-        *
-      FROM
-        get_user_by_id (${id})
-    `;
+    return this.executeQuery<User>('SELECT * FROM get_user_by_id($1)', [id]);
   }
 
   async banUserInChat(streamerId: number, userId: number) {
-    return await sql`
-      SELECT
-        *
-      FROM
-        ban_user_in_chat (
-          ${streamerId},
-          ${userId}
-        )
-    `;
+    return this.executeQuery<null>('SELECT * FROM ban_user_in_chat($1, $2)', [
+      streamerId,
+      userId,
+    ]);
   }
 }

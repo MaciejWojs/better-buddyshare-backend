@@ -12,7 +12,7 @@
  * ```
  */
 import { BaseCache } from './BaseCache';
-import { User } from '@src/types/db';
+import { User } from '@src/types';
 import { CacheService } from '@src/services/cache.service';
 import isEqual from 'lodash/isEqual';
 
@@ -22,7 +22,7 @@ export class UserCacheDao extends BaseCache {
    * Private constructor for the Singleton pattern.
    * @private
    */
-  private constructor() {
+  public constructor() {
     super();
   }
   /**

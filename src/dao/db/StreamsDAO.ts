@@ -1,23 +1,14 @@
-import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
 import { IStreamsDAO } from './interfaces';
-import { Stream } from '@src/types/db';
+import { Stream } from '@src/types';
+import { IDbClient } from '@src/db/interfaces';
 
 export class StreamsDAO extends BaseDAO implements IStreamsDAO {
-
-  private constructor() {
-    super();
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
   }
-
   async checkIfUserIsStreamer(userId: number): Promise<boolean | null> {
-    return await this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          *
-        FROM
-          check_if_user_is_streamer (${userId})
-      `,
-    );
+    return await this.scalar('SELECT check_if_user_is_streamer($1)', [userId]);
   }
 
   async createStream(
@@ -26,72 +17,42 @@ export class StreamsDAO extends BaseDAO implements IStreamsDAO {
     description?: string | null,
   ): Promise<Stream | null> {
     return await this.executeQuery<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          create_stream (
-            ${streamerId},
-            ${title},
-            ${description}
-          )
-      `,
+      'SELECT * FROM create_stream($1, $2, $3)',
+      [streamerId, title, description],
     );
   }
 
   async endStream(streamId: number): Promise<Stream | null> {
-    return await this.executeQuery<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          end_stream (${streamId})
-      `,
-    );
+    return await this.executeQuery<Stream>('SELECT * FROM end_stream($1)', [
+      streamId,
+    ]);
   }
 
   async endAllStreamsForUser(userId: number): Promise<Stream[]> {
     return await this.executeQueryMultiple<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          end_all_streams_for_user (${userId})
-      `,
+      'SELECT * FROM end_all_streams_for_user($1)',
+      [userId],
     );
   }
 
   async endAllStreams(): Promise<Stream[]> {
     return await this.executeQueryMultiple<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          end_all_streams ()
-      `,
+      'SELECT * FROM end_all_streams()',
+      [],
     );
   }
 
   async getActiveStreams(): Promise<Stream[]> {
     return await this.executeQueryMultiple<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_active_streams ()
-      `,
+      'SELECT * FROM get_active_streams()',
+      [],
     );
   }
 
   async checkIfUserIsStreaming(streamerId: number): Promise<boolean> {
-    const result = await this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          *
-        FROM
-          check_if_user_is_streaming (${streamerId})
-      `,
-    );
+    const result = await this.scalar('SELECT check_if_user_is_streaming($1)', [
+      streamerId,
+    ]);
     if (!result) {
       console.log('[STREAMING CHECK] No result returned for streaming check.');
       return false;
@@ -100,13 +61,9 @@ export class StreamsDAO extends BaseDAO implements IStreamsDAO {
   }
 
   async checkIfUserIsStreamingAndPublic(streamerId: number): Promise<boolean> {
-    const result = await this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          *
-        FROM
-          check_if_user_is_streaming_and_public (${streamerId})
-      `,
+    const result = await this.scalar(
+      'SELECT check_if_user_is_streaming_and_public($1)',
+      [streamerId],
     );
     if (!result) {
       console.log(
@@ -118,27 +75,17 @@ export class StreamsDAO extends BaseDAO implements IStreamsDAO {
   }
 
   async getStreamById(streamId: number): Promise<Stream | null> {
-    const result = await this.executeQuery<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_stream_by_id (${streamId})
-      `,
+    return await this.executeQuery<Stream>(
+      'SELECT * FROM get_stream_by_id($1)',
+      [streamId],
     );
-    return result;
   }
 
   async getStreamsByUserId(userId: number): Promise<Stream[]> {
-    const results = await this.executeQueryMultiple<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_streams_by_user_id (${userId})
-      `,
+    return await this.executeQueryMultiple<Stream>(
+      'SELECT * FROM get_streams_by_user_id($1)',
+      [userId],
     );
-    return results;
   }
   async updateStreamDetails(
     streamId: number,
@@ -147,17 +94,8 @@ export class StreamsDAO extends BaseDAO implements IStreamsDAO {
     thumbnail?: string | null,
   ): Promise<Stream | null> {
     return await this.executeQuery<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          update_stream_details (
-            ${streamId},
-            ${title},
-            ${description},
-            ${thumbnail}
-          )
-      `,
+      'SELECT * FROM update_stream_details($1, $2, $3, $4)',
+      [streamId, title, description, thumbnail],
     );
   }
   async setStreamLiveStatus(
@@ -165,15 +103,8 @@ export class StreamsDAO extends BaseDAO implements IStreamsDAO {
     isLive: boolean,
   ): Promise<Stream | null> {
     return await this.executeQuery<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          set_stream_live_status (
-            ${streamId},
-            ${isLive}
-          )
-      `,
+      'SELECT * FROM set_stream_live_status($1, $2)',
+      [streamId, isLive],
     );
   }
   async addPathToStream(
@@ -181,15 +112,8 @@ export class StreamsDAO extends BaseDAO implements IStreamsDAO {
     path: string,
   ): Promise<Stream | null> {
     return await this.executeQuery<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          add_path_to_stream (
-            ${streamId},
-            ${path}
-          )
-      `,
+      'SELECT * FROM add_path_to_stream($1, $2)',
+      [streamId, path],
     );
   }
   async setStreamLockStatus(
@@ -197,15 +121,8 @@ export class StreamsDAO extends BaseDAO implements IStreamsDAO {
     isLocked: boolean,
   ): Promise<Stream | null> {
     return await this.executeQuery<Stream>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          set_stream_lock_status (
-            ${streamId},
-            ${isLocked}
-          )
-      `,
+      'SELECT * FROM set_stream_lock_status($1, $2)',
+      [streamId, isLocked],
     );
   }
 }

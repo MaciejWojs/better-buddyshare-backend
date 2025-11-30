@@ -7,16 +7,16 @@
  * @module dao/Roles
  */
 import { IRolesDAO } from './interfaces';
-import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
-import { Permission, Role } from '@src/types/db';
+import { Permission, Role } from '@src/types';
+import { IDbClient } from '@src/db/interfaces';
 
 export class RolesDAO extends BaseDAO implements IRolesDAO {
   /**
    * Protected constructor to enforce singleton usage via getInstance.
    */
-  private constructor() {
-    super();
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
   }
 
   /**
@@ -28,14 +28,9 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    * @returns The created Role or null
    */
   async createRole(roleName: string): Promise<Role | null> {
-    return await this.executeQuery<Role>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Create_role (${roleName.toUpperCase()})
-      `,
-    );
+    return this.executeQuery<Role>('SELECT * FROM Create_role($1)', [
+      roleName.toUpperCase(),
+    ]);
   }
 
   /**
@@ -48,12 +43,8 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    */
   async deleteRoleById(roleId: number): Promise<boolean> {
     const res = await this.executeQuery<{ delete_role_by_id: boolean }>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Delete_role_by_id (${roleId})
-      `,
+      'SELECT * FROM Delete_role_by_id($1)',
+      [roleId],
     );
     const isDeleted = res?.delete_role_by_id ?? false;
     console.log('[ID] Delete role result:', isDeleted);
@@ -70,12 +61,8 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    */
   async deleteRoleByName(roleName: string): Promise<boolean> {
     const res = await this.executeQuery<{ delete_role_by_name: boolean }>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Delete_role_by_name (${roleName})
-      `,
+      'SELECT * FROM Delete_role_by_name($1)',
+      [roleName],
     );
     const isDeleted = res?.delete_role_by_name ?? false;
     console.log('[Name] Delete role result:', isDeleted);
@@ -88,14 +75,7 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    * @returns Array of Role or null if none
    */
   async getAllRoles(): Promise<Role[] | null> {
-    return await this.executeQueryMultiple<Role>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_all_roles ()
-      `,
-    );
+    return this.executeQueryMultiple<Role>('SELECT * FROM Get_all_roles()', []);
   }
 
   /**
@@ -105,14 +85,9 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    * @returns Role or null if not found
    */
   async getRoleByName(roleName: string): Promise<Role | null> {
-    return await this.executeQuery<Role>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_role_by_name (${roleName})
-      `,
-    );
+    return this.executeQuery<Role>('SELECT * FROM Get_role_by_name($1)', [
+      roleName,
+    ]);
   }
 
   /**
@@ -122,14 +97,9 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    * @returns Role or null if not found
    */
   async getRoleById(roleId: number): Promise<Role | null> {
-    return await this.executeQuery<Role>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_role_by_id (${roleId})
-      `,
-    );
+    return this.executeQuery<Role>('SELECT * FROM Get_role_by_id($1)', [
+      roleId,
+    ]);
   }
 
   /**
@@ -146,15 +116,8 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
     permissionId: number,
   ): Promise<boolean> {
     const res = await this.executeQuery<{ assign_permission_to_role: boolean }>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Assign_permission_to_role (
-            ${roleId},
-            ${permissionId}
-          )
-      `,
+      'SELECT * FROM Assign_permission_to_role($1, $2)',
+      [roleId, permissionId],
     );
     const isAssigned = res?.assign_permission_to_role ?? false;
     console.log('Assign permission to role result:', isAssigned);
@@ -176,17 +139,10 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
   ): Promise<boolean> {
     const res = await this.executeQuery<{
       revoke_permission_from_role: boolean;
-    }>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Revoke_permission_from_role (
-            ${roleId},
-            ${permissionId}
-          )
-      `,
-    );
+    }>('SELECT * FROM Revoke_permission_from_role($1, $2)', [
+      roleId,
+      permissionId,
+    ]);
     const isRevoked = res?.revoke_permission_from_role ?? false;
     console.log('Revoke permission from role result:', isRevoked);
     return isRevoked;
@@ -199,13 +155,9 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
    * @returns Array of Permission, or empty array if none
    */
   async getPermissionsByRoleId(roleId: number): Promise<Permission[] | null> {
-    return await this.executeQueryMultiple<Permission>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_permissions_by_role_id (${roleId})
-      `,
+    return this.executeQueryMultiple<Permission>(
+      'SELECT * FROM Get_permissions_by_role_id($1)',
+      [roleId],
     );
   }
 
@@ -218,13 +170,9 @@ export class RolesDAO extends BaseDAO implements IRolesDAO {
   async getPermissionsByRoleName(
     roleName: string,
   ): Promise<Permission[] | null> {
-    return await this.executeQueryMultiple<Permission>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          Get_permissions_by_role_name (${roleName})
-      `,
+    return this.executeQueryMultiple<Permission>(
+      'SELECT * FROM Get_permissions_by_role_name($1)',
+      [roleName],
     );
   }
 }

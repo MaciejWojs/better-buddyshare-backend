@@ -1,11 +1,11 @@
 import { RefreshToken } from '@src/types';
 import { BaseDAO } from './BaseDao';
 import { IRefreshTokenDAO, SessionWithLastToken } from './interfaces';
-import { sql } from 'bun';
+import { IDbClient } from '@src/db/interfaces';
 
 export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {
-  private constructor() {
-    super();
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
   }
 
   async issueRefreshToken(
@@ -15,17 +15,8 @@ export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {
     rawToken: string,
   ): Promise<RefreshToken | null> {
     return this.executeQuery<RefreshToken>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          issue_refresh_token (
-            ${sessionId},
-            ${userId},
-            ${expiresAt},
-            ${rawToken}
-          )
-      `,
+      'SELECT * FROM issue_refresh_token($1, $2, $3, $4)',
+      [sessionId, userId, expiresAt, rawToken],
     );
   }
 
@@ -35,64 +26,36 @@ export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {
     newRawToken: string,
   ): Promise<RefreshToken | null> {
     return this.executeQuery<RefreshToken>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          rotate_refresh_token (
-            ${oldTokenHash},
-            ${newExpiresAt},
-            ${newRawToken}
-          )
-      `,
+      'SELECT * FROM rotate_refresh_token($1, $2, $3)',
+      [oldTokenHash, newExpiresAt, newRawToken],
     );
   }
 
   async isRefreshTokenValid(tokenHash: string): Promise<boolean> {
-    return this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          is_refresh_token_valid (${tokenHash})
-      `,
-    );
+    return this.scalar('SELECT is_refresh_token_valid($1)', [tokenHash]);
   }
 
   async revokeRefreshToken(
     tokenHash: string,
     revokeSession?: boolean,
   ): Promise<boolean> {
-    return this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          revoke_refresh_token (
-            ${tokenHash},
-            ${revokeSession ?? false}
-          )
-      `,
-    );
+    return this.scalar('SELECT revoke_refresh_token($1, $2)', [
+      tokenHash,
+      revokeSession ?? false,
+    ]);
   }
 
   async getRefreshToken(tokenHash: string): Promise<RefreshToken | null> {
     return this.executeQuery<RefreshToken>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          refresh_tokens
-        WHERE
-          token_hash = ${tokenHash}
-      `,
+      'SELECT * FROM refresh_tokens WHERE token_hash = $1',
+      [tokenHash],
     );
   }
 
   async getRefreshTokensBySession(sessionId: string): Promise<RefreshToken[]> {
     return this.executeQueryMultiple<RefreshToken>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_refresh_tokens_by_session (${sessionId})
-      `,
+      'SELECT * FROM get_refresh_tokens_by_session($1)',
+      [sessionId],
     );
   }
 
@@ -101,25 +64,13 @@ export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {
     limit?: number,
   ): Promise<RefreshToken[]> {
     return this.executeQueryMultiple<RefreshToken>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_user_token_history (
-            ${userId},
-            ${limit ?? 1000}
-          )
-      `,
+      'SELECT * FROM get_user_token_history($1, $2)',
+      [userId, limit ?? 1000],
     );
   }
 
   async markRefreshTokenUsed(tokenHash: string): Promise<boolean> {
-    return this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          mark_refresh_token_used (${tokenHash})
-      `,
-    );
+    return this.scalar('SELECT mark_refresh_token_used($1)', [tokenHash]);
   }
 
   async replaceRefreshToken(
@@ -127,46 +78,25 @@ export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {
     newTokenId: string,
   ): Promise<RefreshToken[]> {
     return this.executeQueryMultiple<RefreshToken>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          replace_refresh_token (
-            ${oldTokenHash},
-            ${newTokenId}
-          )
-      `,
+      'SELECT * FROM replace_refresh_token($1, $2)',
+      [oldTokenHash, newTokenId],
     );
   }
 
   async cleanupExpiredSessionsTokens(): Promise<boolean> {
-    return this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          cleanup_expired_sessions_tokens ()
-      `,
-    );
+    return this.scalar('SELECT cleanup_expired_sessions_tokens()', []);
   }
 
   async getSessionsWithRefreshTokens(
     userId: number,
   ): Promise<SessionWithLastToken[]> {
     return this.executeQueryMultiple<SessionWithLastToken>(
-      () => sql`
-        SELECT
-          *
-        FROM
-          get_sessions_with_refresh_tokens (${userId})
-      `,
+      'SELECT * FROM get_sessions_with_refresh_tokens($1)',
+      [userId],
     );
   }
   async revokeTokensBySession(sessionId: string): Promise<boolean> {
-    return this.getBooleanFromQuery(
-      () => sql`
-        SELECT
-          revoke_tokens_by_session (${sessionId})
-      `,
-    );
+    return this.scalar('SELECT revoke_tokens_by_session($1)', [sessionId]);
   }
 
   async rotateAndReturnRawToken(
@@ -174,13 +104,8 @@ export class RefreshTokenDAO extends BaseDAO implements IRefreshTokenDAO {
     newExpiresAt: Date,
   ): Promise<string | null> {
     return this.executeQuery<string>(
-      () => sql`
-        SELECT
-          rotate_and_return_raw_token (
-            ${oldTokenHash},
-            ${newExpiresAt}
-          )
-      `,
+      'SELECT rotate_and_return_raw_token($1, $2)',
+      [oldTokenHash, newExpiresAt],
     );
   }
 }

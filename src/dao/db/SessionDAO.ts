@@ -1,13 +1,12 @@
-import { sql } from 'bun';
 import { BaseDAO } from './BaseDao';
 import { ISessionDAO } from './interfaces';
-import { Session } from '@src/types/db';
+import { Session } from '@src/types';
+import { IDbClient } from '@src/db/interfaces';
 
 export class SessionDAO extends BaseDAO implements ISessionDAO {
-  private constructor() {
-    super();
+  public constructor(dbClient: IDbClient) {
+    super(dbClient);
   }
-
   private now_30_days_later(): Date {
     const now = new Date();
     const days = 30;
@@ -29,39 +28,25 @@ export class SessionDAO extends BaseDAO implements ISessionDAO {
     device_info?: string,
   ): Promise<Session | null> {
     return this.executeQuery<Session>(
-      async () => sql`
-        SELECT
-          *
-        FROM
-          create_session (
-            ${user_id},
-            ${expires_at},
-            ${ip_address ?? null},
-            ${user_agent ?? null},
-            ${device_info ?? null}
-          )
-      `,
+      'SELECT * FROM create_session($1, $2, $3, $4, $5)',
+      [
+        user_id,
+        expires_at,
+        ip_address ?? null,
+        user_agent ?? null,
+        device_info ?? null,
+      ],
     );
   }
 
   async revokeSession(session_id: string): Promise<boolean> {
-    return await this.getBooleanFromQuery(
-      async () => sql`
-        SELECT
-          *
-        FROM
-          revoke_session (${session_id})
-      `,
-    );
+    return await this.scalar('SELECT * FROM revoke_session($1)', [session_id]);
   }
 
   async revokeAllUserSessions(userId: number): Promise<boolean> {
-    return await this.getBooleanFromQuery(
-      async () => sql`
-        SELECT
-          revoke_all_user_sessions (${userId}) AS RESULT
-      `,
-    );
+    return await this.scalar('SELECT revoke_all_user_sessions($1) AS RESULT', [
+      userId,
+    ]);
   }
 
   async extendSession(
@@ -69,46 +54,29 @@ export class SessionDAO extends BaseDAO implements ISessionDAO {
     new_expires_at: Date = this.now_30_days_later(),
   ): Promise<Session | null> {
     return this.executeQuery<Session>(
-      async () => sql`
-        SELECT
-          *
-        FROM
-          extend_session_expiry (
-            ${session_id},
-            ${new_expires_at}
-          )
-      `,
+      'SELECT * FROM extend_session_expiry($1, $2)',
+      [session_id, new_expires_at],
     );
   }
 
   async getActiveSessions(user_id: number): Promise<Session[]> {
     return this.executeQueryMultiple<Session>(
-      async () => sql`
-        SELECT
-          *
-        FROM
-          get_active_sessions (${user_id})
-      `,
+      'SELECT * FROM get_active_sessions($1)',
+      [user_id],
     );
   }
 
   async touchSessionLastUsed(session_id: string): Promise<Session | null> {
     return this.executeQuery<Session>(
-      async () => sql`
-        SELECT
-          *
-        FROM
-          touch_session_last_used (${session_id})
-      `,
+      'SELECT * FROM touch_session_last_used($1)',
+      [session_id],
     );
   }
 
   async cleanupExpiredSessionsAndTokens(): Promise<boolean> {
-    const result = await this.getBooleanFromQuery(
-      async () => sql`
-        SELECT
-          cleanup_expired_sessions_tokens () AS count
-      `,
+    const result = await this.scalar(
+      'SELECT cleanup_expired_sessions_tokens() AS count',
+      [],
     );
     return result;
   }

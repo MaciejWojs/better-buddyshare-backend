@@ -6,14 +6,14 @@ import {
   DaoCacheConnectionError,
   DaoCacheAuthenticationError,
 } from '@src/errors';
+import { IDbClient } from '@src/db/interfaces';
 
 export abstract class BaseDAO {
-  protected constructor() {
+  protected constructor(protected readonly db: IDbClient) {
     console.log(`Initializing ${this.constructor.name} DAO`);
   }
 
   protected mapPostgresError(error: any): DaoError {
-    // Bun.sql throws PostgresError
     if (error.name === 'PostgresError') {
       switch (error.code) {
         case '23505': // unique_violation
@@ -41,14 +41,12 @@ export abstract class BaseDAO {
       }
     }
 
-    // Inne błędy (np. runtime)
     return new DaoError('Unexpected DAO error', error);
   }
 
   protected mapCacheError(error: any): DaoError {
     if (!error) return new DaoError('Unknown cache error', error);
 
-    // detect redis/valkey style errors by code/name
     if (error.code === 'ERR_REDIS_CONNECTION_CLOSED') {
       return new DaoCacheConnectionError(error);
     }
@@ -56,17 +54,12 @@ export abstract class BaseDAO {
       return new DaoCacheAuthenticationError(error);
     }
 
-    // fallback
     return new DaoError('Cache error', error);
   }
 
-  /**
-   * Generic error mapper: detects DB/cache/other and returns a DaoError subclass.
-   */
   protected mapError(error: any): DaoError {
     if (!error) return new DaoError('Unknown error', error);
 
-    // Postgres/Bun detection
     try {
       if (
         error.name === 'PostgresError' ||
@@ -74,128 +67,51 @@ export abstract class BaseDAO {
       ) {
         return this.mapPostgresError(error);
       }
-    } catch (_) {
-      // continue to other detectors
-    }
+    } catch (_) {}
 
-    // Cache detection
     try {
-      // Redis/Valkey style
       if (error.code && String(error.code).startsWith('ERR_REDIS')) {
         return this.mapCacheError(error);
       }
-    } catch (_) {
-      // ignore
-    }
+    } catch (_) {}
 
-    // Fallback: if it's already a DaoError, return as-is
     if (error instanceof DaoError) return error;
 
-    // Generic wrap
     return new DaoError(error?.message ?? String(error), error);
   }
 
-  /**
-   * Executes a query that should return a single row.
-   */
   protected async executeQuery<T>(
-    query: () => Promise<any>,
+    query: string,
+    params?: any[],
   ): Promise<T | null> {
     try {
-      const results = await query();
+      const results = await this.db.querySingle<T>(query, params);
 
-      if (results === null || results === undefined)
-        console.log(`[QUERY RESULT] during ${query.toString()}`, results);
-
-      if (!Array.isArray(results)) {
-        throw new DaoError('[DB ERROR] Query did not return an array', results);
-      }
-
-      if (results.length === 0) {
-        console.log('[LENGTH] No records found in the database.');
-        return null;
-      }
-
-      // // Jeśli funkcja SQL zwraca np. [{ function_name: null }]
-      const first = results[0];
-      if (
-        first &&
-        typeof first === 'object' &&
-        Object.values(first).every((v) => v === null)
-      ) {
-        console.log('[NULL] Query returned only NULL values.');
-        return null;
-      }
-
-      return first as T;
+      if (!results) return null;
+      return results;
     } catch (error: any) {
-      const mapped = this.mapError(error);
-      // console.error('[DB ERROR]', mapped);
-      throw mapped;
+      throw this.mapError(error);
     }
   }
 
-  /**
-   * Executes a query that returns multiple rows.
-   */
   protected async executeQueryMultiple<T>(
-    query: () => Promise<T>,
+    query: string,
+    params?: any[],
   ): Promise<T[]> {
     try {
-      const results = await query();
-
-      if (!Array.isArray(results)) {
-        throw new DaoError('[DB ERROR] Query did not return an array', results);
-      }
-
-      if (results.length === 0) {
-        console.log('[LENGTH] No records found in the database.');
-        return [];
-      }
-
-      return results as T[];
+      const results = await this.db.queryMultiple<T>(query, params);
+      return results ?? [];
     } catch (error: any) {
-      const mapped = this.mapError(error);
-      // console.error('[DB ERROR]', mapped);
-      throw mapped;
+      throw this.mapError(error);
     }
   }
 
-  protected async getBooleanFromQuery(query: () => any): Promise<boolean> {
-    const res = await this.executeQuery<Record<string, boolean>>(query);
-    if (!res) {
-      throw new DaoError(
-        `No result returned from boolean query ${query.toString()}`,
-      );
-    }
-    const firstValue = Object.values(res)[0];
-    return typeof firstValue === 'boolean' ? firstValue : false;
-  }
+  protected async scalar<T = any>(query: string, params?: any[]): Promise<T> {
+    const result = await this.executeQuery<Record<string, T>>(query, params);
+    if (!result)
+      throw new DaoError(`Scalar query returned no result: ${query}`);
 
-  protected async getPrimitiveFromQuery<
-    T extends string | number | boolean = number,
-  >(query: () => any): Promise<T> {
-    const res = await this.executeQuery<Record<string, T>>(query);
-
-    if (!res) {
-      throw new DaoError(
-        `No result returned from primitive query ${query.toString()}`,
-      );
-    }
-
-    const firstValue = Object.values(res)[0];
-
-    // Sprawdź, czy to prymityw (string, number, boolean)
-    if (
-      typeof firstValue === 'string' ||
-      typeof firstValue === 'number' ||
-      typeof firstValue === 'boolean'
-    ) {
-      return firstValue as T;
-    }
-
-    throw new DaoError(
-      `Unexpected non-primitive value returned from query ${query.toString()}`,
-    );
+    const [value] = Object.values(result);
+    return value as T;
   }
 }

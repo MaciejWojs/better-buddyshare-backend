@@ -11,3 +11,4 @@ export * from './UserDAO';
 export * from './MessagesDAO';
 export * from './StreamStatsTypesDAO';
 export * from './StreamStatisticsDAO';
+export * from './StreamAnalyticsDAO';
