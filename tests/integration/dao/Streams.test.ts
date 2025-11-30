@@ -1,22 +1,19 @@
 import { beforeEach, afterEach, describe, test, expect } from 'bun:test';
 import { sql } from 'bun';
-import { StreamsDAO, UserDAO } from '@src/dao';
+import { StreamsDAO, UserDAO } from '../../test-setup';
 
-let streamsDao: StreamsDAO;
-let userDao: UserDAO;
 let streamerId: number;
 let user: any;
 
 beforeEach(async () => {
-  streamsDao = StreamsDAO.getInstance();
-  userDao = UserDAO.getInstance();
+  // instances are imported from test-setup
 
   await sql`
     TRUNCATE TABLE streams,
     users CASCADE;
   `;
 
-  user = await userDao.createUser('streamer1', 'streamer@test.com', 'pass123');
+  user = await UserDAO.createUser('streamer1', 'streamer@test.com', 'pass123');
   await sql`
     SELECT
       *
@@ -105,7 +102,7 @@ describe('Stream Token Management', () => {
 
 describe('Stream DAO checks', () => {
   test('should detect that user is a streamer', async () => {
-    const isStreamer = await streamsDao.checkIfUserIsStreamer(streamerId);
+    const isStreamer = await StreamsDAO.checkIfUserIsStreamer(streamerId);
     expect(isStreamer).toBeTrue();
   });
 });
@@ -136,7 +133,7 @@ describe('SQL Functions', () => {
   });
 
   test('create_stream throws for non-streamer user', async () => {
-    const viewer = await userDao.createUser(
+    const viewer = await UserDAO.createUser(
       'viewer_sql',
       'viewer_sql@test.com',
       'pw',
@@ -260,7 +257,7 @@ describe('SQL Functions', () => {
 
 describe('Stream Operations via DAO', () => {
   test('should create a new stream for a streamer', async () => {
-    const stream = await streamsDao.createStream(
+    const stream = await StreamsDAO.createStream(
       streamerId,
       'Test Stream',
       'Opis testowy',
@@ -271,22 +268,22 @@ describe('Stream Operations via DAO', () => {
   });
 
   test('should throw error if user is not a streamer', async () => {
-    const user = await userDao.createUser('viewer1', 'viewer@test.com', 'pass');
+    const user = await UserDAO.createUser('viewer1', 'viewer@test.com', 'pass');
     await expect(
-      streamsDao.createStream(user!.user_id, 'Stream', 'x'),
+      StreamsDAO.createStream(user!.user_id, 'Stream', 'x'),
     ).rejects.toThrow(/is not a streamer/i);
   });
 
   test('should throw error if streamer already has an active stream', async () => {
-    await streamsDao.createStream(streamerId, 'First Stream', 'desc');
+    await StreamsDAO.createStream(streamerId, 'First Stream', 'desc');
     await expect(
-      streamsDao.createStream(streamerId, 'Second Stream', 'desc'),
+      StreamsDAO.createStream(streamerId, 'Second Stream', 'desc'),
     ).rejects.toThrow(/already has an active stream/i);
   });
 
   test('should end an existing stream', async () => {
-    const stream = await streamsDao.createStream(streamerId, 'End Me', 'desc');
-    const ended = await streamsDao.endStream(stream!.stream_id);
+    const stream = await StreamsDAO.createStream(streamerId, 'End Me', 'desc');
+    const ended = await StreamsDAO.endStream(stream!.stream_id);
     expect(ended).not.toBeNull();
     expect(ended!.is_live).toBeFalse();
   });
@@ -332,20 +329,20 @@ describe('Stream Operations via DAO', () => {
     ]);
     const stream1 = stream1Res;
     const stream2 = stream2Res;
-    const ended = await streamsDao.endAllStreamsForUser(streamerId);
+    const ended = await StreamsDAO.endAllStreamsForUser(streamerId);
     expect(ended.length).toBeGreaterThanOrEqual(2);
     expect(ended.every((s) => s.is_live === false)).toBeTrue();
   });
 
   test('should end all active streams globally', async () => {
-    await streamsDao.createStream(streamerId, 'Global Stream', 'desc');
-    const ended = await streamsDao.endAllStreams();
+    await StreamsDAO.createStream(streamerId, 'Global Stream', 'desc');
+    const ended = await StreamsDAO.endAllStreams();
     expect(ended.length).toBeGreaterThanOrEqual(1);
     expect(ended[0].is_live).toBeFalse();
   });
 
   test('should return only active and public streams', async () => {
-    const stream = await streamsDao.createStream(
+    const stream = await StreamsDAO.createStream(
       streamerId,
       'Public Stream',
       'desc',
@@ -357,20 +354,20 @@ describe('Stream Operations via DAO', () => {
       WHERE
         stream_id = ${stream!.stream_id}
     `;
-    const activeStreams = await streamsDao.getActiveStreams();
+    const activeStreams = await StreamsDAO.getActiveStreams();
     expect(activeStreams.length).toBeGreaterThanOrEqual(1);
     expect(activeStreams[0].is_public).toBeTrue();
     expect(activeStreams[0].is_live).toBeTrue();
   });
 
   test('should check if user is currently streaming', async () => {
-    await streamsDao.createStream(streamerId, 'Live Stream', 'desc');
-    const isStreaming = await streamsDao.checkIfUserIsStreaming(streamerId);
+    await StreamsDAO.createStream(streamerId, 'Live Stream', 'desc');
+    const isStreaming = await StreamsDAO.checkIfUserIsStreaming(streamerId);
     expect(isStreaming).toBeTrue();
   });
 
   test('should check if user is streaming and public', async () => {
-    const stream = await streamsDao.createStream(
+    const stream = await StreamsDAO.createStream(
       streamerId,
       'Live Stream',
       'desc',
@@ -383,27 +380,27 @@ describe('Stream Operations via DAO', () => {
         stream_id = ${stream!.stream_id}
     `;
     const isPublic =
-      await streamsDao.checkIfUserIsStreamingAndPublic(streamerId);
+      await StreamsDAO.checkIfUserIsStreamingAndPublic(streamerId);
     expect(isPublic).toBeTrue();
   });
 
   test('should get stream by ID', async () => {
-    const stream = await streamsDao.createStream(streamerId, 'Find Me', 'desc');
-    const fetched = await streamsDao.getStreamById(stream!.stream_id);
+    const stream = await StreamsDAO.createStream(streamerId, 'Find Me', 'desc');
+    const fetched = await StreamsDAO.getStreamById(stream!.stream_id);
     expect(fetched).not.toBeNull();
     expect(fetched!.stream_id).toBe(stream!.stream_id);
   });
 
   test('should get all streams by user ID', async () => {
-    await streamsDao.createStream(streamerId, 'S1', 'D1');
-    const streams = await streamsDao.getStreamsByUserId(streamerId);
+    await StreamsDAO.createStream(streamerId, 'S1', 'D1');
+    const streams = await StreamsDAO.getStreamsByUserId(streamerId);
     expect(streams.length).toBeGreaterThanOrEqual(1);
     expect(streams[0].streamer_id).toBe(streamerId);
   });
 
   test('should update stream details', async () => {
-    const stream = await streamsDao.createStream(streamerId, 'Old', 'Old desc');
-    const updated = await streamsDao.updateStreamDetails(
+    const stream = await StreamsDAO.createStream(streamerId, 'Old', 'Old desc');
+    const updated = await StreamsDAO.updateStreamDetails(
       stream!.stream_id,
       'New Title',
       'New Desc',
@@ -413,8 +410,8 @@ describe('Stream Operations via DAO', () => {
   });
 
   test('should set stream live status', async () => {
-    const stream = await streamsDao.createStream(streamerId, 'Live', 'desc');
-    const updated = await streamsDao.setStreamLiveStatus(
+    const stream = await StreamsDAO.createStream(streamerId, 'Live', 'desc');
+    const updated = await StreamsDAO.setStreamLiveStatus(
       stream!.stream_id,
       false,
     );
@@ -422,12 +419,12 @@ describe('Stream Operations via DAO', () => {
   });
 
   test('should add path to stream', async () => {
-    const stream = await streamsDao.createStream(
+    const stream = await StreamsDAO.createStream(
       streamerId,
       'With Path',
       'desc',
     );
-    const updated = await streamsDao.addPathToStream(
+    const updated = await StreamsDAO.addPathToStream(
       stream!.stream_id,
       '/test/path',
     );
@@ -435,14 +432,14 @@ describe('Stream Operations via DAO', () => {
   });
 
   test('should lock and unlock a stream', async () => {
-    const stream = await streamsDao.createStream(streamerId, 'Lock Me', 'desc');
-    const locked = await streamsDao.setStreamLockStatus(
+    const stream = await StreamsDAO.createStream(streamerId, 'Lock Me', 'desc');
+    const locked = await StreamsDAO.setStreamLockStatus(
       stream!.stream_id,
       true,
     );
     expect(locked!.is_locked).toBeTrue();
 
-    const unlocked = await streamsDao.setStreamLockStatus(
+    const unlocked = await StreamsDAO.setStreamLockStatus(
       stream!.stream_id,
       false,
     );

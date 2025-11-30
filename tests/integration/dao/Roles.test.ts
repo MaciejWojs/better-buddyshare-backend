@@ -1,19 +1,14 @@
-import { RolesDAO, PermissionDAO } from '@src/dao';
 import { describe, expect, test, beforeAll } from 'bun:test';
+import { RolesDAO, PermissionDAO } from '../../test-setup';
 
 describe('RolesDAO', () => {
-  let dao: RolesDAO;
-  let permissionDao: PermissionDAO;
   let testRoleId: number;
   let testPermissionId: number;
 
   beforeAll(async () => {
-    dao = RolesDAO.getInstance();
-    permissionDao = PermissionDAO.getInstance();
-
     // Create example roles and permissions
-    const rolePromise = dao.createRole('TEST_ROLE');
-    const permissionPromise = permissionDao.createPermission('TEST_PERMISSION');
+    const rolePromise = RolesDAO.createRole('TEST_ROLE');
+    const permissionPromise = PermissionDAO.createPermission('TEST_PERMISSION');
 
     const [role, perm] = await Promise.all([rolePromise, permissionPromise]);
     testRoleId = role!.role_id;
@@ -21,111 +16,111 @@ describe('RolesDAO', () => {
   });
 
   test('should create a new role', async () => {
-    const role = await dao.createRole('ADMIN_TEMP');
+    const role = await RolesDAO.createRole('ADMIN_TEMP');
     expect(role).not.toBeNull();
     expect(role!.name).toBe('ADMIN_TEMP');
   });
 
   test('should return role by name', async () => {
-    const role = await dao.getRoleByName('TEST_ROLE');
+    const role = await RolesDAO.getRoleByName('TEST_ROLE');
     expect(role).not.toBeNull();
     expect(role!.name).toBe('TEST_ROLE');
   });
 
   test('should return role by ID', async () => {
-    const role = await dao.getRoleById(testRoleId);
+    const role = await RolesDAO.getRoleById(testRoleId);
     expect(role).not.toBeNull();
     expect(role!.role_id).toBe(testRoleId);
   });
 
   test('should return all roles', async () => {
-    const roles = await dao.getAllRoles();
+    const roles = await RolesDAO.getAllRoles();
     expect(Array.isArray(roles)).toBeTrue();
     expect(roles.length).toBeGreaterThan(0);
   });
 
   test('should assign a permission to a role', async () => {
-    const result = await dao.assignPermissionToRole(
+    const result = await RolesDAO.assignPermissionToRole(
       testRoleId,
       testPermissionId,
     );
     expect(result).toBeTrue();
 
-    const perms = await dao.getPermissionsByRoleId(testRoleId);
+    const perms = await RolesDAO.getPermissionsByRoleId(testRoleId);
     expect(perms.some((p) => p.name === 'TEST_PERMISSION')).toBeTrue();
   });
 
   test('should revoke a permission from a role', async () => {
-    const result = await dao.revokePermissionFromRole(
+    const result = await RolesDAO.revokePermissionFromRole(
       testRoleId,
       testPermissionId,
     );
     expect(result).toBeTrue();
 
-    const perms = await dao.getPermissionsByRoleId(testRoleId);
+    const perms = await RolesDAO.getPermissionsByRoleId(testRoleId);
     expect(perms.some((p) => p.name === 'TEST_PERMISSION')).toBeFalse();
   });
 
   test('should return role permissions by ID', async () => {
     // re-assign so the test has data
-    await dao.assignPermissionToRole(testRoleId, testPermissionId);
-    const perms = await dao.getPermissionsByRoleId(testRoleId);
+    await RolesDAO.assignPermissionToRole(testRoleId, testPermissionId);
+    const perms = await RolesDAO.getPermissionsByRoleId(testRoleId);
     expect(Array.isArray(perms)).toBeTrue();
     expect(perms.length).toBeGreaterThan(0);
   });
 
   test('should return role permissions by name', async () => {
-    const perms = await dao.getPermissionsByRoleName('TEST_ROLE');
+    const perms = await RolesDAO.getPermissionsByRoleName('TEST_ROLE');
     expect(Array.isArray(perms)).toBeTrue();
     expect(perms.some((p) => p.name === 'TEST_PERMISSION')).toBeTrue();
   });
 
   test('should NOT delete role by ID if it has assigned permissions', async () => {
     // TEST_ROLE has TEST_PERMISSION assigned
-    const result = await dao.deleteRoleById(testRoleId);
+    const result = await RolesDAO.deleteRoleById(testRoleId);
     expect(result).toBeFalse();
 
-    const stillExists = await dao.getRoleById(testRoleId);
+    const stillExists = await RolesDAO.getRoleById(testRoleId);
     expect(stillExists).not.toBeNull();
   });
 
   test('should NOT delete role by name if it has assigned permissions', async () => {
     const roleName = 'TEST_ROLE';
-    const result = await dao.deleteRoleByName(roleName);
+    const result = await RolesDAO.deleteRoleByName(roleName);
     expect(result).toBeFalse();
 
-    const stillExists = await dao.getRoleByName(roleName);
+    const stillExists = await RolesDAO.getRoleByName(roleName);
     expect(stillExists).not.toBeNull();
   });
 
   test('should delete role by ID when it has no relations', async () => {
     // Create a new role with no assignments
-    const tempRole = await dao.createRole('UNUSED_ROLE');
-    const result = await dao.deleteRoleById(tempRole!.role_id);
+    const tempRole = await RolesDAO.createRole('UNUSED_ROLE');
+    const result = await RolesDAO.deleteRoleById(tempRole!.role_id);
     expect(result).toBeTrue();
 
-    const deleted = await dao.getRoleById(tempRole!.role_id);
+    const deleted = await RolesDAO.getRoleById(tempRole!.role_id);
     expect(deleted).toBeNull();
   });
 
   test('should delete role by name when it has no relations', async () => {
     const roleName = 'UNUSED_ROLE_2';
-    await dao.createRole(roleName);
-    const result = await dao.deleteRoleByName(roleName);
+    await RolesDAO.createRole(roleName);
+    const result = await RolesDAO.deleteRoleByName(roleName);
     expect(result).toBeTrue();
 
-    const deleted = await dao.getRoleByName(roleName);
+    const deleted = await RolesDAO.getRoleByName(roleName);
     expect(deleted).toBeNull();
   });
 
   test('should delete TEST_ROLE after manually removing assignments', async () => {
     const roleName = 'TEST_ROLE';
     // First revoke the assigned permission
-    await dao.revokePermissionFromRole(testRoleId, testPermissionId);
-    const result = await dao.deleteRoleByName(roleName);
+    await RolesDAO.revokePermissionFromRole(testRoleId, testPermissionId);
+    const result = await RolesDAO.deleteRoleByName(roleName);
     expect(result).toBeTrue();
 
-    const deleted = await dao.getRoleByName(roleName);
+    const deleted = await RolesDAO.getRoleByName(roleName);
     expect(deleted).toBeNull();
   });
 });

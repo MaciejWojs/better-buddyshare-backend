@@ -1,17 +1,14 @@
 import { beforeEach, afterEach, describe, test, expect } from 'bun:test';
 import { sql } from 'bun';
-import { RefreshTokenDAO, UserDAO } from '@src/dao';
+import { RefreshTokenDAO, UserDAO } from '../../test-setup';
 
-let dao: RefreshTokenDAO;
-let userDao: UserDAO;
 let userId: number;
 let sessionId: string;
 let tokenHash: string;
 let rawToken = 'raw_token_example';
 
 beforeEach(async () => {
-  dao = RefreshTokenDAO.getInstance();
-  userDao = UserDAO.getInstance();
+  // dao and userDao are imported from test-setup
 
   await sql`
     TRUNCATE TABLE refresh_tokens,
@@ -20,7 +17,7 @@ beforeEach(async () => {
     TRUNCATE TABLE users RESTART IDENTITY CASCADE;
   `.simple();
 
-  const createdUser = await userDao.createUser(
+  const createdUser = await UserDAO.createUser(
     'testuser',
     'test@example.com',
     'hashed_password',
@@ -42,7 +39,7 @@ beforeEach(async () => {
   `;
   sessionId = session[0].session_id;
 
-  const issued = await dao.issueRefreshToken(
+  const issued = await RefreshTokenDAO.issueRefreshToken(
     sessionId,
     userId,
     expires,
@@ -61,7 +58,7 @@ afterEach(async () => {
 describe('RefreshTokenDAO – issuing and fetching', () => {
   test('should issue a new refresh token', async () => {
     const expires = new Date(Date.now() + 1000 * 60 * 60 * 2);
-    const token = await dao.issueRefreshToken(
+    const token = await RefreshTokenDAO.issueRefreshToken(
       sessionId,
       userId,
       expires,
@@ -74,25 +71,25 @@ describe('RefreshTokenDAO – issuing and fetching', () => {
 
   test('should fail issuing token when raw_token empty', async () => {
     await expect(
-      dao.issueRefreshToken(sessionId, userId, new Date(), ''),
+      RefreshTokenDAO.issueRefreshToken(sessionId, userId, new Date(), ''),
     ).rejects.toThrow();
   });
 
   test('should get token by hash', async () => {
-    const token = await dao.getRefreshToken(tokenHash);
+    const token = await RefreshTokenDAO.getRefreshToken(tokenHash);
     expect(token).not.toBeNull();
     expect(token!.token_hash).toBe(tokenHash);
   });
 
   test('should return null when getting nonexistent token', async () => {
-    const token = await dao.getRefreshToken('nonexistent_hash');
+    const token = await RefreshTokenDAO.getRefreshToken('nonexistent_hash');
     expect(token).toBeNull();
   });
 });
 
 describe('RefreshTokenDAO – validation & revocation', () => {
   test('should validate active token', async () => {
-    const valid = await dao.isRefreshTokenValid(tokenHash);
+    const valid = await RefreshTokenDAO.isRefreshTokenValid(tokenHash);
     expect(valid).toBe(true);
   });
 
@@ -102,25 +99,25 @@ describe('RefreshTokenDAO – validation & revocation', () => {
       SET
         expires_at = NOW () - INTERVAL '1 minute'
     `;
-    const valid = await dao.isRefreshTokenValid(tokenHash);
+    const valid = await RefreshTokenDAO.isRefreshTokenValid(tokenHash);
     expect(valid).toBe(false);
   });
 
   test('should return false for revoked token', async () => {
-    await dao.revokeRefreshToken(tokenHash);
-    const valid = await dao.isRefreshTokenValid(tokenHash);
+    await RefreshTokenDAO.revokeRefreshToken(tokenHash);
+    const valid = await RefreshTokenDAO.isRefreshTokenValid(tokenHash);
     expect(valid).toBe(false);
   });
 
   test('should revoke refresh token only', async () => {
-    const revoked = await dao.revokeRefreshToken(tokenHash);
+    const revoked = await RefreshTokenDAO.revokeRefreshToken(tokenHash);
     expect(revoked).toBe(true);
-    const token = await dao.getRefreshToken(tokenHash);
+    const token = await RefreshTokenDAO.getRefreshToken(tokenHash);
     expect(token!.revoked_at).not.toBeNull();
   });
 
   test('should revoke refresh token and linked session', async () => {
-    const revoked = await dao.revokeRefreshToken(tokenHash, true);
+    const revoked = await RefreshTokenDAO.revokeRefreshToken(tokenHash, true);
     expect(revoked).toBe(true);
     const session = await sql`
       SELECT
@@ -134,7 +131,8 @@ describe('RefreshTokenDAO – validation & revocation', () => {
   });
 
   test('should return false when revoking nonexistent token', async () => {
-    const revoked = await dao.revokeRefreshToken('nonexistent_hash');
+    const revoked =
+      await RefreshTokenDAO.revokeRefreshToken('nonexistent_hash');
     expect(revoked).toBe(false);
   });
 });
@@ -142,7 +140,7 @@ describe('RefreshTokenDAO – validation & revocation', () => {
 describe('RefreshTokenDAO – rotation', () => {
   test('should rotate token and create new one', async () => {
     const newExpires = new Date(Date.now() + 1000 * 60 * 60 * 3);
-    const rotated = await dao.rotateRefreshToken(
+    const rotated = await RefreshTokenDAO.rotateRefreshToken(
       tokenHash,
       newExpires,
       'rotated_raw',
@@ -154,13 +152,20 @@ describe('RefreshTokenDAO – rotation', () => {
   test('should fail rotation for nonexistent token', async () => {
     const newExpires = new Date(Date.now() + 1000 * 60 * 60 * 3);
     await expect(
-      dao.rotateRefreshToken('invalid_hash', newExpires, 'rotated_raw'),
+      RefreshTokenDAO.rotateRefreshToken(
+        'invalid_hash',
+        newExpires,
+        'rotated_raw',
+      ),
     ).rejects.toThrow();
   });
 
   test('should rotate and return raw token', async () => {
     const newExpires = new Date(Date.now() + 1000 * 60 * 60);
-    const raw = await dao.rotateAndReturnRawToken(tokenHash, newExpires);
+    const raw = await RefreshTokenDAO.rotateAndReturnRawToken(
+      tokenHash,
+      newExpires,
+    );
 
     // jeśli DAO zwróci obiekt { rotate_and_return_raw_token: '...' } rozpakowujemy wartość
     const rawStr =
@@ -177,16 +182,16 @@ describe('RefreshTokenDAO – rotation', () => {
 
 describe('RefreshTokenDAO – maintenance and cleanup', () => {
   test('should mark refresh token as used', async () => {
-    const marked = await dao.markRefreshTokenUsed(tokenHash);
+    const marked = await RefreshTokenDAO.markRefreshTokenUsed(tokenHash);
     expect(marked).toBe(true);
-    const updated = await dao.getRefreshToken(tokenHash);
+    const updated = await RefreshTokenDAO.getRefreshToken(tokenHash);
     expect(updated!.used_at).not.toBeNull();
   });
 
   test('should replace refresh token link', async () => {
     // utwórz nowy token i użyj jego id jako replaced_by_id (unikamy FK error)
     const expires = new Date(Date.now() + 1000 * 60 * 60 * 2);
-    const newToken = await dao.issueRefreshToken(
+    const newToken = await RefreshTokenDAO.issueRefreshToken(
       sessionId,
       userId,
       expires,
@@ -202,7 +207,10 @@ describe('RefreshTokenDAO – maintenance and cleanup', () => {
       );
     }
 
-    const tokens = await dao.replaceRefreshToken(tokenHash, String(newTokenId));
+    const tokens = await RefreshTokenDAO.replaceRefreshToken(
+      tokenHash,
+      String(newTokenId),
+    );
     expect(tokens.length).toBeGreaterThan(0);
     expect(tokens[0].replaced_by_id).toBe(String(newTokenId));
   });
@@ -213,14 +221,14 @@ describe('RefreshTokenDAO – maintenance and cleanup', () => {
       SET
         expires_at = NOW () - INTERVAL '2 hours'
     `;
-    const cleaned = await dao.cleanupExpiredSessionsTokens();
+    const cleaned = await RefreshTokenDAO.cleanupExpiredSessionsTokens();
     expect(cleaned).toBe(true);
   });
 
   test('should revoke tokens by session', async () => {
-    const revoked = await dao.revokeTokensBySession(sessionId);
+    const revoked = await RefreshTokenDAO.revokeTokensBySession(sessionId);
     expect(revoked).toBe(true);
-    const tokens = await dao.getRefreshTokensBySession(sessionId);
+    const tokens = await RefreshTokenDAO.getRefreshTokensBySession(sessionId);
     expect(tokens.every((t: any) => t.revoked_at !== null)).toBe(true);
   });
 });

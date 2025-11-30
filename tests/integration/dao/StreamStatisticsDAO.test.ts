@@ -1,24 +1,23 @@
-import { StreamStatisticsDAO, StreamsDAO, UserDAO } from '@src/dao';
 import { sql } from 'bun';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'bun:test';
-import { StreamStatsTypesDAO } from '../../../src/dao/db/StreamStatsTypes';
-
-const dao = StreamStatisticsDAO.getInstance();
+import {
+  StreamStatisticsDAO,
+  StreamsDAO,
+  UserDAO,
+  StreamStatsTypesDAO,
+} from '../../test-setup';
 
 let testStreamId: number;
 let testStatisticTypeId: number;
-let streamDao = StreamsDAO.getInstance();
-let userDao = UserDAO.getInstance();
-let streamStatsTypesDAO = StreamStatsTypesDAO.getInstance();
 
 beforeAll(async () => {
-  const user = await userDao.createUser(
+  const user = await UserDAO.createUser(
     'test_user_stats_dao',
     'daoUser@example.com',
     'pass',
   );
-  await userDao.updateStreamToken(user!.user_id);
-  const stream = await streamDao.createStream(
+  await UserDAO.updateStreamToken(user!.user_id);
+  const stream = await StreamsDAO.createStream(
     user!.user_id,
     'Test Stream',
     'This is a test stream',
@@ -26,7 +25,7 @@ beforeAll(async () => {
   testStreamId = stream!.stream_id;
 
   // Tworzymy testowy typ statystyki
-  const statType = await streamStatsTypesDAO.createStatisticType(
+  const statType = await StreamStatsTypesDAO.createStatisticType(
     'Test Statistic Type',
     'Description for test statistic type',
   );
@@ -58,7 +57,7 @@ afterEach(async () => {
 
 describe('StreamStatisticsDAO Integration Tests', () => {
   it('should add a new stream statistic', async () => {
-    const stat = await dao.addStreamStatistic(
+    const stat = await StreamStatisticsDAO.addStreamStatistic(
       testStreamId,
       testStatisticTypeId,
       42,
@@ -69,13 +68,13 @@ describe('StreamStatisticsDAO Integration Tests', () => {
   });
 
   it('should update a stream statistic value', async () => {
-    const stat = await dao.addStreamStatistic(
+    const stat = await StreamStatisticsDAO.addStreamStatistic(
       testStreamId,
       testStatisticTypeId,
       10,
       new Date(),
     );
-    const updated = await dao.updateStreamStatisticValue(
+    const updated = await StreamStatisticsDAO.updateStreamStatisticValue(
       stat!.statistic_in_time_id,
       20,
     );
@@ -83,36 +82,42 @@ describe('StreamStatisticsDAO Integration Tests', () => {
   });
 
   it('should delete a stream statistic', async () => {
-    const stat = await dao.addStreamStatistic(
+    const stat = await StreamStatisticsDAO.addStreamStatistic(
       testStreamId,
       testStatisticTypeId,
       15,
       new Date(),
     );
-    const result = await dao.deleteStreamStatistic(stat!.statistic_in_time_id);
+    const result = await StreamStatisticsDAO.deleteStreamStatistic(
+      stat!.statistic_in_time_id,
+    );
     expect(result).toBe(true);
   });
 
   it('should get statistics for stream', async () => {
-    await dao.addStreamStatistic(
+    await StreamStatisticsDAO.addStreamStatistic(
       testStreamId,
       testStatisticTypeId,
       5,
       new Date(),
     );
-    const stats = await dao.getStatisticsForStream(testStreamId, null, null);
+    const stats = await StreamStatisticsDAO.getStatisticsForStream(
+      testStreamId,
+      null,
+      null,
+    );
     expect(stats.length).toBeGreaterThan(0);
     expect(stats[0].stream_id).toBe(testStreamId);
   });
 
   it('should get statistics for stream and type', async () => {
-    await dao.addStreamStatistic(
+    await StreamStatisticsDAO.addStreamStatistic(
       testStreamId,
       testStatisticTypeId,
       5,
       new Date(),
     );
-    const stats = await dao.getStatisticsForStreamAndType(
+    const stats = await StreamStatisticsDAO.getStatisticsForStreamAndType(
       testStreamId,
       testStatisticTypeId,
       null,
@@ -123,24 +128,25 @@ describe('StreamStatisticsDAO Integration Tests', () => {
   });
 
   it('should count statistics for stream', async () => {
-    await dao.addStreamStatistic(
+    await StreamStatisticsDAO.addStreamStatistic(
       testStreamId,
       testStatisticTypeId,
       5,
       new Date(),
     );
-    const count = await dao.countStatisticsForStream(testStreamId);
+    const count =
+      await StreamStatisticsDAO.countStatisticsForStream(testStreamId);
     expect(count).toBeGreaterThan(0);
   });
 
   it('should delete old statistics for stream', async () => {
-    await dao.addStreamStatistic(
+    await StreamStatisticsDAO.addStreamStatistic(
       testStreamId,
       testStatisticTypeId,
       50,
       new Date('2000-01-01'),
     );
-    const deletedCount = await dao.deleteOldStatisticsForStream(
+    const deletedCount = await StreamStatisticsDAO.deleteOldStatisticsForStream(
       testStreamId,
       new Date('2010-01-01'),
     );

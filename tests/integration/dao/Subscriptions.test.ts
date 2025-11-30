@@ -1,17 +1,14 @@
 import { beforeEach, afterEach, describe, test, expect } from 'bun:test';
 import { sql } from 'bun';
-import { SubscriptionsDAO, UserDAO } from '@src/dao';
-import { User } from '@src/types/db';
+import { SubscriptionsDAO, UserDAO } from '../../test-setup';
+import { User } from '@src/types';
 
-let subscriptionsDao: SubscriptionsDAO;
-let userDao: UserDAO;
 let user1: User;
 let streamer1: User;
 let streamer2: User;
 
 beforeEach(async () => {
-  subscriptionsDao = SubscriptionsDAO.getInstance();
-  userDao = UserDAO.getInstance();
+  // instances are imported from test-setup
 
   // Wyczyść dane
 
@@ -23,9 +20,9 @@ beforeEach(async () => {
 
   // Utwórz testowych użytkowników
   const [u1, s1, s2] = await Promise.all([
-    userDao.createUser('viewer_1', 'viewer1@mail.com', 'pass123'),
-    userDao.createUser('streamer_1', 'streamer1@mail.com', 'pass123'),
-    userDao.createUser('streamer_2', 'streamer2@mail.com', 'pass123'),
+    UserDAO.createUser('viewer_1', 'viewer1@mail.com', 'pass123'),
+    UserDAO.createUser('streamer_1', 'streamer1@mail.com', 'pass123'),
+    UserDAO.createUser('streamer_2', 'streamer2@mail.com', 'pass123'),
   ]);
 
   user1 = u1;
@@ -33,8 +30,8 @@ beforeEach(async () => {
   streamer2 = s2;
 
   // Uczyń streamerów faktycznymi streamerami
-  await userDao.updateStreamToken(streamer1.user_id);
-  await userDao.updateStreamToken(streamer2.user_id);
+  await UserDAO.updateStreamToken(streamer1.user_id);
+  await UserDAO.updateStreamToken(streamer2.user_id);
 });
 
 afterEach(async () => {
@@ -51,7 +48,7 @@ afterEach(async () => {
 
 describe('SubscriptionsDAO.addSubscription & subscriptionExists', () => {
   test('should create a new subscription and confirm existence', async () => {
-    const created = await subscriptionsDao.addSubscription(
+    const created = await SubscriptionsDAO.addSubscription(
       user1.user_id,
       streamer1.user_id,
     );
@@ -59,7 +56,7 @@ describe('SubscriptionsDAO.addSubscription & subscriptionExists', () => {
     expect(created!.user_id).toBe(user1.user_id);
     expect(created!.streamer_id).toBe(streamer1.user_id);
 
-    const exists = await subscriptionsDao.subscriptionExists(
+    const exists = await SubscriptionsDAO.subscriptionExists(
       user1.user_id,
       streamer1.user_id,
     );
@@ -67,8 +64,8 @@ describe('SubscriptionsDAO.addSubscription & subscriptionExists', () => {
   });
 
   test('should not create duplicate subscriptions', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const duplicate = await subscriptionsDao.addSubscription(
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const duplicate = await SubscriptionsDAO.addSubscription(
       user1.user_id,
       streamer1.user_id,
     );
@@ -76,7 +73,7 @@ describe('SubscriptionsDAO.addSubscription & subscriptionExists', () => {
     expect(duplicate).not.toBeNull();
     expect(duplicate!.user_id).toBe(user1.user_id);
 
-    const count = await subscriptionsDao.getSubscriptionCountByUser(
+    const count = await SubscriptionsDAO.getSubscriptionCountByUser(
       user1.user_id,
     );
     expect(count).toBe(1);
@@ -84,21 +81,21 @@ describe('SubscriptionsDAO.addSubscription & subscriptionExists', () => {
 
   test('should throw when streamer does not exist', async () => {
     await expect(
-      subscriptionsDao.addSubscription(user1.user_id, 9999),
+      SubscriptionsDAO.addSubscription(user1.user_id, 9999),
     ).rejects.toThrow(/does not exist/);
   });
 });
 
 describe('SubscriptionsDAO.removeSubscription', () => {
   test('should remove existing subscription', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const result = await subscriptionsDao.removeSubscription(
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const result = await SubscriptionsDAO.removeSubscription(
       user1.user_id,
       streamer1.user_id,
     );
     expect(result).toBe(true);
 
-    const exists = await subscriptionsDao.subscriptionExists(
+    const exists = await SubscriptionsDAO.subscriptionExists(
       user1.user_id,
       streamer1.user_id,
     );
@@ -106,7 +103,7 @@ describe('SubscriptionsDAO.removeSubscription', () => {
   });
 
   test('should return false when subscription does not exist', async () => {
-    const result = await subscriptionsDao.removeSubscription(
+    const result = await SubscriptionsDAO.removeSubscription(
       user1.user_id,
       streamer1.user_id,
     );
@@ -117,18 +114,18 @@ describe('SubscriptionsDAO.removeSubscription', () => {
 describe('SubscriptionsDAO.getSubscriptionsByUser / getSubscribersByStreamer', () => {
   test('should return user subscriptions list', async () => {
     await Promise.all([
-      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
-      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer2.user_id),
     ]);
 
-    const list = await subscriptionsDao.getSubscriptionsByUser(user1.user_id);
+    const list = await SubscriptionsDAO.getSubscriptionsByUser(user1.user_id);
     expect(list.length).toBe(2);
   });
 
   test('should return streamer subscribers list', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
 
-    const list = await subscriptionsDao.getSubscribersByStreamer(
+    const list = await SubscriptionsDAO.getSubscribersByStreamer(
       streamer1.user_id,
     );
     expect(list.length).toBe(1);
@@ -139,19 +136,19 @@ describe('SubscriptionsDAO.getSubscriptionsByUser / getSubscribersByStreamer', (
 describe('SubscriptionsDAO counting & pagination', () => {
   test('should count subscriptions for a user', async () => {
     await Promise.all([
-      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
-      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer2.user_id),
     ]);
 
-    const count = await subscriptionsDao.getSubscriptionCountByUser(
+    const count = await SubscriptionsDAO.getSubscriptionCountByUser(
       user1.user_id,
     );
     expect(count).toBe(2);
   });
 
   test('should count subscribers for a streamer', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const count = await subscriptionsDao.getSubscriptionCountByStreamer(
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const count = await SubscriptionsDAO.getSubscriptionCountByStreamer(
       streamer1.user_id,
     );
     expect(count).toBe(1);
@@ -159,11 +156,11 @@ describe('SubscriptionsDAO counting & pagination', () => {
 
   test('should paginate subscriptions', async () => {
     await Promise.all([
-      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
-      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer2.user_id),
     ]);
 
-    const paginated = await subscriptionsDao.getSubscriptionsPaginated(
+    const paginated = await SubscriptionsDAO.getSubscriptionsPaginated(
       user1.user_id,
       0,
       1,
@@ -172,8 +169,8 @@ describe('SubscriptionsDAO counting & pagination', () => {
   });
 
   test('should paginate subscribers', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const paginated = await subscriptionsDao.getSubscribersPaginated(
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const paginated = await SubscriptionsDAO.getSubscribersPaginated(
       streamer1.user_id,
       0,
       1,
@@ -185,19 +182,19 @@ describe('SubscriptionsDAO counting & pagination', () => {
 describe('SubscriptionsDAO bulk removals', () => {
   test('should remove all subscriptions by user', async () => {
     await Promise.all([
-      subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id),
-      subscriptionsDao.addSubscription(user1.user_id, streamer2.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id),
+      SubscriptionsDAO.addSubscription(user1.user_id, streamer2.user_id),
     ]);
 
-    const deletedCount = await subscriptionsDao.removeAllSubscriptionsByUser(
+    const deletedCount = await SubscriptionsDAO.removeAllSubscriptionsByUser(
       user1.user_id,
     );
     expect(deletedCount).toBe(2);
   });
 
   test('should remove all subscribers by streamer', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const deletedCount = await subscriptionsDao.removeAllSubscribersByStreamer(
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const deletedCount = await SubscriptionsDAO.removeAllSubscribersByStreamer(
       streamer1.user_id,
     );
     expect(deletedCount).toBe(1);
@@ -206,8 +203,8 @@ describe('SubscriptionsDAO bulk removals', () => {
 
 describe('SubscriptionsDAO details & rankings', () => {
   test('should get subscription details', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const details = await subscriptionsDao.getSubscriptionDetails(
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const details = await SubscriptionsDAO.getSubscriptionDetails(
       user1.user_id,
       streamer1.user_id,
     );
@@ -216,15 +213,15 @@ describe('SubscriptionsDAO details & rankings', () => {
   });
 
   test('should get top streamers', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const top = await subscriptionsDao.getTopStreamersBySubscribers(10);
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const top = await SubscriptionsDAO.getTopStreamersBySubscribers(10);
     expect(top.length).toBeGreaterThanOrEqual(1);
     expect(top[0].streamer_id).toBe(streamer1.user_id);
   });
 
   test('should get recent subscriptions', async () => {
-    await subscriptionsDao.addSubscription(user1.user_id, streamer1.user_id);
-    const recent = await subscriptionsDao.getRecentSubscriptionsByUser(
+    await SubscriptionsDAO.addSubscription(user1.user_id, streamer1.user_id);
+    const recent = await SubscriptionsDAO.getRecentSubscriptionsByUser(
       user1.user_id,
       5,
     );
