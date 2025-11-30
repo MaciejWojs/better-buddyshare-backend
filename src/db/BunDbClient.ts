@@ -21,7 +21,7 @@ export class BunDbClient implements IDbClient {
     queryText: string,
     params: any[] = [],
   ): Promise<T | null> {
-    console.log('Executing single query:', queryText, 'with params:', params);
+    // console.log('Executing single query:', queryText, 'with params:', params);
 
     const results = await this.query<T>(queryText, params);
 
@@ -39,7 +39,7 @@ export class BunDbClient implements IDbClient {
     queryText: string,
     params: any[] = [],
   ): Promise<T[]> {
-    console.log('Executing multiple query:', queryText, 'with params:', params);
+    // console.log('Executing multiple query:', queryText, 'with params:', params);
     return this.query<T>(queryText, params);
   }
 

@@ -16,7 +16,7 @@ export class UserRepository extends BaseRepository implements IUserRepository {
   constructor(dao?: UserDAO, cache?: UserCacheDao) {
     super();
     this.dao = dao ?? this.daoFactory.db.User();
-    this.cache = cache ?? UserCacheDao.getInstance();
+    this.cache = cache ?? this.daoFactory.cache.UserCache();
   }
 
   //! Important: methods in repository should be 1:1 with methods in DAO

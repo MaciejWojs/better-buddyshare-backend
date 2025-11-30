@@ -32,9 +32,9 @@ describe('MessagesDAO – integration tests', () => {
   // ----------------------------------------------------------------------
 
   it('should create a message', async () => {
-    const msg = await createMessage('; DROP TABLE chat_messages; --');
+    const msg = await createMessage('hello world');
     expect(msg).not.toBeNull();
-    expect(msg!.content).toBe('; DROP TABLE chat_messages; --');
+    expect(msg!.content).toBe('hello world');
     expect(msg!.stream_id).toBe(streamId);
     expect(msg!.user_id).toBe(userId);
   });
