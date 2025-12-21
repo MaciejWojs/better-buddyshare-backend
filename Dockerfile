@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.4-alpine AS builder
+FROM oven/bun:1.3.5-alpine AS builder
 
 WORKDIR /BS
 
@@ -10,7 +10,7 @@ COPY . /BS
 
 RUN bun run minify
 
-FROM oven/bun:1.3.4-alpine
+FROM oven/bun:1.3.5-alpine
 
 WORKDIR /app
 
