@@ -5,7 +5,7 @@ import {
   Role,
   UserId,
   Username,
-  StreamRole 
+  StreamRole,
 } from '@src/domain';
 
 export class User {
@@ -19,7 +19,7 @@ export class User {
     readonly profileBanner: string,
     readonly description: Description,
     readonly isBanned: boolean,
-    readonly roles: Role[],           // Role globalne (Admin, Support)
+    readonly roles: Role[], // Role globalne (Admin, Support)
     readonly streamRoles: StreamRole[], // Role kanałowe (Moderator u kogoś)
     readonly banReason: string | null,
     readonly banExpiresAt: Date | null,
@@ -99,19 +99,19 @@ export class User {
 
   hasPermission(permission: string, contextStreamerId?: UserId): boolean {
     // 1. Sprawdź role globalne
-    if (this.roles.some(r => r.hasPermission(permission))) return true;
+    if (this.roles.some((r) => r.hasPermission(permission))) return true;
 
     // 2. Jeśli podano kontekst, sprawdź role na tym kanale
     if (contextStreamerId) {
       return this.streamRoles
-        .filter(sr => sr.streamerId.value === contextStreamerId.value)
-        .some(sr => sr.role.hasPermission(permission));
+        .filter((sr) => sr.streamerId.value === contextStreamerId.value)
+        .some((sr) => sr.role.hasPermission(permission));
     }
 
     return false;
   }
 
-  // Ulepszone hasRole - lepiej sprawdzać po nazwie (string), 
+  // Ulepszone hasRole - lepiej sprawdzać po nazwie (string),
   // bo obiekty Role mogą mieć różne referencje w pamięci
   hasRole(roleName: string): boolean {
     return this.roles.some((r) => r.name.value === roleName);

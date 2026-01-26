@@ -1,2 +1,2 @@
-export * from './ChatMessageContent'
-export * from './ChatMessageId'
+export * from './ChatMessageContent';
+export * from './ChatMessageId';

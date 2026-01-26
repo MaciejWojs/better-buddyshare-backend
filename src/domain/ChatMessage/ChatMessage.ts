@@ -41,6 +41,6 @@ export class ChatMessage {
     return this.copy({ content: newContent });
   }
 
-  //! TODO: add edit history tracking 
+  //! TODO: add edit history tracking
   // (separate entity?, like in prisma schema)
 }

@@ -1,2 +1,2 @@
-export * from './ChatMessageIdError'
-export * from './ChatMessageValueError'
+export * from './ChatMessageIdError';
+export * from './ChatMessageValueError';

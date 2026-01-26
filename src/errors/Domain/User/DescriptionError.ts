@@ -11,7 +11,7 @@ const getTruncatedDescription = (description: string): string => {
     return description.slice(0, MAX_DESCRIPTION_LENGTH_FOR_ERROR) + '...';
   }
   return description;
-}
+};
 
 export class DescriptionBelowMinLengthError extends BaseBelowMinLengthError {
   constructor(description: string, length: number) {
