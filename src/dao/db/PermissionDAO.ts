@@ -1,8 +1,5 @@
 /**
- * Permissions DAO.
- *
- * Provides methods to create, delete and fetch permission records via
- * database functions. Uses BaseDAO helpers to execute queries and map errors.
+ * Permissions DAO - Raw SQL queries implementation.
  *
  * @module dao/Permissions
  */
@@ -12,100 +9,57 @@ import { Permission } from '@src/types';
 import { BaseDAO } from './BaseDao';
 
 export class PermissionDAO extends BaseDAO implements IPermissionsDAO {
-  /**
-   * Protected constructor to enforce singleton usage via getInstance.
-   */
   public constructor(dbClient: IDbClient) {
     super(dbClient);
   }
-  /**
-   * Create a new permission by name.
-   *
-   * Calls the DB function Create_permission and returns the created Permission
-   * or null if not created.
-   *
-   * @param permissionName - Permission name (will be uppercased before call)
-   * @returns The created Permission or null
-   */
+
   async createPermission(permissionName: string): Promise<Permission | null> {
+    const name = permissionName.toUpperCase();
+    // Sprawdź czy już istnieje
+    const existing = await this.getPermissionByName(name);
+    if (existing) return existing;
+
     return this.executeQuery<Permission>(
-      'SELECT * FROM Create_permission($1)',
-      [permissionName.toUpperCase()],
+      `INSERT INTO permissions (name) VALUES ($1) RETURNING *`,
+      [name],
     );
   }
 
-  /**
-   * Delete a permission by its numeric ID.
-   *
-   * Calls the DB function Delete_permission_by_id and returns boolean result.
-   *
-   * @param permissionId - Numeric ID of the permission to delete
-   * @returns true when deleted, false otherwise
-   */
   async deletePermissionById(permissionId: number): Promise<boolean> {
-    const res = await this.executeQuery<{ delete_permission_by_id: boolean }>(
-      'SELECT * FROM Delete_permission_by_id($1)',
+    const res = await this.executeQuery<Permission>(
+      `DELETE FROM permissions WHERE permission_id = $1 RETURNING *`,
       [permissionId],
     );
-    const isDeleted = res?.delete_permission_by_id ?? false;
-    console.log('[ID] Delete permission result:', isDeleted);
-    return isDeleted;
+    return res !== null;
   }
 
-  /**f
-   * Delete a permission by its name.
-   *
-   * The name will be uppercased before invoking the DB function.
-   *
-   * @param permissionName - Name of the permission to delete
-   * @returns true when deleted, false otherwise
-   */
   async deletePermissionByName(permissionName: string): Promise<boolean> {
-    const res = await this.executeQuery<{ delete_permission_by_name: boolean }>(
-      'SELECT * FROM Delete_permission_by_name($1)',
+    const res = await this.executeQuery<Permission>(
+      `DELETE FROM permissions WHERE name = $1 RETURNING *`,
       [permissionName.toUpperCase()],
     );
-    const isDeleted = res?.delete_permission_by_name ?? false;
-    console.log('[NAME] Delete permission result:', isDeleted);
-    return isDeleted;
+    return res !== null;
   }
 
-  /**
-   * Retrieve all permissions.
-   *
-   * @returns Array of Permission or null if none
-   */
   async getAllPermissions(): Promise<Permission[] | null> {
     return this.executeQueryMultiple<Permission>(
-      'SELECT * FROM Get_all_permissions()',
+      `SELECT * FROM permissions ORDER BY permission_id`,
       [],
     );
   }
 
-  /**
-   * Get permission by its name.
-   *
-   * @param permissionName - Name of the permission to look up
-   * @returns Permission or null if not found
-   */
   async getPermissionByName(
     permissionName: string,
   ): Promise<Permission | null> {
     return this.executeQuery<Permission>(
-      'SELECT * FROM Get_permission_by_name($1)',
+      `SELECT * FROM permissions WHERE name = $1`,
       [permissionName.toUpperCase()],
     );
   }
 
-  /**
-   * Get permission by its ID.
-   *
-   * @param permissionId - Numeric ID of the permission
-   * @returns Permission or null if not found
-   */
   async getPermissionById(permissionId: number): Promise<Permission | null> {
     return this.executeQuery<Permission>(
-      'SELECT * FROM Get_permission_by_id($1)',
+      `SELECT * FROM permissions WHERE permission_id = $1`,
       [permissionId],
     );
   }
