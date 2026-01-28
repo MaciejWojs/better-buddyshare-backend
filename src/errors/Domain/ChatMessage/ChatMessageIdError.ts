@@ -1,4 +1,4 @@
-import { InvalidIdError } from '@src/errors';
+import { InvalidIdError } from '../Base/IdError';
 
 export class InvalidChatMessageIdError extends InvalidIdError {
   constructor(messageId: number) {

@@ -3,7 +3,7 @@ import {
   BaseExceedsMaxLengthError,
   BaseInvalidValueError,
   BaseProfanityError,
-} from '@src/errors';
+} from '../Base/ValueValidationErrors';
 
 export class ChatMessageBelowMinLengthError extends BaseBelowMinLengthError {
   constructor(chatMessage: string, minLength: number) {

@@ -1,4 +1,4 @@
-import { BaseDomainError } from '@src/errors';
+import { BaseDomainError } from '../BaseDomainError';
 
 export class WeakPasswordError extends BaseDomainError {
   constructor(password: string) {

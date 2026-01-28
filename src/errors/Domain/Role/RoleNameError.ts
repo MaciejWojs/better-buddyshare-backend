@@ -3,7 +3,7 @@ import {
   BaseExceedsMaxLengthError,
   BaseInvalidValueError,
   BaseProfanityError,
-} from '@src/errors';
+} from '../Base/ValueValidationErrors';
 
 export class RoleNameBelowMinLengthError extends BaseBelowMinLengthError {
   constructor(roleName: string, minLength: number) {

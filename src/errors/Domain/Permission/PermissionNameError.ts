@@ -3,7 +3,7 @@ import {
   BaseExceedsMaxLengthError,
   BaseInvalidValueError,
   BaseProfanityError,
-} from '@src/errors';
+} from '../Base/ValueValidationErrors';
 
 export class PermissionNameBelowMinLengthError extends BaseBelowMinLengthError {
   constructor(permissionName: string, minLength: number) {

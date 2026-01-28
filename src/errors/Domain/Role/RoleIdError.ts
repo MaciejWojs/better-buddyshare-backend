@@ -1,4 +1,4 @@
-import { InvalidIdError } from '@src/errors';
+import { InvalidIdError } from '../Base/IdError';
 
 export class InvalidRoleIdError extends InvalidIdError {
   constructor(roleId: number) {

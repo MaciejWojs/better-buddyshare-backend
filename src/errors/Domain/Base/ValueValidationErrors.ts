@@ -1,4 +1,4 @@
-import { BaseDomainError } from '@src/errors';
+import { BaseDomainError } from '../BaseDomainError';
 
 /**
  * Base error class for invalid values.

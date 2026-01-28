@@ -3,7 +3,7 @@ import {
   BaseExceedsMaxLengthError,
   BaseInvalidValueError,
   BaseProfanityError,
-} from '@src/errors';
+} from '../Base/ValueValidationErrors';
 
 export class StreamDescriptionBelowMinLengthError extends BaseBelowMinLengthError {
   constructor(streamDescription: string, minLength: number) {

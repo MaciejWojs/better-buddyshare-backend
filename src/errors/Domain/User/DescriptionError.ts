@@ -2,7 +2,7 @@ import {
   BaseBelowMinLengthError,
   BaseExceedsMaxLengthError,
   BaseProfanityError,
-} from '@src/errors';
+} from '../Base/ValueValidationErrors';
 
 const MAX_DESCRIPTION_LENGTH_FOR_ERROR = 50;
 
