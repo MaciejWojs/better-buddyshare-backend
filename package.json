@@ -22,14 +22,14 @@
   "dependencies": {
     "@hono/swagger-ui": "^0.5.3",
     "@prisma/client": "^7.3.0",
-    "hono": "^4.11.6",
+    "hono": "^4.11.9",
     "lodash": "^4.17.23",
     "rabbitmq-client": "^5.0.8"
   },
   "devDependencies": {
     "@0xts/gitleaks-cli": "^0.1.3",
     "@mermaid-js/mermaid-cli": "^11.12.0",
-    "@types/bun": "^1.3.6",
+    "@types/bun": "^1.3.9",
     "@types/lodash": "^4.17.23",
     "@types/swagger-ui-dist": "^3.30.6",
     "husky": "^9.1.7",
@@ -43,8 +43,8 @@
     "prisma": "^7.3.0",
     "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.28.16",
-    "typedoc-plugin-dt-links": "^2.0.39",
-    "typedoc-plugin-markdown": "^4.9.0",
+    "typedoc-plugin-dt-links": "^2.0.41",
+    "typedoc-plugin-markdown": "^4.10.0",
     "typedoc-plugin-mdn-links": "^5.1.1",
     "typedoc-plugin-mermaid": "^1.12.0",
     "typescript": "^5.9.3"
