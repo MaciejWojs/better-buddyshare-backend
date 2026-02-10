@@ -1,12 +1,12 @@
 export type Session = {
-  id: string; // UUID
-  userId: number;
-  ipAddress: string | null;
-  userAgent: string | null;
-  deviceInfo: string | null;
-  createdAt: Date;
-  lastUsedAt: Date | null;
-  revokedAt: Date | null;
-  expiresAt: Date;
-  isActive: boolean;
+  session_id: string;
+  user_id: number;
+  ip_address: string | null;
+  user_agent: string | null;
+  device_info: string | null;
+  created_at: Date;
+  last_used_at: Date | null;
+  revoked_at: Date | null;
+  expires_at: Date;
+  is_active: boolean;
 };
