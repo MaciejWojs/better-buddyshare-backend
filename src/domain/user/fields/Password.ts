@@ -20,6 +20,10 @@ export class Password {
     return new Password(hashed);
   }
 
+  static fromHash(hash: string): Password {
+    return new Password(hash);
+  }
+
   get value(): string {
     return this.pass;
   }
