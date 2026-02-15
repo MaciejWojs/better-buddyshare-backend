@@ -1,4 +1,4 @@
-FROM postgres:18.1-alpine3.22
+FROM postgres:18.2-alpine3.22
 
 # Build-time argument to specify the number of processes for make
 ARG MAKE_PROCS=4
