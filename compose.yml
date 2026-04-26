@@ -148,7 +148,7 @@ services:
       - backend
 
   queue:
-    image: rabbitmq:4.2-management-alpine
+    image: rabbitmq:4.3-management-alpine
     container_name: rabbitmq
     restart: unless-stopped
     ports:
