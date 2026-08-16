@@ -7,7 +7,7 @@
       "dependencies": {
         "@hono/swagger-ui": "^0.6.1",
         "@prisma/client": "^7.9.1",
-        "hono": "^4.13.0",
+        "hono": "^4.13.2",
         "lodash": "^4.18.1",
         "rabbitmq-client": "^5.0.8",
       },
@@ -28,7 +28,7 @@
         "prisma": "^7.9.1",
         "tsconfig-paths": "^4.2.0",
         "typedoc": "^0.28.20",
-        "typedoc-plugin-dt-links": "^2.0.66",
+        "typedoc-plugin-dt-links": "^2.0.67",
         "typedoc-plugin-markdown": "^4.12.0",
         "typedoc-plugin-mdn-links": "^5.1.1",
         "typedoc-plugin-mermaid": "^1.12.0",
@@ -657,7 +657,7 @@
 
     "highlight.js": ["highlight.js@10.7.3", "", {}, "sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A=="],
 
-    "hono": ["hono@4.13.0", "", {}, "sha512-jhunvfHWxd7J5EFfSgH4xsYJzSe/lfqbUCxiyyeaQasUsXeEHXtzVid+7EOGByc5JnFa23SSFL3Y2RV/z1T+eQ=="],
+    "hono": ["hono@4.13.2", "", {}, "sha512-JydRilDRkYBQMt9qR9U92mXxmbGqsqSn/IKOrh4e7/gEbn+0zSr8igTu0obwJoNGN4sez28DIql7FBHWydoJpA=="],
 
     "html-escaper": ["html-escaper@3.0.3", "", {}, "sha512-RuMffC89BOWQoY0WKGpIhn5gX3iI54O6nRA0yC124NYVtzjmFWBIiFd8M0x+ZdX0P9R4lADg1mgP8C7PxGOWuQ=="],
 
@@ -1065,7 +1065,7 @@
 
     "typedoc": ["typedoc@0.28.20", "", { "dependencies": { "@gerrit0/mini-shiki": "^3.23.0", "lunr": "^2.3.9", "markdown-it": "^14.3.0", "minimatch": "^10.2.5", "yaml": "^2.9.0" }, "peerDependencies": { "typescript": "5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x || 5.9.x || 6.0.x" }, "bin": { "typedoc": "bin/typedoc" } }, "sha512-uSKqkh8Cr48vllnEy+jdaAgOeR6Y+QCBW7usgUsKj7gJEfR7stw9U/fE49LBnj2tPRKPY0c0EBJSWe9Appmplg=="],
 
-    "typedoc-plugin-dt-links": ["typedoc-plugin-dt-links@2.0.66", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-kpkisf98WlmLI+bWmvKbCq4M5mlStdZ2XpApneLz39uF7Lt+knOypWwN97YGt0ggX65Ue6YNJlMVEp2ebIPsOg=="],
+    "typedoc-plugin-dt-links": ["typedoc-plugin-dt-links@2.0.67", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-IbUvmVORMxKn6zHjSozO0bS2stMBmSe3DfUQrSjkFpH3GvmQQiD+OfKkdyLCJsHJ8KfG6RKsmvx2AWwduVUvBg=="],
 
     "typedoc-plugin-markdown": ["typedoc-plugin-markdown@4.12.0", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-eJDEMAfxCmede22c/Jw7d0FA13ggAQv+KkwQYKYCdqI02cin6Rc9QRwbG/7XvvHWinuFejySnZVUWDtvGk3Vbg=="],
 
