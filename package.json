@@ -22,7 +22,7 @@
   "dependencies": {
     "@hono/swagger-ui": "^0.6.1",
     "@prisma/client": "^7.10.0",
-    "hono": "^4.13.7",
+    "hono": "^4.13.8",
     "lodash": "^4.18.1",
     "rabbitmq-client": "^5.0.8"
   },
@@ -35,7 +35,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
     "mermaid": "^12.0.0",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     "prettier-plugin-embed": "^0.5.1",
     "prettier-plugin-nginx": "^2.0.0",
     "prettier-plugin-prisma": "^5.0.0",
@@ -43,7 +43,7 @@
     "prisma": "^7.10.0",
     "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.28.20",
-    "typedoc-plugin-dt-links": "^2.0.71",
+    "typedoc-plugin-dt-links": "^2.0.72",
     "typedoc-plugin-markdown": "^4.13.0",
     "typedoc-plugin-mdn-links": "^5.1.1",
     "typedoc-plugin-mermaid": "^1.12.0",
