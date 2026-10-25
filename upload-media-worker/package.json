@@ -16,6 +16,6 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "rabbitmq-client": "^5.0.8"
+    "rabbitmq-client": "^5.1.0"
   }
 }
