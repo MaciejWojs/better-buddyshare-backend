@@ -20,16 +20,16 @@
     "*.jsx": "prettier --write"
   },
   "dependencies": {
-    "@hono/swagger-ui": "^0.6.1",
+    "@hono/swagger-ui": "^0.6.2",
     "@prisma/client": "^7.10.1",
-    "hono": "^4.13.13",
+    "hono": "^4.13.14",
     "lodash": "^4.18.1",
     "rabbitmq-client": "^5.1.0"
   },
   "devDependencies": {
     "@0xts/gitleaks-cli": "^0.1.3",
     "@mermaid-js/mermaid-cli": "^12.0.0",
-    "@types/bun": "^1.4.3",
+    "@types/bun": "^1.4.4",
     "@types/lodash": "^4.17.27",
     "@types/swagger-ui-dist": "^3.30.6",
     "husky": "^9.1.7",
@@ -43,7 +43,7 @@
     "prisma": "^7.10.1",
     "tsconfig-paths": "^4.2.0",
     "typedoc": "^0.28.20",
-    "typedoc-plugin-dt-links": "^2.0.77",
+    "typedoc-plugin-dt-links": "^2.0.78",
     "typedoc-plugin-markdown": "^4.14.1",
     "typedoc-plugin-mdn-links": "^5.1.1",
     "typedoc-plugin-mermaid": "^1.12.0",
