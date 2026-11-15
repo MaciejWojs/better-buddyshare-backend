@@ -7,7 +7,7 @@
       "dependencies": {
         "@hono/swagger-ui": "^0.6.2",
         "@prisma/client": "^7.10.1",
-        "hono": "^4.13.16",
+        "hono": "^4.13.18",
         "lodash": "^4.18.1",
         "rabbitmq-client": "^5.1.0",
       },
@@ -20,7 +20,7 @@
         "husky": "^9.1.7",
         "lint-staged": "^17.6.0",
         "mermaid": "^12.3.0",
-        "prettier": "^3.9.10",
+        "prettier": "^3.10.1",
         "prettier-plugin-embed": "^0.8.2",
         "prettier-plugin-nginx": "^2.0.0",
         "prettier-plugin-prisma": "^5.0.0",
@@ -28,7 +28,7 @@
         "prisma": "^7.10.1",
         "tsconfig-paths": "^4.2.0",
         "typedoc": "^0.28.20",
-        "typedoc-plugin-dt-links": "^2.0.79",
+        "typedoc-plugin-dt-links": "^2.0.80",
         "typedoc-plugin-markdown": "^4.14.1",
         "typedoc-plugin-mdn-links": "^5.1.1",
         "typedoc-plugin-mermaid": "^1.12.0",
@@ -673,7 +673,7 @@
 
     "highlight.js": ["highlight.js@11.12.0", "", {}, "sha512-nbfWpyRMcMrPMmDwJB+dhX/eiaPKtc2RB+0QZskqJ3WjRA/FDS0e9hZrx8EC/lbEv8gXy98FcDbNa/dspAaJMg=="],
 
-    "hono": ["hono@4.13.16", "", {}, "sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A=="],
+    "hono": ["hono@4.13.18", "", {}, "sha512-H9q/E1XizaWstJxUW881dmLxEj+t/TrGGnyxINkm4+sK0qUwsMtFdo2BWI9Vs3cIS19MU6b6iCijoUoEf4f3DA=="],
 
     "html-escaper": ["html-escaper@3.0.3", "", {}, "sha512-RuMffC89BOWQoY0WKGpIhn5gX3iI54O6nRA0yC124NYVtzjmFWBIiFd8M0x+ZdX0P9R4lADg1mgP8C7PxGOWuQ=="],
 
@@ -873,7 +873,7 @@
 
     "postinstall": ["postinstall@0.11.2", "", { "dependencies": { "@danieldietrich/copy": "^0.4.2", "glob": "^11.0.2", "minimist": "^1.2.8", "resolve": "^1.22.10" }, "bin": { "postinstall": "bin/postinstall.js" } }, "sha512-Et2ClU0WofEsK14Lc8xeGB1Vor9R6/+pB9jPQ9AW5Rpbt8By/yv7CaIh+qWgKJ2yy06kTJ+tIICo7cNQc65/Tg=="],
 
-    "prettier": ["prettier@3.9.10", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-skGHTH1Yb9QvaTC4hWnRTzEYtCpApF0UMBPz+t/0ZPzP8ihefo/btKd+QA7pUE0fEwA1SbS/NmhyEcstdXOIdA=="],
+    "prettier": ["prettier@3.10.1", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-70vp3ZUYoPlFbF9uiTdXHUUCGEIp7d4+6p+8DYbkm2jP7x/3i/paXVF6dopSI3zd/CEitrZN1rc4i85xWmmXlg=="],
 
     "prettier-plugin-embed": ["prettier-plugin-embed@0.8.2", "", { "dependencies": { "@types/estree": "^1.0.9", "tiny-jsonc": "^1.0.2" } }, "sha512-ctzFzw8PWLgv5umnSbaouB+/qTZkR/tyjZX26LsDlTGdmu9CCh4idMOJJt9dv/8clDfuFD9p2Y3AUQ8iWHNUJA=="],
 
@@ -1033,7 +1033,7 @@
 
     "typedoc": ["typedoc@0.28.20", "", { "dependencies": { "@gerrit0/mini-shiki": "^3.23.0", "lunr": "^2.3.9", "markdown-it": "^14.3.0", "minimatch": "^10.2.5", "yaml": "^2.9.0" }, "peerDependencies": { "typescript": "5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x || 5.5.x || 5.6.x || 5.7.x || 5.8.x || 5.9.x || 6.0.x" }, "bin": { "typedoc": "bin/typedoc" } }, "sha512-uSKqkh8Cr48vllnEy+jdaAgOeR6Y+QCBW7usgUsKj7gJEfR7stw9U/fE49LBnj2tPRKPY0c0EBJSWe9Appmplg=="],
 
-    "typedoc-plugin-dt-links": ["typedoc-plugin-dt-links@2.0.79", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-kDynmiXbNXumeNfbC1UCD2qJNexEIWoT7mS50xg/RE0FAXqWaseHfrmn2POsqJKlqpbnHM0VEmh9Fc//VjzBcw=="],
+    "typedoc-plugin-dt-links": ["typedoc-plugin-dt-links@2.0.80", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-DORpQvHuNgoxQNahZS+QlUAtu/4m6Hp2dmVk2etgcfZnXnfFeE7TWtGu9J09HbA8L7G2NsWrF9rYygcMCdajXA=="],
 
     "typedoc-plugin-markdown": ["typedoc-plugin-markdown@4.14.1", "", { "peerDependencies": { "typedoc": "0.28.x" } }, "sha512-24XX0oqyBsjBIBNoSH4wbgQkouci/CmgmO1ZBSaVkrcflqXFL2PQ5zFOpkz+Ewow5xQ3q2You+wrcmilNepRKg=="],
 
